@@ -30,8 +30,7 @@ GZ_REGISTER_MODEL_PLUGIN(ActorPlugin)
 /////////////////////////////////////////////////
 ActorPlugin::ActorPlugin()
 {
-  // init_keyboard();
-  // std::cout << "####plugin init####" << std::endl;
+  
 }
 
 /////////////////////////////////////////////////
@@ -87,17 +86,6 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 /////////////////////////////////////////////////
 void ActorPlugin::Reset()
 {
-  // SET Model's Pose
-  ignition::math::Pose3d pose = this->actor->WorldPose();
-  ignition::math::Vector3d pos = this->target - pose.Pos();
-  ignition::math::Vector3d rpy = pose.Rot().Euler();
-
-  ignition::math::Angle yaw = atan2(pos.Y(), pos.X()) + 1.5707 - rpy.Z();
-  yaw.Normalize();
-
-  pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+
-        yaw.Radian()*0.001);
-
   this->velocity = 0.8;
   this->lastUpdate = 0;
 
@@ -120,7 +108,6 @@ void ActorPlugin::Reset()
 
     this->actor->SetCustomTrajectory(this->trajectoryInfo);
   }
-  std::cout << pose.Rot() << std::endl;
 }
 
 /////////////////////////////////////////////////
@@ -161,7 +148,7 @@ void ActorPlugin::HandleObstacles(ignition::math::Vector3d &_pos)
       double modelDist = offset.Length();
       if (modelDist < 4.0)
       {
-        std::cout << "offset normalize" << std::endl;
+        // std::cout << "offset normalize" << std::endl;
         double invModelDist = this->obstacleWeight / modelDist;
         offset.Normalize();
         offset *= invModelDist;
@@ -187,6 +174,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   int ch;
   if (_kbhit()){
          ch = _getch();
+         _putch(ch);
       }
 
   // Choose a new target position if the actor has reached its current
@@ -208,19 +196,26 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Angle yaw = atan2(pos.Y(), pos.X()) + 1.5707 - rpy.Z();
   yaw.Normalize();
 
-  // std::cout << "YAW:"+std::to_string(yaw.Radian())+", Z"+std::to_string(rpy.Z()) << std::endl;
   if (ch == 119){
-    pose.Pos() += 3.0 * (cos(rpy.Z()+yaw.Radian()), sin(rpy.Z()+yaw.Radian()), 1.0) * dt;
+    float target_angle = this->normalize_rpy(1.5707 + rpy.Z());
+    pose.Pos().X(pose.Pos().X() - 5*cos(target_angle)*dt);
+    pose.Pos().Y(pose.Pos().Y() - 5*sin(target_angle)*dt);
+    pose.Pos().Z(pose.Pos().Z() - 5*dt);
   }
   if (ch == 115){
-    pose.Pos() -= 3.0 * (cos(rpy.Z()+yaw.Radian()), sin(rpy.Z()+yaw.Radian()), 1.0) * dt;
+    float target_angle = this->normalize_rpy(1.5707 + rpy.Z());
+    pose.Pos().X(pose.Pos().X() + 5*cos(target_angle)*dt);
+    pose.Pos().Y(pose.Pos().Y() + 5*sin(target_angle)*dt);
+    pose.Pos().Z(pose.Pos().Z() + 5*dt);
+
   }
   if (ch == 97){
-    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z() - 0.0524);
-  }
-  if (ch == 100){
     pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z() + 0.0524);
   }
+  if (ch == 100){
+    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z() - 0.0524);
+  }
+  
   // Rotate in place, instead of jumping.
   // if (std::abs(yaw.Radian()) > IGN_DTOR(10))
   // {
@@ -237,8 +232,6 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   // }
 
   // Make sure the actor stays within bounds
-  // pose.Pos().X(std::max(-3.0, std::min(3.5, pose.Pos().X())));
-  // pose.Pos().Y(std::max(-10.0, std::min(2.0, pose.Pos().Y())));
   pose.Pos().Z(1.0);
 
   // Distance traveled is used to coordinate motion with the walking
@@ -250,4 +243,16 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   this->actor->SetScriptTime(this->actor->ScriptTime() +
     (distanceTraveled * this->animationFactor));
   this->lastUpdate = _info.simTime;
+}
+
+float ActorPlugin::normalize_rpy(float angle){
+  if (angle < -3.14159){
+    angle = angle + 2*3.14159;
+  }
+
+  if (angle > 3.14159){
+    angle = angle - 2*3.14159;
+  }
+  
+  return angle;
 }

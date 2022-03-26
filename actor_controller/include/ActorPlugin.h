@@ -53,6 +53,8 @@ namespace gazebo
     /// to nearby obstacles.
     private: void HandleObstacles(ignition::math::Vector3d &_pos);
 
+    private: float normalize_rpy(float angle);
+
     /// \brief Pointer to the parent actor.
     private: physics::ActorPtr actor;
 
