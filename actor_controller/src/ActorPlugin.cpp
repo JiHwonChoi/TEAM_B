@@ -20,6 +20,7 @@
 #include <ignition/math.hh>
 #include "gazebo/physics/physics.hh"
 #include "include/ActorPlugin.h"
+#include <string>
 
 using namespace gazebo;
 GZ_REGISTER_MODEL_PLUGIN(ActorPlugin)
@@ -29,14 +30,14 @@ GZ_REGISTER_MODEL_PLUGIN(ActorPlugin)
 /////////////////////////////////////////////////
 ActorPlugin::ActorPlugin()
 {
-  init_keyboard();
-  std::cout << "####plugin init####" << std::endl;
+  // init_keyboard();
+  // std::cout << "####plugin init####" << std::endl;
 }
 
 /////////////////////////////////////////////////
 void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
-  std::cout << "####load####" << std::endl;
+  // std::cout << "####load####" << std::endl;
   this->sdf = _sdf;
   this->actor = boost::dynamic_pointer_cast<physics::Actor>(_model);
   this->world = this->actor->GetWorld();
@@ -86,7 +87,17 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 /////////////////////////////////////////////////
 void ActorPlugin::Reset()
 {
-  std::cout << "####Reset####" << std::endl;
+  // SET Model's Pose
+  ignition::math::Pose3d pose = this->actor->WorldPose();
+  ignition::math::Vector3d pos = this->target - pose.Pos();
+  ignition::math::Vector3d rpy = pose.Rot().Euler();
+
+  ignition::math::Angle yaw = atan2(pos.Y(), pos.X()) + 1.5707 - rpy.Z();
+  yaw.Normalize();
+
+  pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+
+        yaw.Radian()*0.001);
+
   this->velocity = 0.8;
   this->lastUpdate = 0;
 
@@ -94,7 +105,7 @@ void ActorPlugin::Reset()
     this->target = this->sdf->Get<ignition::math::Vector3d>("target");
   else
     this->target = ignition::math::Vector3d(0, -5, 1.2138);
-
+  
   auto skelAnims = this->actor->SkeletonAnimations();
   if (skelAnims.find(WALKING_ANIMATION) == skelAnims.end())
   {
@@ -109,6 +120,7 @@ void ActorPlugin::Reset()
 
     this->actor->SetCustomTrajectory(this->trajectoryInfo);
   }
+  std::cout << pose.Rot() << std::endl;
 }
 
 /////////////////////////////////////////////////
@@ -149,6 +161,7 @@ void ActorPlugin::HandleObstacles(ignition::math::Vector3d &_pos)
       double modelDist = offset.Length();
       if (modelDist < 4.0)
       {
+        std::cout << "offset normalize" << std::endl;
         double invModelDist = this->obstacleWeight / modelDist;
         offset.Normalize();
         offset *= invModelDist;
@@ -174,18 +187,16 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   int ch;
   if (_kbhit()){
          ch = _getch();
-        _putch(ch);
-        std::cout << char(ch) << ch << std::endl;
       }
 
   // Choose a new target position if the actor has reached its current
   // target.
-  if (distance < 0.3)
-  {
-    std::cout << "distance < 0.3" << std::endl;
-    this->ChooseNewTarget();
-    pos = this->target - pose.Pos();
-  }
+  // if (distance < 0.3)
+  // {
+  //   std::cout << "distance < 0.3" << std::endl;
+  //   this->ChooseNewTarget();
+  //   pos = this->target - pose.Pos();
+  // }
 
   // Normalize the direction vector, and apply the target weight
   // pos = pos.Normalize() * this->targetWeight;
@@ -197,20 +208,27 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Angle yaw = atan2(pos.Y(), pos.X()) + 1.5707 - rpy.Z();
   yaw.Normalize();
 
+  // std::cout << "YAW:"+std::to_string(yaw.Radian())+", Z"+std::to_string(rpy.Z()) << std::endl;
   if (ch == 119){
-    pose.Pos() += (3.0, 3.0, 3.0) * dt;
+    pose.Pos() += 3.0 * (cos(rpy.Z()+yaw.Radian()), sin(rpy.Z()+yaw.Radian()), 1.0) * dt;
   }
   if (ch == 115){
-    pose.Pos() -= (3.0, 3.0, 3.0) * dt;
+    pose.Pos() -= 3.0 * (cos(rpy.Z()+yaw.Radian()), sin(rpy.Z()+yaw.Radian()), 1.0) * dt;
+  }
+  if (ch == 97){
+    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z() - 0.0524);
+  }
+  if (ch == 100){
+    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z() + 0.0524);
   }
   // Rotate in place, instead of jumping.
-  if (std::abs(yaw.Radian()) > IGN_DTOR(10))
-  {
+  // if (std::abs(yaw.Radian()) > IGN_DTOR(10))
+  // {
 
-    std::cout << this->velocity << std::endl;
-    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+
-        yaw.Radian()*0.001);
-  }
+  //   std::cout << this->velocity << std::endl;
+  //   pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+
+  //       yaw.Radian()*0.001);
+  // }
   // else
   // {
   //   // std::cout << "else rotation" << std::endl;
@@ -221,7 +239,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   // Make sure the actor stays within bounds
   // pose.Pos().X(std::max(-3.0, std::min(3.5, pose.Pos().X())));
   // pose.Pos().Y(std::max(-10.0, std::min(2.0, pose.Pos().Y())));
-  pose.Pos().Z(0.5);
+  pose.Pos().Z(1.0);
 
   // Distance traveled is used to coordinate motion with the walking
   // animation
