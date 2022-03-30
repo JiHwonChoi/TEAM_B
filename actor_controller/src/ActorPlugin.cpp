@@ -201,19 +201,81 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
     pose.Pos().X(pose.Pos().X() - 5*cos(target_angle)*dt);
     pose.Pos().Y(pose.Pos().Y() - 5*sin(target_angle)*dt);
     pose.Pos().Z(pose.Pos().Z() - 5*dt);
+    pose.Pos().Z(1.0);
   }
   if (ch == 115){
     float target_angle = this->normalize_rpy(1.5707 + rpy.Z());
     pose.Pos().X(pose.Pos().X() + 5*cos(target_angle)*dt);
     pose.Pos().Y(pose.Pos().Y() + 5*sin(target_angle)*dt);
     pose.Pos().Z(pose.Pos().Z() + 5*dt);
+    pose.Pos().Z(1.0);
 
   }
   if (ch == 97){
     pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z() + 0.0524);
+    pose.Pos().Z(1.0);
   }
   if (ch == 100){
     pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z() - 0.0524);
+    pose.Pos().Z(1.0);
+  }
+
+  if (ch == 122){
+    float roll = rpy.X();
+    roll = roll - 1.5707 / 8;
+    if (roll < 0){
+      roll = 0;
+    }
+    pose.Pos().Z(pose.Pos().Z() - 0.1);
+    if (pose.Pos().Z() < 0.2){
+      pose.Pos().Z(0.2);
+    }
+    pose.Rot() = ignition::math::Quaterniond(roll, 0, rpy.Z());
+  }
+
+  if (ch == 120) {
+    float roll = rpy.X();
+    roll = roll + 1.5707 / 8;
+    if (roll > 1.5707){
+      roll = 1.5707;
+    }
+
+    pose.Pos().Z(pose.Pos().Z() + 0.1);
+    if (pose.Pos().Z() > 1.0){
+      pose.Pos().Z(1.0);
+    }
+
+    pose.Rot() = ignition::math::Quaterniond(roll, 0, rpy.Z());
+  }
+
+  if (ch == 99) {
+    float pitch = rpy.Y();
+    pitch = pitch + 1.5707 / 8;
+    if (pitch > 1.5707){
+      pitch = 1.5707;
+    }
+
+    pose.Pos().Z(pose.Pos().Z() - 0.1);
+    if (pose.Pos().Z() < 0.2){
+      pose.Pos().Z(0.2);
+    }
+
+    pose.Rot() = ignition::math::Quaterniond(1.5707, pitch, rpy.Z());
+  }
+
+  if (ch == 118) {
+    float pitch = rpy.Y();
+    pitch = pitch - 1.5707 / 8;
+    if (pitch < 0){
+      pitch = 0;
+    }
+    
+    pose.Pos().Z(pose.Pos().Z() + 0.1);
+    if (pose.Pos().Z() > 1.0){
+      pose.Pos().Z(1.0);
+    }
+
+    pose.Rot() = ignition::math::Quaterniond(1.5707, pitch, rpy.Z());
   }
   
   // Rotate in place, instead of jumping.
@@ -232,7 +294,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   // }
 
   // Make sure the actor stays within bounds
-  pose.Pos().Z(1.0);
+  // pose.Pos().Z(1.0);
 
   // Distance traveled is used to coordinate motion with the walking
   // animation
