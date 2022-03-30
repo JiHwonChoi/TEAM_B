@@ -16,7 +16,7 @@ const Main = (props) => {
             <div>
 			<h1>main page</h1>
             <h3>Current location</h3>
-            <img src='mapimg/map.png' onClick={this.imgClick}></img>
+            <img src='mapimg/map.png'></img>
             <Link to ="/Page1">
                 <h3>Page1</h3>
             </Link>

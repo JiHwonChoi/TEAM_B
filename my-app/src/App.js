@@ -8,10 +8,11 @@ import NotFound from './components/NotFound';
 import React from "react";
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-const App = () => {
+const App =() => {
   return (
     <div className="App">
-      {/* <Main /> */}
+
+      
       <BrowserRouter>
         <Header />
         <Routes>
@@ -23,7 +24,7 @@ const App = () => {
       </BrowserRouter>
       
     </div>
-  );
-};
+  )
+}
 
 export default App;
