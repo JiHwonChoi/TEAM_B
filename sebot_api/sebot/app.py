@@ -32,16 +32,9 @@ def odom():
 
     return res_body
 
-@app.route("/upload_image", methods=['POST'])
-def upload_image():
-    if sebot.img is None:
-        return "NOT_INITIALIZED", 406
-
-    res = db.image_upload(sebot.img)
-    if not res:
-        return "UPLOAD_FAIL", 400
-
-    return "UPLOAD_COMPLETE", 200
+@app.route("/get_image", methods=['POST'])
+def get_image():
+    return 400
 
 @app.route("/call_sebot", methods=['POST'])
 def call_sebot():

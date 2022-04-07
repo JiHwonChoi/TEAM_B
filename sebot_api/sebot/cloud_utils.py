@@ -2,7 +2,6 @@
 # _*_ coding: utf-8 _*_
 
 import os
-from sre_constants import SUCCESS
 import sys
 from datetime import datetime
 import boto3
@@ -26,7 +25,7 @@ class Cloud:
                 ContentType = 'image/jpeg'
             )
             return True
-            
+
         except:
             return False
 
