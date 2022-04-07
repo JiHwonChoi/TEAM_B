@@ -7,6 +7,7 @@ import psycopg2
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from config import DB
+from cloud_utils import Cloud
 
 class Database:
     def __init__(self):
@@ -16,6 +17,8 @@ class Database:
                                 password = DB['password'],
                                 port=DB['port'])
         self.cursor = self.db.cursor()
+
+        self.cloud = Cloud()
 
     def __del__(self):
         self.db.close()
@@ -30,3 +33,8 @@ class Database:
 
         else:
             self.db.commit()
+
+
+    def image_upload(self, image):
+        res = self.cloud.upload_image(image)
+        return res
