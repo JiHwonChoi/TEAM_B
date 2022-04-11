@@ -7,7 +7,6 @@ class Main extends Component {
             this.state={
                 marker:'marker.png',
                 clicked:{x:0, y:0},
-                    
                 where:{
                     top: '50%', left: '50%'
                 }
@@ -29,6 +28,8 @@ class Main extends Component {
                 }
             )
        }
+
+       
 
        render(){
 
