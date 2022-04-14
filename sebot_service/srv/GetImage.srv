@@ -1,0 +1,3 @@
+bool emergency
+---
+sensor_msgs/CompressedImage image
