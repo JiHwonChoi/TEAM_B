@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
 
-from re import S
-
-from soupsieve import closest
 import rospy
 from sensor_msgs.msg import CompressedImage
 from nav_msgs.msg import Odometry
@@ -12,6 +9,8 @@ from move_base_msgs.msg import MoveBaseActionResult
 
 class SeBot:
     def __init__(self):
+        rospy.init_node('sebot_api', disable_signals=True, tcpros_port=9090)
+
         # robot pose
         self.x = None
         self.y = None
@@ -37,18 +36,23 @@ class SeBot:
 
         self.user_path = []
 
-        rospy.init_node('sebot_api')
+        
         self.odom_subscriber = rospy.Subscriber("/odom", Odometry, self.odom_callback)
-        self.image_subscrber = rospy.Subscriber("/camera/rgb/image_raw/compressed", CompressedImage, self.image_callback)
+        # self.image_subscrber = rospy.Subscriber("/camera/rgb/image_raw/compressed", CompressedImage, self.image_callback)
         self.goal_subscriber = rospy.Subscriber("/move_base/result", MoveBaseActionResult, self.result_callback)
 
-        self.goal_publisher = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=1)
+        self.goal_publisher = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=3)
 
+        rospy.loginfo("SEBOT INITIALIZED")
         # emergency_client
         # log subscriber
 
+
     def run(self):
+        rate = rospy.Rate(10)
+
         while not rospy.is_shutdown():
+            rate.sleep()
             if self.x is None or self.y is None:
                 continue
             
@@ -82,7 +86,7 @@ class SeBot:
                     self.goal_publisher.publish(msg)
                     self.user_path.pop(0)
                     self.reached = 0
-    
+        rospy.signal_shutdown("KEYBOARD INTERRUPT")
 
     def make_goal(self, point):
         msg = PoseStamped()

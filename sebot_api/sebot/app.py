@@ -11,8 +11,6 @@ from db_utils import Database
 
 
 app = Flask(__name__)
-sebot = SeBot()
-db = Database()
 
 @app.route("/")
 def hello():
@@ -72,7 +70,15 @@ def call_sebot():
 
 
 if __name__=="__main__":
-    sebot_thread = threading.Thread(target=sebot.run)
     flask_thread = threading.Thread(target=app.run, args=("0.0.0.0", 5000))
-    sebot_thread.start()
     flask_thread.start()
+
+    sebot = SeBot()
+    db = Database()
+    
+    sebot_thread = threading.Thread(target=sebot.run)
+    sebot_thread.start()
+    
+    
+    
+    
