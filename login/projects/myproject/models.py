@@ -10,5 +10,5 @@ db = psycopg2.connect(host=DB['host'],
     user=DB['user'],
     password = DB['password'],
     port=DB['port'])
-
+## db connect를 여기서 하고 온다.
 print(db)
