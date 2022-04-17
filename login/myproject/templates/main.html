@@ -6,7 +6,7 @@
 </head>
 <body>
     {% if session.get('logFlag') %}
-        userId : {{ session['userId'] }}
+        이름 : {{ session['userId'] }}
         | <a href="/user_info_edit/{{ session['idx'] }}">Edit</a>
         | <a href="/logout">Logout</a>
     {% else %}
