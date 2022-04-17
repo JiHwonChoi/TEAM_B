@@ -1,4 +1,4 @@
-22.04.11
+22.04.17
 Dependencies
 openpose (https://github.com/CMU-Perceptual-Computing-Lab/openpose)
 yolov3_pytorch_ros (https://github.com/vvasilo/yolov3_pytorch_ros)
