@@ -48,7 +48,19 @@ bottom: 40.96%;
 background: #8DC63F;
 border-radius: 20px;
 }
-.bell{
+
+.home_icon{
+    /* position: absolute; */
+    margin-left: auto;
+    margin-right: auto;
+    /* top: 26.51%;
+    bottom: 56.56%; */
+    width: 40px;
+    height: 40px;
+
+    background: no-repeat center/100% url(./image/home.png)
+}
+.noti{
 /* 40 / Toolbar / bell */
 
 
@@ -59,7 +71,15 @@ top: 10.84%;
 bottom: 40.96%;
 
 }
-.mypage{
+
+.noti_icon{
+    width: 40px;
+    height: 40px;
+    background:no-repeat center/100% url(./image/bell.png);
+}
+
+
+.profile{
 /* 40 / Toolbar / bell */
 
 
@@ -68,4 +88,10 @@ left: 86.4%;
 right: 2.93%;
 top: 10.84%;
 bottom: 40.96%;
+}
+
+.profile_icon{
+    width: 40px;
+    height: 40px;
+    background:no-repeat center/100% url(./image/icon.png);   
 }
