@@ -31,7 +31,7 @@ class Database:
             return row
 
         else:
-                self.db.commit()
+            self.db.commit()
 
 
     def image_upload(self, image):

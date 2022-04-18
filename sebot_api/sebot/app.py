@@ -3,8 +3,8 @@
 
 import json
 import cv2
-import threading
 from flask import Flask, request, session, render_template, redirect, url_for
+import psycopg2
 from ros_utils import SeBot
 from db_utils import Database
 
@@ -40,8 +40,10 @@ def register():
         
         try:
             db.execute(sql, (userId, userPwd, userName, userCode, userNumber, userType,))
-        except Exception as e:
-            return f"Register Failed", 400
+            
+        except psycopg2.IntegrityError:
+            db.db.rollback()
+            return f"Register Failed: IntegrityError", 400
         
     return redirect(url_for('main')) # 용도 확인
 
@@ -162,13 +164,10 @@ def call_sebot():
     return "SUCCESS", 200
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sebot = SeBot()
+    sebot.start()
     db = Database()
-    
-    sebot_thread = threading.Thread(target=sebot.run)
-    sebot_thread.start()
-    
+
     app.secret_key = '20200601'
-    app.debug = True
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
