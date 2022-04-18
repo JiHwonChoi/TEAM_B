@@ -5,8 +5,7 @@ import os
 import sys
 import psycopg2
 
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from TEAM_B.login.login.config import DB
+from config import DB
 from cloud_utils import Cloud
 
 class Database:
@@ -32,7 +31,7 @@ class Database:
             return row
 
         else:
-            self.db.commit()
+                self.db.commit()
 
 
     def image_upload(self, image):

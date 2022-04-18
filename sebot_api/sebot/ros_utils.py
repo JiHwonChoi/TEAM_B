@@ -9,7 +9,7 @@ from move_base_msgs.msg import MoveBaseActionResult
 
 class SeBot:
     def __init__(self):
-        rospy.init_node('sebot_api', disable_signals=True, tcpros_port=9090)
+        rospy.init_node('sebot_api', disable_signals=True)
 
         # robot pose
         self.x = None
