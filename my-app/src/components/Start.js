@@ -1,5 +1,4 @@
-import React, {useState} from 'react'
-import { Link } from 'react-router-dom';
+import React, {useState, useEffect} from 'react'
 import './start.css'
 import New from './New';
 import Homelogo from './Homelogo';
@@ -8,19 +7,53 @@ import Home from './Home';
 import Notification from './Notification';
 import Profile from './Profile';
 import Navigation from './Navigation';
+import axios from 'axios';
+
 
 
 function Start (props) {
         
         const [article, setArticle] = useState(<Homelogo />)
+        const [title, setTitle] = useState('empty')
+
+        function getapi (i){
+
+            let timer = setInterval(async ()=>{
+                i=i+1
+                let my_url='https://jsonplaceholder.typicode.com/todos/'+i
+                let response = await axios.get(my_url)
+                console.log(response.data)
+                let title = response.data.title
+                setTitle(title)
+                if(i>10){
+                    clearTimeout(timer)
+                    console.log('clear')
+                }
+                //받아온 정보로 state를 지속적으로 업데이트 하기
+        
+            },200)
+        
+            
+        }
+
+
+        // 렌더링이 처음 됐을때 한번 받아오기
+        // useEffect 를 react 에서 임포트 해와야함
+        useEffect(async ()=>{
+            
+            let my_url = 'https://jsonplaceholder.typicode.com/todos/1'
+            let response = await axios.get(my_url)
+            console.log(response.data)
+        },[])
 
         return(
             <div>
                 {console.log('render')}
                 <div className='home-background'>
-                    {/* <div className='sebotage_1'></div>
-                    <div className='logo'></div> */}
+                    
                     {article}
+                    <br></br><br></br><br></br>
+                    {title}
                     <Navigation onChange={function(idx){
                         console.log('this is onChange function',idx)
                         if(idx=='plus'){
@@ -42,11 +75,13 @@ function Start (props) {
                             setArticle(<Homelogo />)
                         }
                         
+                        let i = 0
+                        getapi(i)
+
+
                     } }></Navigation>
                 </div>
-                {/* <Link to ="/main">메인페이지</Link>
-                <br></br>
-                <Link to ="/page1">page1</Link> */}
+
 			
 		    </div>
 
