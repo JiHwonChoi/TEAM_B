@@ -3,8 +3,9 @@
 
 import json
 import cv2
-from flask import Flask, request, session, render_template, redirect, url_for
 import psycopg2
+import time
+from flask import Flask, request, session, render_template, redirect, url_for, Response, stream_with_context, jsonify
 from ros_utils import SeBot
 from db_utils import Database
 
@@ -118,18 +119,17 @@ def odom():
     if sebot.x is None or sebot.y is None or sebot.z is None:
         return "NOT_INTIALIZED", 406
 
-    res_body = {}
-    res_body['x'] = sebot.x
-    res_body['y'] = sebot.y
-    res_body['z'] = sebot.z
+    def generate():
+        while 1:
+            yield f'x: {sebot.x}, y: {sebot.y}, z:{sebot.z}'
+            time.sleep(5)
 
-    return res_body
+    return app.response_class(stream_with_context(generate()))
 
 
 @app.route("/get_image", methods=['POST'])
 def get_image():
     return 400
-
 
 @app.route("/call_sebot", methods=['POST'])
 def call_sebot():
@@ -142,13 +142,8 @@ def call_sebot():
         return "INVALID_INPUT", 406
 
     start_point = data['start']
-    target_point = data['target']
-    end_point = start_point[:]
 
-    if not type(start_point) is list or len(start_point) != 2:
-        return "INVALID_INPUT", 406
-
-    if not type(target_point) is list or len(target_point) != 2:
+    if not type(start_point) is list or len(start_point) != 2 or not start_point[0].isdigt() or not start_point[1].isdigit():
         return "INVALID_INPUT", 406
 
     if not sebot.idle:
@@ -158,10 +153,9 @@ def call_sebot():
     sebot.idle = False
     sebot.reached = -1
     sebot.user_path.append(start_point)
-    sebot.user_path.append(target_point)
-    sebot.user_path.append(end_point)
 
     return "SUCCESS", 200
+
 
 
 if __name__ == "__main__":
@@ -170,4 +164,5 @@ if __name__ == "__main__":
     db = Database()
 
     app.secret_key = '20200601'
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.debug = True
+    app.run(host="0.0.0.0", port=5000)
