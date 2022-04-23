@@ -13,8 +13,29 @@ import axios from 'axios';
 
 function Start (props) {
         
-        const [article, setArticle] = useState(<Homelogo />)
+        const [article, setArticle] = useState(<New />)
         const [title, setTitle] = useState('empty')
+
+        function socket_test (){
+            let socket = new WebSocket("wss://javascript.info/article/websocket/demo/hello");
+            console.log('websocket:',socket)
+            let message =''
+            socket.onopen = function(e) {
+                alert("[open] Connection established & send");
+                socket.send("what is this?");
+            };
+            
+            socket.onmessage = ( event )=> { 
+                message = event.data
+                console.log('message from server', message)
+                setTitle(message)
+                }
+
+            //socket 닫기 필요해
+        }
+        
+
+        
 
         function getapi (i){
 
@@ -53,7 +74,7 @@ function Start (props) {
                     
                     {article}
                     <br></br><br></br><br></br>
-                    {title}
+                    {/* {title} */}
                     <Navigation onChange={function(idx){
                         console.log('this is onChange function',idx)
                         if(idx=='plus'){
@@ -75,8 +96,10 @@ function Start (props) {
                             setArticle(<Homelogo />)
                         }
                         
-                        let i = 0
-                        getapi(i)
+                        // let i = 0
+                        // getapi(i)
+                        socket_test()
+
 
 
                     } }></Navigation>
