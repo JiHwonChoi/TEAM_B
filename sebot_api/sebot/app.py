@@ -128,7 +128,7 @@ def odom():
     # change it to socket io
     def generate():
         while 1:
-            yield f'x: {sebot.x}, y: {sebot.y}, reached:{sebot.reached}'
+            yield f'x: {sebot.x}, y: {sebot.y}, reached:{sebot.reached}, step:{sebot.active_step}'
             time.sleep(5)
 
     return app.response_class(stream_with_context(generate()))
@@ -198,7 +198,7 @@ def set_dest():
                                                             }
                                                 }))
     goal_publisher.unadvertise()
-    sebot.active_step += 1
+    sebot.active_step = (sebot.active_step + 1) % 3
 
     return "SUCCESS", 200
 
