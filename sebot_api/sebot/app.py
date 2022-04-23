@@ -151,7 +151,7 @@ def call_sebot():
 
     start_point = data['start']
 
-    if not type(start_point) is list or len(start_point) != 2 or not start_point[0].isdigt() or not start_point[1].isdigit():
+    if not type(start_point) is list or len(start_point) != 2 or not type(start_point[0]) is int or not type(start_point[1]) is int:
         return "INVALID_INPUT", 406
 
     if not sebot.idle:
