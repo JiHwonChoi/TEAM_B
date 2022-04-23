@@ -5,7 +5,10 @@ import json
 import cv2
 import psycopg2
 import time
+import roslibpy
+import argparse
 from flask import Flask, request, session, render_template, redirect, url_for, Response, stream_with_context, jsonify
+from yaml import parse
 from ros_utils import SeBot
 from db_utils import Database
 
@@ -116,12 +119,16 @@ def logout():
 
 @app.route("/odom", methods=['GET'])
 def odom():
+    if not sebot.client.is_connected:
+        return "ROBOT_IS_OFF", 406
+
     if sebot.x is None or sebot.y is None or sebot.z is None:
         return "NOT_INTIALIZED", 406
 
+    # change it to socket io
     def generate():
         while 1:
-            yield f'x: {sebot.x}, y: {sebot.y}, z:{sebot.z}'
+            yield f'x: {sebot.x}, y: {sebot.y}, reached:{sebot.reached}'
             time.sleep(5)
 
     return app.response_class(stream_with_context(generate()))
@@ -131,6 +138,7 @@ def odom():
 def get_image():
     return 400
 
+
 @app.route("/call_sebot", methods=['POST'])
 def call_sebot():
     if request.headers["Content-Type"] != "application/json":
@@ -138,7 +146,7 @@ def call_sebot():
     
     data = json.loads(request.get_data()) # json error detector needed
 
-    if (not 'target' in data) or (not 'start' in data):
+    if (not 'start' in data):
         return "INVALID_INPUT", 406
 
     start_point = data['start']
@@ -148,19 +156,60 @@ def call_sebot():
 
     if not sebot.idle:
         return "SEBOT_BUSY", 423
-
+    
     # SEND TARGET TO ROBOT
     sebot.idle = False
-    sebot.reached = -1
+    sebot.reached = 0
     sebot.user_path.append(start_point)
+
+    goal_publisher = roslibpy.Topic(sebot.client, "move_base_simple/goal", "geometry_msgs/PoseStamped")
+    goal_publisher.publish(roslibpy.Message({"header": {"frame_id": "map"},
+                                                    "pose": {"position": {"x": start_point[0], "y": start_point[1]},
+                                                            "orientation": {"z": 1}
+                                                            }
+                                                }))
+    goal_publisher.unadvertise()
+    sebot.active_step += 1
+
+    return "SUCCESS", 200
+
+@app.route("/set_dest", methods=['POST'])
+def set_dest():
+    if request.headers["Content-Type"] != "application/json":
+        return "INVALID_ACCESS", 406
+    
+    data = json.loads(request.get_data()) # json error detector needed
+
+    if (not 'dest' in data):
+        return "INVALID_INPUT", 406
+
+    start_point = data['dest']
+
+    if not type(start_point) is list or len(start_point) != 2 or not start_point[0].isdigt() or not start_point[1].isdigit():
+        return "INVALID_INPUT", 406
+    
+    # SEND TARGET TO ROBOT
+    sebot.reached = 0
+
+    goal_publisher = roslibpy.Topic(sebot.client, "move_base_simple/goal", "geometry_msgs/PoseStamped")
+    goal_publisher.publish(roslibpy.Message({"header": {"frame_id": "map"},
+                                                    "pose": {"position": {"x": start_point[0], "y": start_point[1]},
+                                                            "orientation": {"z": 1}
+                                                            }
+                                                }))
+    goal_publisher.unadvertise()
+    sebot.active_step += 1
 
     return "SUCCESS", 200
 
 
 
 if __name__ == "__main__":
-    sebot = SeBot()
-    sebot.start()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--robot-ip", type=str, help="robot's ip")
+    args = parser.parse_args()
+
+    sebot = SeBot(args.robot_ip)
     db = Database()
 
     app.secret_key = '20200601'

@@ -2,16 +2,19 @@
 # _*_ coding: utf-8 _*_
 
 import threading
+import time
 import rospy
+import roslibpy
 from sensor_msgs.msg import CompressedImage
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseStamped
 from move_base_msgs.msg import MoveBaseActionResult
 
-class SeBot(threading.Thread):
-    def __init__(self):
-        super().__init__()
-        rospy.init_node('sebot_api', disable_signals=True, anonymous=True)
+class SeBot:
+    def __init__(self, robot_ip):
+        #Init ros web socket
+        self.client = roslibpy.Ros(host=robot_ip, port=9090)
+        self.client.run()
 
         # robot pose
         self.x = None
@@ -31,6 +34,9 @@ class SeBot(threading.Thread):
 
         # robot status => should be handled by flask
         self.idle = True
+        
+        # robot active step
+        self.active_step = 0
 
         # default path
         self.path = [[-0.615, 10.210], [-6.511, 10.224], [-8.757, -36.167], [1.814, -26.819]]
@@ -38,57 +44,57 @@ class SeBot(threading.Thread):
 
         self.user_path = []
 
+        self.odom_subscriber = roslibpy.Topic(self.client, "odom", "nav_msgs/Odometry")
+        self.odom_subscriber.subscribe(self.odom_callback)
+
+        # self.image_subscrber = rospy.Subscriber("/camera/rgb/image_raw/compressed", CompressedImage, self.image_callback)
         
-        self.odom_subscriber = rospy.Subscriber("/odom", Odometry, self.odom_callback)
-        self.image_subscrber = rospy.Subscriber("/camera/rgb/image_raw/compressed", CompressedImage, self.image_callback)
-        self.goal_subscriber = rospy.Subscriber("/move_base/result", MoveBaseActionResult, self.result_callback)
-
-        self.goal_publisher = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=3)
-
-        rospy.loginfo(f'{self}')
+        # Change it to service
+        self.reach_subscriber = roslibpy.Topic(self.client, "move_base/result", "move_base_msgs/MoveBaseActionResult")
+        self.reach_subscriber.subscribe(self.result_callback)
+        
+        rospy.loginfo(f'SEBOT INIT')
 
         # emergency_client
         # log subscriber
 
+    def __del__(self):
+        self.client.close()
 
-    def run(self):
-        rate = rospy.Rate(10)
+    # def run(self):
+        # while not self.client.is_connected:
+        #     time.sleep(1)
+            
+        #     if self.idle:
+        #         if self.reached == 0:
+        #             continue
 
-        rospy.wait_for_message("/odom", Odometry)
+        #         else:
+        #             rospy.loginfo("Sebot is IDLE")
+        #             if self.reached == -1:
+        #                 self.path_couter = self.get_closest()
 
-        while not rospy.is_shutdown():
-            rate.sleep()
+        #             msg = self.make_goal(self.path[self.path_couter])
 
-            if self.idle:
-                if self.reached == 0:
-                    continue
+        #             self.goal_publisher.publish(msg)
+        #             self.path_couter = (self.path_couter + 1) % 4
+        #             self.reached = 0
 
-                else:
-                    rospy.loginfo("Sebot is IDLE")
-                    if self.reached == -1:
-                        self.path_couter = self.get_closest()
+            # else:
+            #     if self.reached == 0:
+            #         continue
 
-                    msg = self.make_goal(self.path[self.path_couter])
+            #     else:
+            #         rospy.loginfo("Sebot is Active")
+            #         if len(self.user_path) == 0:
+            #             self.idle = True
+            #             self.reached = -1
+            #             continue
 
-                    self.goal_publisher.publish(msg)
-                    self.path_couter = (self.path_couter + 1) % 4
-                    self.reached = 0
-
-            else:
-                if self.reached == 0:
-                    continue
-
-                else:
-                    rospy.loginfo("Sebot is Active")
-                    if len(self.user_path) == 0:
-                        self.idle = True
-                        self.reached = -1
-                        continue
-
-                    msg = self.make_goal(self.user_path[0])
-                    self.goal_publisher.publish(msg)
-                    self.user_path.pop(0)
-                    self.reached = 0
+            #         msg = self.make_goal(self.user_path[0])
+            #         self.goal_publisher.publish(msg)
+            #         self.user_path.pop(0)
+            #         self.reached = 0
 
     def make_goal(self, point):
         msg = PoseStamped()
@@ -124,34 +130,22 @@ class SeBot(threading.Thread):
         return closest_point
 
 
-    def result_callback(self, msg: MoveBaseActionResult):
-        if "Goal reached" in msg.status.text:
+    def result_callback(self, msg):
+        if "Goal reached" in msg["status"]["text"]:
             self.reached = 1
 
 
-    def odom_callback(self, msg: Odometry):
-        self.x = msg.pose.pose.position.x
-        self.y = msg.pose.pose.position.y
-        self.z = msg.pose.pose.position.z
+    def odom_callback(self, msg):
+        self.x = msg["pose"]["pose"]["position"]["x"]
+        self.y = msg["pose"]["pose"]["position"]["y"]
+        self.z = msg["pose"]["pose"]["position"]["z"]
 
-        self.qx = msg.pose.pose.orientation.x
-        self.qy = msg.pose.pose.orientation.y
-        self.qz = msg.pose.pose.orientation.z
-        self.qw = msg.pose.pose.orientation.w
+        self.qx = msg["pose"]["pose"]["orientation"]["x"]
+        self.qy = msg["pose"]["pose"]["orientation"]["y"]
+        self.qz = msg["pose"]["pose"]["orientation"]["z"]
+        self.qw = msg["pose"]["pose"]["orientation"]["w"]
 
 
     def image_callback(self, msg: CompressedImage):
         self.img = msg.data
-
-
-    def publish_goal(self, goal):
-        msg = PoseStamped()
-        msg.header.frame_id = 'map'
-        msg.pose.position.x = goal[0]
-        msg.pose.position.y = goal[1]
-
-        # need to optimize angle
-        msg.pose.orientation.z = 1
-        
-        self.goal_publisher.publish(msg)
 
