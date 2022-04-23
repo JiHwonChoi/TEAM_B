@@ -1,0 +1,26 @@
+[{
+    "lol_id" : "Sandodong Karma",
+    "user_id" : "Karma",
+    "position" : "Mid",
+    "greeting" : "HI"
+},{
+    "lol_id" : "Sandodong Zillion",
+    "user_id" : "Zillion",
+    "position" : "Sup",
+    "greeting" : "HI"
+},{
+    "lol_id" : "Sandodong Twitch",
+    "user_id" : "Twitch",
+    "position" : "AD",
+    "greeting" : "HI"
+},{
+    "lol_id" : "Sandodong Veiga",
+    "user_id" : "Veiga",
+    "position" : "Mid",
+    "greeting" : "HI"
+},{
+    "lol_id" : "Sandodong Dinger",
+    "user_id" : "Himer Dinger",
+    "position" : "Mid",
+    "greeting" : "HI"
+}]
