@@ -98,6 +98,7 @@ class Pose_detector:
                    print ("angle",angle)
                    if angle<30 or angle>150:
                        print("People fall down! Emergency!")
+
             #print("All people detected")
         except:
             cv2.imshow("OpenPose 1.7.0 - ROS_ROBOT_VERSION_BTEAM", datum.cvOutputData)

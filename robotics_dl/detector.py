@@ -34,7 +34,7 @@ from yolov3_pytorch_ros.msg import BoundingBoxes, BoundingBox
 
 # Detector manager class for YOLO
 class DetectorManager():
-    def __init__(self):
+    def __init__(self,camera='back'):
         #self.out = out
         # Load weights parameter
         self.MAX_DIST=5
@@ -47,9 +47,16 @@ class DetectorManager():
             raise IOError(('{:s} not found.').format(self.weights_path))
 
         # Load image parameter and confidence threshold
-        self.image_topic = rospy.get_param('~image_topic', '/camera/rgb/image_raw')
+        #self.image_topic = rospy.get_param('~image_topic', '/camera/rgb/image_raw')
         #you should change depth topic in here
-        self.depth_topic = '/camera/depth/image_raw'
+
+        if camera=='back':
+            self.image_topic = '/rear_camera/rgb/image_raw'
+            self.depth_topic = '/rear_camera/depth/image_raw'
+        else:
+            self.image_topic = '/camera/rgb/image_raw'
+            self.depth_topic = '/camera/depth/image_raw'
+
         self.confidence_th = rospy.get_param('~confidence', 0.5)
         self.nms_th = rospy.get_param('~nms_th', 0.3)
 
@@ -98,11 +105,13 @@ class DetectorManager():
         # Define publishers
         self.pub_ = rospy.Publisher(self.detected_objects_topic, BoundingBoxes, queue_size=10)
         self.pub_viz_ = rospy.Publisher(self.published_image_topic, Image, queue_size=10)
+        self.depth_point = None
         rospy.loginfo("Launched node for object detection")
     def depthCb(self,data):
         try:
             #print("data encoding",data.height)
             self.depth_cv_image = self.bridge.imgmsg_to_cv2(data,"32FC1")
+
             ##print("depth image shape",self.depth_cv_image.shape)
             #cv2.normalize(depth_array, depth_array, 0, 1, cv2.NORM_MINMAX)
 
@@ -110,11 +119,7 @@ class DetectorManager():
             print(e)
         #print("depth cv img",self.depth_cv_image)
         cv_image_array = np.array(self.depth_cv_image, dtype=np.float32)
-        #d=cv2.normalize(cv_image_array, cv_image_array, 0, 1, cv2.NORM_MINMAX)
-        #d[152:556,645:749]=1
-        #print("d",d*255)
-        #cv2.imshow('depth', d)
-        #cv2.waitKey(1)
+
         self.MAX_DIST=10
         cv_image_array=np.where(np.isnan(cv_image_array),self.MAX_DIST, cv_image_array)
         self.depth_np=cv_image_array
@@ -123,7 +128,7 @@ class DetectorManager():
     def imageCb(self, data):
         # Convert the image to OpenCV
         try:
-            self.cv_image = self.bridge.imgmsg_to_cv2(data, "rgb8")
+            self.cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:
             print(e)
         depth_np = self.depth_np
@@ -183,11 +188,15 @@ class DetectorManager():
                 except:
                     pass
         else:
+            #self.cv_image = cv2.cvtColor(self.cv_image,cv2.COLOR_RGB2BGR)
+            self.depth_point = None
             imgOut = np.ascontiguousarray(self.cv_image)
+            imgOut = cv2.resize(imgOut,(640,320))
             cv2.imshow('hi', imgOut)
             cv2.waitKey(1)
-            rospy.loginfo("No detections available, next image")
-
+            #rospy.loginfo("No detections available, next image")
+            image_msg = self.bridge.cv2_to_imgmsg(imgOut, "rgb8")
+            self.pub_viz_.publish(image_msg)
         return True
     
 
@@ -222,7 +231,6 @@ class DetectorManager():
 
         return input_img
 
-
     def visualizeAndPublish(self, output, imgIn,depth_np):
         # Copy image and visualize
         #print ("depth np",type(depth_np))
@@ -238,7 +246,8 @@ class DetectorManager():
             x_p3 = output.bounding_boxes[index].xmax
             y_p3 = output.bounding_boxes[index].ymax
             confidence = output.bounding_boxes[index].probability
-
+            if label != "person":
+                continue
             # Find class color
             if label in self.classes_colors.keys():
                 color = self.classes_colors[label]
@@ -266,6 +275,7 @@ class DetectorManager():
             lineColor = (int(color[0]), int(color[1]), int(color[2]))
             cv2.rectangle(imgOut,(mid_point[0]-_thresh,mid_point[1]-_thresh),(mid_point[0]+_thresh,mid_point[1]+_thresh),(255,0,0),5)
             cv2.rectangle(imgOut, start_point, end_point, lineColor, thickness)
+            self.depth_point=depth_point
             if depth_point==self.MAX_DIST or depth_point==-1:
                 text = ('{:s}: {:s}').format(f"{label}(Depth)", "NAN")
             else:
@@ -274,6 +284,8 @@ class DetectorManager():
             #print("imgOut",imgOut.shape)
             cv2.putText(imgOut, text, (int(x_p1), int(y_p1+50)), font, fontScale, (0,0,255), thickness ,cv2.LINE_AA)
             #cv2.circle(imgOut,(mid_point[0],mid_point[1]),5,(1,0,0),10)
+            #imgOut=cv2.cvtColor(imgOut,cv2.COLOR_RGB2BGR)
+            imgOut = cv2.resize(imgOut, (640, 320))
             cv2.imshow('hi',imgOut)
             cv2.waitKey(1)
             #self.out.write(imgOut)
@@ -281,13 +293,11 @@ class DetectorManager():
         image_msg = self.bridge.cv2_to_imgmsg(imgOut, "rgb8")
         self.pub_viz_.publish(image_msg)
 
-
 if __name__=="__main__":
     # Initialize node
     rospy.init_node("detector_manager_node")
     #out=cv2.VideoWriter('outpy.avi', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 10, (1080, 1920))
     # Define detector object
     dm = DetectorManager()
-    #out.release()
     # Spin
     rospy.spin()
