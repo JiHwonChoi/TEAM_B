@@ -5,6 +5,8 @@ import os
 from sys import platform
 import argparse
 from sensor_msgs.msg import Image
+from std_msgs.msg import Bool
+from std_srvs.srv import SetBool,SetBoolResponse
 from cv_bridge import CvBridge,CvBridgeError
 import numpy as np
 import time
@@ -15,7 +17,8 @@ NECK_TH=450
 -------PARAMETERS-----------
 '''
 openpose_path = '/home/danmuzi/openpose/' #You need to change to dir where you download openpose
-image_topic= '/camera/rgb/image_raw'
+image_topic = '/rear_camera/rgb/image_raw'
+emergency_srv = '/emergency_sign'
 '''
 --------------------------
 '''
@@ -59,11 +62,14 @@ opWrapper.start()
 
 
 class Pose_detector:
-    def __init__(self,opWrapper):
+    def __init__(self,opWrapper,vis):
         self.pose_sub=rospy.Subscriber(image_topic,Image,self._cb)
         self.opWrapper=opWrapper
         self.bridge=CvBridge()
         self.cnt=0
+        self.emergency_flag = False
+        self._vis = vis
+        self.emergency_srv = rospy.Service(emergency_srv, SetBool, self._handle_emergency)
 
     def _cb(self,data):
         #print("hiihi")
@@ -72,6 +78,7 @@ class Pose_detector:
         except CvBridgeError as e:
             print(e)
         self.__process_pose(cv_image)
+
     def __process_pose(self,imageToProcess):
         datum = op.Datum()
         datum.cvInputData = imageToProcess
@@ -83,7 +90,7 @@ class Pose_detector:
 
         ## x is index 0 , y(height) is index 1...
         emergency_flag=False
-
+        _safe = True
         #Todo:insert no detection sign
         try:
             for person in datum.poseKeypoints:
@@ -97,17 +104,28 @@ class Pose_detector:
                    angle=np.abs(np.arctan2(person[1][1]-person[8][1],person[1][0]-person[8][0]))*180/np.pi
                    print ("angle",angle)
                    if angle<30 or angle>150:
+                       _safe = False
+                       self.emergency_flag = True
                        print("People fall down! Emergency!")
-
-            #print("All people detected")
+            if _safe:
+                self.emergency_flag = False
+                #print("All people detected")
         except:
+            self.emergency_flag = False #Need more inspection...
+            pass
+        if self._vis == True:
             cv2.imshow("OpenPose 1.7.0 - ROS_ROBOT_VERSION_BTEAM", datum.cvOutputData)
             cv2.waitKey(3)
+
+    def _handle_emergency(self, req):
+        print(self.emergency_flag)
+        if req.data = True:
+            return SetBoolResponse(self.emergency_flag,"This is a emergency sign")
 
 
 if __name__ == '__main__':
     rospy.init_node('sample_openpose')
-    Pose_detector(opWrapper)
+    Pose_detector(opWrapper,vis=True)
     try:
         rospy.spin()
     except KeyboardInterrupt:
