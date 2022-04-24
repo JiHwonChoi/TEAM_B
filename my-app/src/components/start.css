@@ -6,7 +6,8 @@
     height: 812px;
     background: #FFFFFF;
     border: 1px solid black;
-    overflow-y: auto;
+    overflow-x: visible;
+    overflow-y: scroll;
 }
 
 .sebotage_1{
