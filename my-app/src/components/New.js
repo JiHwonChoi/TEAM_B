@@ -9,12 +9,14 @@ function New() {
                 <div className='small_title'>원하시는 카테고리를 선택해주세요</div>
             </div>
             <div className='search_tab'>
-                    this is search
+                    search tab
                 </div>
 
-            <div className='robot_current'></div>
-            <div className='detail'></div>
-            <div className='to_my_location'></div>
+            <div className='robot_current'>
+                display robot location
+            </div>
+            <div className='detail'>goto detail page</div>
+            <div className='to_my_location'>goto mylocation page</div>
             <div className='take_stroll'></div>
 
         </div>
