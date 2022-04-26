@@ -4,11 +4,12 @@ import cv2
 import os
 from sys import platform
 import argparse
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, CompressedImage
 from std_msgs.msg import Bool
-from std_srvs.srv import SetBool,SetBoolResponse
+from std_srvs.srv import *
 from cv_bridge import CvBridge,CvBridgeError
 import numpy as np
+from sebot_service.srv import GetImage
 import time
 HEIGHT=1080
 WIDTH=1920
@@ -64,13 +65,15 @@ opWrapper.start()
 class Pose_detector:
     def __init__(self,opWrapper,vis):
         self.pose_sub=rospy.Subscriber(image_topic,Image,self._cb)
+        self.comp_img_sub = rospy.Subscriber(image_topic+'/compressed',CompressedImage,self._comp_cb)
         self.opWrapper=opWrapper
         self.bridge=CvBridge()
         self.cnt=0
         self.emergency_flag = False
         self._vis = vis
-        self.emergency_srv = rospy.Service(emergency_srv, SetBool, self._handle_emergency)
-
+        rospy.wait_for_service(emergency_srv)
+        print("Service detected")
+        self.emergency_client = rospy.ServiceProxy(emergency_srv,GetImage)
     def _cb(self,data):
         #print("hiihi")
         try:
@@ -78,7 +81,11 @@ class Pose_detector:
         except CvBridgeError as e:
             print(e)
         self.__process_pose(cv_image)
-
+    def _comp_cb(self,data):
+        if self.emergency_flag:
+            res = self.emergency_client(data)
+            print("RESPONSED")
+            print("SERVICE SUCCESS? : ",res.success)
     def __process_pose(self,imageToProcess):
         datum = op.Datum()
         datum.cvInputData = imageToProcess
@@ -117,10 +124,6 @@ class Pose_detector:
             cv2.imshow("OpenPose 1.7.0 - ROS_ROBOT_VERSION_BTEAM", datum.cvOutputData)
             cv2.waitKey(3)
 
-    def _handle_emergency(self, req):
-        print(self.emergency_flag)
-        if req.data = True:
-            return SetBoolResponse(self.emergency_flag,"This is a emergency sign")
 
 
 if __name__ == '__main__':

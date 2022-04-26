@@ -2,10 +2,12 @@ import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from nav_msgs.msg import Odometry
 from human_follower import Human_follower
-from geometry_msgs.msg import Point,Pose
+from geometry_msgs.msg import Point,Pose,PoseStamped
+from sebot_service.srv import *
 import rospy
 import numpy as np
 PATH_A =np.array([(23.5,61.1),(25.7,65.6),(21.97,68.45),(16.48,74.68),(9.61,79.67),(0.935,83.29),(-9.23,85.02),(-18.49,82.40),(-16.947,77.188),(-13.6,72.56),(-8.87,66.47),(-5.758,63.45),(-2.63,63.67)])
+goal_srv = '/goal_srv'
 class Nav_goal_control:
     def __init__(self,start_pos,speed = 0.7,goal_threshold = 0.3,path = 'A'):
         self.MoveBaseClient = actionlib.SimpleActionClient("move_base", MoveBaseAction)
@@ -25,6 +27,15 @@ class Nav_goal_control:
         self.goal_threshold = goal_threshold
         self.cur_pos = self.path[0]
         self.make_goal_pos(self.path[0][0],self.path[0][1])
+        rospy.wait_for_service(goal_srv)
+        print("Service detected")
+        self.goal_client = rospy.ServiceProxy(goal_srv,SetGoal)
+        goal = PoseStamped()
+        goal.header.stamp = rospy.Time.now()
+        goal.header.frame_id = 'map'
+        goal.pose.position = Point(self.path[-1][0],self.path[-1][1],0)
+        res = self.goal_client(goal)
+        print("SERVICE STATUS NO",res.status)
     def _init_goal(self):
         self.goal.target_pose.header.frame_id = "map"
         self.goal.target_pose.header.stamp = rospy.Time.now()

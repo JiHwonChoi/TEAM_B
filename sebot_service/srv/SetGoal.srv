@@ -1,0 +1,3 @@
+geometry_msgs/PoseStamped goal
+---
+int32 status
