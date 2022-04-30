@@ -1,0 +1,16 @@
+{
+    "name": "my-app",
+    "version": "1.0.0",
+    "scripts": {
+        "client": "cd client && npm start",
+        "server": "python run_app.py"
+    },
+    "dependencies": {
+        "body-parser": "^1.18.3",
+        "express": "^4.16.4",
+        "http-proxy-middleware": "^2.0.6"
+    },
+    "devDependencies": {
+        "concurrently": "^4.0.1"
+    }
+}
