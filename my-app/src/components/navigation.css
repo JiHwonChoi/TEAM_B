@@ -1,4 +1,9 @@
 
+.navigation{
+    position:absolute;
+    bottom: 0px;
+}
+
 .tabbar{
     position: absolute;
 width: 375px;
@@ -29,9 +34,15 @@ right: 67.47%;
 top: 10.84%;
 bottom: 40.96%;
 }
+<<<<<<< HEAD
 
 .search_icon{
 
+=======
+
+.search_icon{
+
+>>>>>>> b7e9765e3d13de7b2478093b56a2fc7c4daaf18b
     width: 40px;
     height: 40px;
     background:no-repeat center/100% url(./image/search.jpg);

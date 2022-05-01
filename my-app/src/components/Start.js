@@ -7,9 +7,7 @@ import Home from './Home';
 import Notification from './Notification';
 import Profile from './Profile';
 import Navigation from './Navigation';
-import Register from './Register';
 import axios from 'axios';
-import Login from './Login'
 import io from 'socket.io-client'
 
 
@@ -66,6 +64,10 @@ function Start (props) {
                     {title}
 
 
+                    
+                    {article}
+                    <br></br><br></br><br></br>
+                    {/* {title} */}
                     <Navigation onChange={function(idx){
                         console.log('this is onChange function',idx)
                         if(idx=='plus'){
@@ -84,9 +86,13 @@ function Start (props) {
                             setArticle(<Profile />)
                         }
                         else{
-                            setArticle(<Home />)
+                            setArticle(<Homelogo />)
                         }
                         
+                        // let i = 0
+                        // getapi(i)
+                        socket_test()
+
 
 
                     } }></Navigation>
