@@ -18,7 +18,7 @@ from sensor_msgs.msg import Image,PointCloud2
 from geometry_msgs.msg import Polygon, Point32
 from yolov3_pytorch_ros.msg import BoundingBox, BoundingBoxes
 from cv_bridge import CvBridge, CvBridgeError
-
+#import deepcopy
 package = RosPack()
 package_path = package.get_path('yolov3_pytorch_ros')
 
@@ -39,6 +39,7 @@ class DetectorManager():
         # Load weights parameter
         self.MAX_DIST=5
         weights_name = rospy.get_param('~weights_name', 'yolov3-tiny.weights')
+        print(weights_name)
         self.weights_path = os.path.join(package_path, 'models', weights_name)
         rospy.loginfo("Found weights, loading %s", self.weights_path)
 
@@ -59,7 +60,6 @@ class DetectorManager():
 
         self.confidence_th = rospy.get_param('~confidence', 0.5)
         self.nms_th = rospy.get_param('~nms_th', 0.3)
-
         # Load publisher topics
         self.detected_objects_topic = rospy.get_param('~detected_objects_topic','detected_objects_in_image')
         self.published_image_topic = rospy.get_param('~detections_image_topic',"detections_image_topic")
@@ -70,7 +70,7 @@ class DetectorManager():
         classes_name = rospy.get_param('~classes_name', 'coco.names')
         self.classes_path = os.path.join(package_path, 'classes', classes_name)
         self.gpu_id = rospy.get_param('~gpu_id', 0)
-        self.network_img_size = rospy.get_param('~img_size', 416)
+        self.network_img_size = rospy.get_param('~img_size', 288) #288 for yolo_tiny_weight
         self.publish_image = rospy.get_param('~publish_image',"true")
         
         # Initialize width and height
@@ -82,8 +82,10 @@ class DetectorManager():
         # Load net
         self.model.load_weights(self.weights_path)
         if torch.cuda.is_available():
+            rospy.loginfo("Available GPU num %d "%torch.cuda.device_count())
             rospy.loginfo("CUDA available, use GPU")
-            self.model.cuda()
+            torch.cuda.device(0)
+            self.model = self.model.cuda()
         else:
             rospy.loginfo("CUDA not available, use CPU")
             # if CUDA not available, use CPU
@@ -105,6 +107,7 @@ class DetectorManager():
         # Define publishers
         self.pub_ = rospy.Publisher(self.detected_objects_topic, BoundingBoxes, queue_size=10)
         self.pub_viz_ = rospy.Publisher(self.published_image_topic, Image, queue_size=10)
+        self.pub_sort = rospy.Publisher('/img_for_sort', Image, queue_size=10)
         self.depth_point = None
         rospy.loginfo("Launched node for object detection")
     def depthCb(self,data):
@@ -141,11 +144,13 @@ class DetectorManager():
         # Configure input
         input_img = self.imagePreProcessing(self.cv_image)
 
-        # set image type
+        #set image type
         if(torch.cuda.is_available()):
-          input_img = Variable(input_img.type(torch.cuda.FloatTensor))
+          #input_img = Variable(input_img.type(torch.cuda.FloatTensor))
+          #print("cuda input")
+          input_img = input_img.to('cuda:0').float()
         else:
-          input_img = Variable(input_img.type(torch.FloatTensor))
+            input_img = Variable(input_img.type(torch.FloatTensor))
 
         # Get detections from network
         with torch.no_grad():
@@ -168,11 +173,11 @@ class DetectorManager():
 
                 # Populate darknet message
                 detection_msg = BoundingBox()
-                detection_msg.xmin = xmin_unpad
-                detection_msg.xmax = xmax_unpad
-                detection_msg.ymin = ymin_unpad
-                detection_msg.ymax = ymax_unpad
-                detection_msg.probability = conf
+                detection_msg.xmin = int(xmin_unpad)
+                detection_msg.xmax = int(xmax_unpad)
+                detection_msg.ymin = int(ymin_unpad)
+                detection_msg.ymax = int(ymax_unpad)
+                detection_msg.probability = float(conf)
                 detection_msg.Class = self.classes[int(det_class)]
 
                 # Append in overall detection message
@@ -191,12 +196,13 @@ class DetectorManager():
             #self.cv_image = cv2.cvtColor(self.cv_image,cv2.COLOR_RGB2BGR)
             self.depth_point = None
             imgOut = np.ascontiguousarray(self.cv_image)
-            imgOut = cv2.resize(imgOut,(640,320))
+            #imgOut = cv2.resize(imgOut,(640,320))
             cv2.imshow('hi', imgOut)
             cv2.waitKey(1)
             #rospy.loginfo("No detections available, next image")
             image_msg = self.bridge.cv2_to_imgmsg(imgOut, "rgb8")
             self.pub_viz_.publish(image_msg)
+            self.pub_sort.publish(image_msg)
         return True
     
 
@@ -235,6 +241,10 @@ class DetectorManager():
         # Copy image and visualize
         #print ("depth np",type(depth_np))
         imgOut = np.ascontiguousarray(imgIn)
+        #imgOut_sort = imgOut.deepcopy()
+        img_sort = self.bridge.cv2_to_imgmsg(imgOut, "rgb8")
+        #imgOut = cv2.resize(imgSor, (640, 320))
+        self.pub_sort.publish(img_sort)
         #print ("imgout",imgOut)
         font = cv2.FONT_HERSHEY_SIMPLEX
         fontScale = 1.0
@@ -285,7 +295,7 @@ class DetectorManager():
             cv2.putText(imgOut, text, (int(x_p1), int(y_p1+50)), font, fontScale, (0,0,255), thickness ,cv2.LINE_AA)
             #cv2.circle(imgOut,(mid_point[0],mid_point[1]),5,(1,0,0),10)
             #imgOut=cv2.cvtColor(imgOut,cv2.COLOR_RGB2BGR)
-            imgOut = cv2.resize(imgOut, (640, 320))
+            #imgOut = cv2.resize(imgOut, (640, 320))
             cv2.imshow('hi',imgOut)
             cv2.waitKey(1)
             #self.out.write(imgOut)

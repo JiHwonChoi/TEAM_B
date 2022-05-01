@@ -33,6 +33,15 @@ class Human_follower(DetectorManager):
 
     def modify_speed(self):
         pub_vel = Twist()
+        if not self.flag:
+            try:
+                pub_vel.linear = self.linear
+                pub_vel.angular = self.angular
+                self.vel_pub.publish(pub_vel)
+            except:
+                #print("Robot currently stop.")
+                pass
+            return
         if self.depth_point is None:
             if self.no_human_flag == False:
                 self.no_human_flag = time.time()
@@ -43,7 +52,7 @@ class Human_follower(DetectorManager):
         else:
             self.no_human_flag = False
 
-        if self.depth_point is None or self.depth_point<threshold_dist or not self.flag:
+        if self.depth_point is None or self.depth_point<threshold_dist :
             try:
                 pub_vel.linear = self.linear
                 pub_vel.angular = self.angular
@@ -78,6 +87,7 @@ if __name__ == '__main__':
     rospy.init_node("human_follower")
     human_follower=Human_follower(True)
     while True:
+        print("it")
         human_follower.modify_speed()
         rospy.sleep(.1)
     rospy.spin()
