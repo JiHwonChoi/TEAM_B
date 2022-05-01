@@ -9,7 +9,8 @@ import Profile from './Profile';
 import Navigation from './Navigation';
 import Register from './Register';
 import axios from 'axios';
-import Login from './Login';
+import Login from './Login'
+import io from 'socket.io-client'
 
 
 
@@ -18,44 +19,53 @@ import Login from './Login';
 function Start (props) {
         
         const [article, setArticle] = useState(<Homelogo />)
-        const [title, setTitle] = useState('empty')
-
-        //api 지속적으로 새로고침 하는 함수
-        // function getapi (i){
-        //     let timer = setInterval(async ()=>{
-        //         i=i+1
-        //         let my_url='https://jsonplaceholder.typicode.com/todos/'+i
-        //         let response = await axios.get(my_url)
-        //         console.log(response.data)
-        //         let title = response.data.title
-        //         setTitle(title)
-        //         if(i>10){
-        //             clearTimeout(timer)
-        //             console.log('clear')
-        //         }
-        //         //받아온 정보로 state를 지속적으로 업데이트 하기
+        const [title, setTitle] = useState('소켓통신 실패')
         
-        //     },200)    
-        // }
+        //api 지속적으로 새로고침 하는 함수 
+        //socket 안되면 이걸로라도
+        function getapi (i){
+            let timer = setInterval(async ()=>{
+                i=i+1
+                let my_url='https://jsonplaceholder.typicode.com/todos/'+i
+                let response = await axios.get(my_url)
+                console.log(response.data)
+                let title = response.data.title
+                setTitle(title)
+                if(i>10){
+                    clearTimeout(timer)
+                    console.log('clear')
+                }
+                //받아온 정보로 state를 지속적으로 업데이트 하기
+        
+            },200)    
+        }
 
 
-        // 렌더링이 처음 됐을때 한번 받아오기
-        // useEffect 를 react 에서 임포트 해와야함
-        // useEffect(async ()=>{
+        //socket 사용하는 부분
+        useEffect(async ()=>{
             
-        //     let my_url = 'https://jsonplaceholder.typicode.com/todos/1'
-        //     let response = await axios.get(my_url)
-        //     console.log(response.data)
-        // },[])
+            //소켓 주소 맞게 입력해주세요
+            const socket = io.connect('http://13.124.209.232:5000')
+
+            //------소켓이 연결이 안된 상태에서 아래를 활성화 하면 앱이 멈춥니다------
+            // socket.on('odom',(data)=>{
+            //     let msg = '테스트 성공'+data
+            //     setTitle(msg)
+            // })
+            
+
+        },[])
 
         return(
             <div>
                 {console.log('render')}
                 <div className='home-background'>
-                    
-                    {article}
+                    socketio test 입니다
                     <br></br><br></br><br></br>
+                    
                     {title}
+
+
                     <Navigation onChange={function(idx){
                         console.log('this is onChange function',idx)
                         if(idx=='plus'){
