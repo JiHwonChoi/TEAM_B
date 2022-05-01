@@ -91,7 +91,6 @@ function Start (props) {
                         
                         // let i = 0
                         // getapi(i)
-                        socket_test()
 
 
 
