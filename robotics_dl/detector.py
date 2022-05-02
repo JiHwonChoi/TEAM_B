@@ -114,7 +114,6 @@ class DetectorManager():
         try:
             #print("data encoding",data.height)
             self.depth_cv_image = self.bridge.imgmsg_to_cv2(data,"32FC1")
-
             ##print("depth image shape",self.depth_cv_image.shape)
             #cv2.normalize(depth_array, depth_array, 0, 1, cv2.NORM_MINMAX)
 
@@ -179,17 +178,16 @@ class DetectorManager():
                 detection_msg.ymax = int(ymax_unpad)
                 detection_msg.probability = float(conf)
                 detection_msg.Class = self.classes[int(det_class)]
-
-                # Append in overall detection message
                 detection_results.bounding_boxes.append(detection_msg)
 
-            # Publish detection results
-            self.pub_.publish(detection_results)
 
             # Visualize detection results
             if (self.publish_image):
                 try:
-                    self.visualizeAndPublish(detection_results, self.cv_image,depth_np)
+                    depth_array = self.visualizeAndPublish(detection_results, self.cv_image,depth_np)
+                    #print("depth array",depth_array)
+                    for i in range (len(depth_array)):
+                        detection_results.bounding_boxes[i].depth = depth_array[i]
                 except:
                     pass
         else:
@@ -203,6 +201,11 @@ class DetectorManager():
             image_msg = self.bridge.cv2_to_imgmsg(imgOut, "rgb8")
             self.pub_viz_.publish(image_msg)
             self.pub_sort.publish(image_msg)
+
+        # Publish detection results
+        # Append in overall detection message
+        #print("detection_results",detection_results)
+        self.pub_.publish(detection_results)
         return True
     
 
@@ -249,6 +252,7 @@ class DetectorManager():
         font = cv2.FONT_HERSHEY_SIMPLEX
         fontScale = 1.0
         thickness = int(3)
+        depth_array=[]
         for index in range(len(output.bounding_boxes)):
             label = output.bounding_boxes[index].Class
             x_p1 = output.bounding_boxes[index].xmin
@@ -293,6 +297,7 @@ class DetectorManager():
             #text = ('{:s}: {:.3f}').format(label,confidence)
             #print("imgOut",imgOut.shape)
             cv2.putText(imgOut, text, (int(x_p1), int(y_p1+50)), font, fontScale, (0,0,255), thickness ,cv2.LINE_AA)
+            depth_array.append(depth_point)
             #cv2.circle(imgOut,(mid_point[0],mid_point[1]),5,(1,0,0),10)
             #imgOut=cv2.cvtColor(imgOut,cv2.COLOR_RGB2BGR)
             #imgOut = cv2.resize(imgOut, (640, 320))
@@ -302,7 +307,7 @@ class DetectorManager():
         #Publish visualization image
         image_msg = self.bridge.cv2_to_imgmsg(imgOut, "rgb8")
         self.pub_viz_.publish(image_msg)
-
+        return depth_array
 if __name__=="__main__":
     # Initialize node
     rospy.init_node("detector_manager_node")

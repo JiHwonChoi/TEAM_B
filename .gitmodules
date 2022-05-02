@@ -1,3 +1,6 @@
 [submodule "sort-deepsort-yolov3-ROS"]
 	path = sort-deepsort-yolov3-ROS
 	url = https://github.com/LimSeunghyeon1/sort-deepsort-yolov3-ROS
+[submodule "yolov3_pytorch_ros"]
+	path = yolov3_pytorch_ros
+	url = https://github.com/LimSeunghyeon1/yolov3_pytorch_ros
