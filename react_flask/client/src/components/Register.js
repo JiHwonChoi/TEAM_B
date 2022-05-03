@@ -1,6 +1,8 @@
 import React from 'react';
 import {post} from 'axios';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+
 
 axios.defaults.withCredentials = false;
 axios.defaults.baseURL = "localhost:5000";
@@ -35,12 +37,17 @@ class Register extends React.Component {
         formData.append('regi_number', this.state.regi_number);
         return post(url, formData, config);
     }
-
+    
     handleFormSubmit = (event) => {
+        //let navigate= useNavigate()
         event.preventDefault();
         this.register().then((res)=> {
-            console.log(res.data);
+            console.log(res)
+            if (res.status == 200){
+                //navigate('/')
+            }
         })
+       
     }
 
     handleValueChange = (event) => {
@@ -52,6 +59,7 @@ class Register extends React.Component {
 
     render () {
         return (
+            <div className='register'> 
             <form onSubmit={this.handleFormSubmit}>
                 <h1>회원가입</h1>
                 <label>아이디</label>
@@ -68,6 +76,7 @@ class Register extends React.Component {
                 <input type="text" name="regi_number"  value={this.state.regi_number} onChange={this.handleValueChange}/>
                 <button type="submit">회원가입</button>
             </form>
+            </div>
         )
     }
 }
