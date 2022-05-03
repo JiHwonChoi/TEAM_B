@@ -9,15 +9,17 @@ import time
 from visualization_msgs.msg import Marker, MarkerArray
 from nav_msgs.msg import Odometry
 from std_msgs.msg import ColorRGBA
+from cv_bridge import CvBridge
+import cv2
 import numpy as np
 threshold_dist = 3.0
 stop_threshold = 5.0
-no_human_endurance_time = 3.0 # time to stop if there's no human
+no_human_endurance_time = 5.0 # time to stop if there's no human
 WIDTH = 960
 HEIGHT = 540
 class Human_follower(DetectorManager):
     def __init__(self, follower_mode=False,speed = 0.5):
-        super().__init__()
+        super().__init__(False)
         self.flag=follower_mode
         self.no_human_flag = False
         self.cmd_vel = rospy.Subscriber('/cmd_vel_raw',Twist,self._vel_cb,queue_size=1)
@@ -30,20 +32,30 @@ class Human_follower(DetectorManager):
         self.odom_idx=0
         self.vel_pub = rospy.Publisher('/cmd_vel',Twist,queue_size=1)
         rospy.Subscriber('/sort_track_deep', IntList, self._track_cb,queue_size=1)
+        rospy.Subscriber('/sort_vis',Image,self._vis_cb,queue_size=10)
         self.actor_idx = None
         self.actor_depth = float('inf')
         self.endurance_time = time.time()
         self.last_data = [0,0,0,0,0,0]
+        self.vis_img = None
+        self.bridge = CvBridge()
+        self.initial_endurance = time.time()
+    def _vis_cb(self,data):
+        self.vis_img = self.bridge.imgmsg_to_cv2(data, "8UC3")
     def _track_cb(self,data):
-        print(data.data)
+        #print(data.data)
+        vis_img = self.vis_img
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        fontScale = 1.0
+        thickness = int(3)
         if len(data.data)==0 or self.last_data == data.data:
             print("No Human found...")
+            cv2.putText(vis_img,"Move toward to identify you.",(50,50),font,fontScale,(255,255,0),thickness,cv2.LINE_AA)
             rospy.sleep(.5)
         else:
             xmin,ymin,xmax,ymax,depth,idx = data.data
             if self.actor_idx == int(idx) :
                 self.endurance_time = time.time()
-                #self.bbox = [xmin,ymin,width,height,depth]
                 self.actor_depth = depth
                 self.last_data = data.data
             _thres = 50
@@ -55,12 +67,19 @@ class Human_follower(DetectorManager):
                         self.actor_idx = int(idx)
                         self.actor_depth = depth
                     else:
-                        print("THERE MUST BE ONLY ONE PERSON toward camera for identification")
+                        _word ="THERE MUST BE ONLY ONE PERSON toward camera for identification"
+                        print(_word)
+                        cv2.putText(vis_img, _word, (50, 50), font, fontScale, (255, 255, 0), thickness,cv2.LINE_AA)
                         self.actor_idx = idx
                         self.actor_depth = depth
                 else:
+                    _word = "MOVE TO the CENTER AND COME NEARBY"
                     print("MOVE TO the CENTER AND COME NEARBY")
-
+                    cv2.putText(vis_img, _word, (50, 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
+        cv2.putText(vis_img,f"Target_actor: {self.actor_idx}",(50,HEIGHT-50),font,fontScale,(255,255,0),thickness,cv2.LINE_AA)
+        #print("vis_img",vis_img)
+        cv2.imshow('track_result',vis_img)
+        cv2.waitKey(25)
 
     def _vel_cb(self,data):
         self.linear = data.linear
@@ -78,12 +97,13 @@ class Human_follower(DetectorManager):
                 pass
             return
         if time.time() - self.endurance_time > no_human_endurance_time:
-            self.no_human_flag = True
-            self.actor_idx = None
-            self.actor_depth = float('inf')
+            if time.time() - self.initial_endurance > no_human_endurance_time *2:
+                self.no_human_flag = True
+                self.actor_idx = None
+                self.actor_depth = float('inf')
 
         if self.no_human_flag: #start searching
-            _stop=Twist()
+            _stop = Twist()
             _stop.angular.z = 0
             self.vel_pub.publish(_stop)
             print("We need to identify you. Please move toward the camera")
@@ -92,8 +112,14 @@ class Human_follower(DetectorManager):
             if self.actor_idx is not None:
                 self.no_human_flag = False
                 self.endurance_time = time.time()
+                self.initial_endurance = time.time()
 
-        if self.depth_point is None or self.depth_point<threshold_dist :
+        if self.depth_point is None:
+            _stop = Twist()
+            _stop.angular.z =0
+            self.vel_pub.publish(_stop)
+
+        elif self.depth_point < threshold_dist :
             try:
                 pub_vel.linear = self.linear
                 pub_vel.angular = self.angular
@@ -105,16 +131,16 @@ class Human_follower(DetectorManager):
             try:
                 linear = self.linear
                 angular = self.angular
-                print ("depth point",self.depth_point)
-                if self.depth_point > stop_threshold:
+                #print ("depth point",self.depth_point)
+                if self.actor_depth > stop_threshold:
                     print("YOU ARE TOO FAR AWAY... STOP FOR A SEC...",time.time())
                     _stop = Twist()
                     _stop.angular.z = 0
                     self.vel_pub.publish(_stop)
 
                 else:
-                    speed_ratio = threshold_dist/self.depth_point # positive value: the actor is far from robot, you need to slow down
-                    print("speed_ratio",speed_ratio)
+                    speed_ratio = threshold_dist/self.actor_depth # positive value: the actor is far from robot, you need to slow down
+                    #print("speed_ratio",speed_ratio)
                     linear.x = min( self.max_vel_x,speed_ratio * linear.x)
                     linear.y = min( self.max_vel_y,speed_ratio * linear.y)
                     pub_vel.linear = linear

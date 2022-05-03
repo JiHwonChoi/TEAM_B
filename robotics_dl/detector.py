@@ -34,7 +34,7 @@ from yolov3_pytorch_ros.msg import BoundingBoxes, BoundingBox
 
 # Detector manager class for YOLO
 class DetectorManager():
-    def __init__(self,camera='back'):
+    def __init__(self,vis,camera='back'):
         #self.out = out
         # Load weights parameter
         self.MAX_DIST=5
@@ -42,7 +42,7 @@ class DetectorManager():
         print(weights_name)
         self.weights_path = os.path.join(package_path, 'models', weights_name)
         rospy.loginfo("Found weights, loading %s", self.weights_path)
-
+        self.vis=vis
         # Raise error if it cannot find the model
         if not os.path.isfile(self.weights_path):
             raise IOError(('{:s} not found.').format(self.weights_path))
@@ -195,8 +195,9 @@ class DetectorManager():
             self.depth_point = None
             imgOut = np.ascontiguousarray(self.cv_image)
             #imgOut = cv2.resize(imgOut,(640,320))
-            cv2.imshow('hi', imgOut)
-            cv2.waitKey(1)
+            if self.vis:
+                cv2.imshow('hi', imgOut)
+                cv2.waitKey(1)
             #rospy.loginfo("No detections available, next image")
             image_msg = self.bridge.cv2_to_imgmsg(imgOut, "rgb8")
             self.pub_viz_.publish(image_msg)
@@ -301,8 +302,9 @@ class DetectorManager():
             #cv2.circle(imgOut,(mid_point[0],mid_point[1]),5,(1,0,0),10)
             #imgOut=cv2.cvtColor(imgOut,cv2.COLOR_RGB2BGR)
             #imgOut = cv2.resize(imgOut, (640, 320))
-            cv2.imshow('hi',imgOut)
-            cv2.waitKey(1)
+            if self.vis:
+                cv2.imshow('hi',imgOut)
+                cv2.waitKey(1)
             #self.out.write(imgOut)
         #Publish visualization image
         image_msg = self.bridge.cv2_to_imgmsg(imgOut, "rgb8")
@@ -313,6 +315,6 @@ if __name__=="__main__":
     rospy.init_node("detector_manager_node")
     #out=cv2.VideoWriter('outpy.avi', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 10, (1080, 1920))
     # Define detector object
-    dm = DetectorManager()
+    dm = DetectorManager(True)
     # Spin
     rospy.spin()
