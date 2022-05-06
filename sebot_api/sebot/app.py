@@ -120,6 +120,14 @@ def logout():
     return redirect(url_for('main'))
 
 
+@socketio.on('robot location')
+def robot_location():
+    map = db.map.copy()
+    map = cv2.circle(map, (int(sebot.x), int(sebot.y)), 5, (0, 0, 255), -1)
+    map = cv2.imencode(map, cv2.IMREAD_COLOR)
+    socketio.emit('state', {'map': map, 'arrival': False})
+
+
 @app.route("/odom", methods=['GET'])
 def odom():
     if not sebot.client.is_connected:
