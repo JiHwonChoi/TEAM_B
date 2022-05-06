@@ -1,0 +1,102 @@
+
+.navigation{
+    position:absolute;
+    bottom: 0px;
+}
+
+.tabbar{
+    position: absolute;
+width: 375px;
+height: 83px;
+left: 0px;
+bottom: 0px;
+border: 1px solid black;
+}
+
+.plus {
+    position: absolute;
+    left: 2.93%;
+    right: 86.4%;
+    top: 10.84%;
+    bottom: 40.96%;
+    /* border: 1px solid black; */
+}
+.plus_icon{
+
+    width: 40px;
+    height: 40px;
+    background:no-repeat center/100% url(./image/plus.jpg);
+}
+.search{
+    position: absolute;
+left: 21.87%;
+right: 67.47%;
+top: 10.84%;
+bottom: 40.96%;
+}
+
+.search_icon{
+
+    width: 40px;
+    height: 40px;
+    background:no-repeat center/100% url(./image/search.jpg);
+}
+
+.home-button{
+/* Rectangle */
+position: absolute;
+left: 40.8%;
+right: 40.53%;
+top: 10.84%;
+bottom: 40.96%;
+
+background: #8DC63F;
+border-radius: 20px;
+}
+
+.home_icon{
+    /* position: absolute; */
+    margin-left: auto;
+    margin-right: auto;
+    /* top: 26.51%;
+    bottom: 56.56%; */
+    width: 40px;
+    height: 40px;
+
+    background: no-repeat center/100% url(./image/home.png)
+}
+.noti{
+/* 40 / Toolbar / bell */
+
+
+position: absolute;
+left: 67.73%;
+right: 21.6%;
+top: 10.84%;
+bottom: 40.96%;
+
+}
+
+.noti_icon{
+    width: 40px;
+    height: 40px;
+    background:no-repeat center/100% url(./image/bell.png);
+}
+
+
+.profile{
+/* 40 / Toolbar / bell */
+
+
+position: absolute;
+left: 86.4%;
+right: 2.93%;
+top: 10.84%;
+bottom: 40.96%;
+}
+
+.profile_icon{
+    width: 40px;
+    height: 40px;
+    background:no-repeat center/100% url(./image/icon.png);   
+}
