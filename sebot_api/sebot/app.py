@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
 
+from audioop import cross
 import json
 import cv2
 import psycopg2
@@ -9,12 +10,15 @@ import roslibpy
 import argparse
 from flask import Flask, request, session, render_template, redirect, url_for, Response, stream_with_context, jsonify
 from flask_socketio import SocketIO
-from yaml import parse
+from flask_cors import cross_origin, CORS
+from PIL import Image
 from ros_utils import SeBot
 from db_utils import Database
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+app.config['CORS_SUPPORTS_CREDENTIALS'] = True
+CORS(app, resources={r"/*": {"origins": "*"}}, automatic_options=True)
+socketio = SocketIO(app, cors_allowed_origin="* ")
 
 @app.route('/main')
 def main():
@@ -135,6 +139,35 @@ def odom():
 
     return app.response_class(stream_with_context(generate()))
 
+
+@app.route("/robot_state", methods=['GET'])
+def robot_state():
+    # change it to socket io
+    def generate():
+        while 1:
+            yield f'hi'
+            time.sleep(5)
+
+    return app.response_class(stream_with_context(generate()))
+
+
+# @app.route("/robot_state", methods=['GET'])
+# def robot_state():
+#     # image = Image.open("map.pgm")
+    
+#     def make_robot_state():
+#         while True:
+#             yield f'1'
+#             time.sleep(5)
+    
+#     return Response(make_robot_state(), mimetype = "multipart/x-mixed-replace; boundary=frame")
+
+
+@socketio.on('my event')
+@cross_origin()
+def handle_my_custom_event(json):
+    print('received my event: ' + str(json))
+    # socketio.emit('my response', json, callback=messageReceived)
 
 @app.route("/get_image", methods=['POST'])
 def get_image():
