@@ -11,10 +11,13 @@ from geometry_msgs.msg import PoseStamped
 from move_base_msgs.msg import MoveBaseActionResult
 
 class SeBot:
-    def __init__(self, robot_ip):
+    def __init__(self, db, robot_ip):
         #Init ros web socket
         self.client = roslibpy.Ros(host=robot_ip, port=9090)
-        self.client.run()
+        self.client.on_ready(run_in_thread=True)
+        self.client.run_forever()
+
+        self.db = db
 
         # robot pose
         self.x = None
@@ -47,7 +50,10 @@ class SeBot:
         self.odom_subscriber = roslibpy.Topic(self.client, "odom", "nav_msgs/Odometry")
         self.odom_subscriber.subscribe(self.odom_callback)
 
+        #Service
         # self.image_subscrber = rospy.Subscriber("/camera/rgb/image_raw/compressed", CompressedImage, self.image_callback)
+        self.emergency_srv = roslibpy.Service(self.client, '/emergency_sign', 'sebot_service/GetImage')
+        self.emergency_srv.advertise(self.upload_image)
         
         # Change it to service
         self.reach_subscriber = roslibpy.Topic(self.client, "move_base/result", "move_base_msgs/MoveBaseActionResult")
@@ -55,11 +61,19 @@ class SeBot:
         
         rospy.loginfo(f'SEBOT INIT')
 
-        # emergency_client
         # log subscriber
+
 
     def __del__(self):
         self.client.close()
+
+
+    def upload_image(self, request, response):
+        image = request['image']
+        res = self.db.image_upload(image)
+        response['emergency'] = res
+        return res
+
 
     # def run(self):
         # while not self.client.is_connected:

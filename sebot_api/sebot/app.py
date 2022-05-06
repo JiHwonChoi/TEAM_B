@@ -14,7 +14,7 @@ from ros_utils import SeBot
 from db_utils import Database
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins='*')
 
 @app.route('/main')
 def main():
@@ -113,6 +113,7 @@ def user_info_edit_proc():
         db.execute(sql, (userPwd, idx))
         return redirect(url_for('main'))
 
+
 @app.route('/logout')
 def logout():
     session.clear()
@@ -138,6 +139,7 @@ def odom():
 
 @app.route("/get_image", methods=['POST'])
 def get_image():
+    #For manager
     return 400
 
 
@@ -175,6 +177,7 @@ def call_sebot():
 
     return "SUCCESS", 200
 
+
 @app.route("/set_dest", methods=['POST'])
 def set_dest():
     if request.headers["Content-Type"] != "application/json":
@@ -185,9 +188,9 @@ def set_dest():
     if (not 'dest' in data):
         return "INVALID_INPUT", 406
 
-    start_point = data['dest']
+    dst_point = data['dest']
 
-    if not type(start_point) is list or len(start_point) != 2 or not start_point[0].isdigt() or not start_point[1].isdigit():
+    if not type(dst_point) is list or len(dst_point) != 2 or not dst_point[0].isdigt() or not dst_point[1].isdigit():
         return "INVALID_INPUT", 406
     
     # SEND TARGET TO ROBOT
@@ -195,7 +198,7 @@ def set_dest():
 
     goal_publisher = roslibpy.Topic(sebot.client, "move_base_simple/goal", "geometry_msgs/PoseStamped")
     goal_publisher.publish(roslibpy.Message({"header": {"frame_id": "map"},
-                                                    "pose": {"position": {"x": start_point[0], "y": start_point[1]},
+                                                    "pose": {"position": {"x": dst_point[0], "y": dst_point[1]},
                                                             "orientation": {"z": 1}
                                                             }
                                                 }))
@@ -205,14 +208,13 @@ def set_dest():
     return "SUCCESS", 200
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--robot-ip", type=str, help="robot's ip")
     args = parser.parse_args()
 
-    sebot = SeBot(args.robot_ip)
     db = Database()
+    sebot = SeBot(db, args.robot_ip)
 
     app.secret_key = '20200601'
     # app.debug = True
