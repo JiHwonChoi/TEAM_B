@@ -8,7 +8,7 @@ import Notification from './Notification';
 import Profile from './Profile';
 import Navigation from './Navigation';
 import axios from 'axios';
-import io from 'socket.io-client'
+import socketio from 'socket.io-client'
 
 
 
@@ -44,31 +44,37 @@ function Start (props) {
             // },200)    
         // }
 
+        const socket = socketio.connect('http://127.0.0.1:5000')
 
         //socket 사용하는 부분
-        // useEffect(async ()=>{
+        useEffect(async ()=>{
             
-        //     //소켓 주소 맞게 입력해주세요
-        //     const socket = io.connect('http://127.0.0.1:5000')
+            //소켓 주소 맞게 입력해주세요
+            
 
-        //     //------소켓이 연결이 안된 상태에서 아래를 활성화 하면 앱이 멈춥니다------
-        //     socket.on( 'connect', function() {
-        //         socket.emit( 'my event', {
-        //           data: 'User Connected'
-        //         })
-        //     })
-        //     })
+            //------소켓이 연결이 안된 상태에서 아래를 활성화 하면 앱이 멈춥니다------
+            socket.on('connect', function() {
+                
+                socket.emit( 'my event', {
+                  data: 'User Connected'
+                })
+            })
+            })
+
+            socket.on('server response', function(msg){
+                console.log(msg)
+            })
         
-        useEffect( ()=>{
-            console.log("hello")
-            async function fetchData() {
-                let my_url='http://127.0.0.1:5000/robot_state'
-                let response = await axios.get(my_url)
-                console.log(response.data)
-            }
+        // useEffect( ()=>{
+        //     console.log("hello")
+        //     async function fetchData() {
+        //         let my_url='http://127.0.0.1:5000/robot_state'
+        //         let response = await axios.get(my_url)
+        //         console.log(response.data)
+        //     }
 
-            fetchData()
-        },[])
+        //     fetchData()
+        // },[])
 
         return(
             <div>

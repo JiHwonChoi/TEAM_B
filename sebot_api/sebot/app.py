@@ -15,9 +15,8 @@ from flask_cors import cross_origin, CORS
 # from db_utils import Database
 
 app = Flask(__name__)
-app.config['CORS_SUPPORTS_CREDENTIALS'] = True
-CORS(app, resources={r"/*": {"origins": "*"}}, automatic_options=True)
-socketio = SocketIO(app, cors_allowed_origin="* ")
+cors = CORS(app, resources={r"/*": {"origins": "*"}}, automatic_options=True)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 @app.route("/robot_state", methods=['GET'])
 def robot_state():
@@ -30,22 +29,16 @@ def robot_state():
     return app.response_class(stream_with_context(generate()))
 
 
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
+
 @socketio.on('my event')
-@cross_origin()
 def handle_my_custom_event(json):
     print('received my event: ' + str(json))
-    # socketio.emit('my response', json, callback=messageReceived)
-
+    socketio.emit('server response', json, callback=messageReceived)
 
 
 if __name__ == "__main__":
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--robot-ip", type=str, help="robot's ip")
-    # args = parser.parse_args()
-
-    # sebot = SeBot(args.robot_ip)
-    # db = Database()
-
     app.secret_key = '20200601'
     # app.debug = True
     # app.run(host="0.0.0.0", port=5000)
