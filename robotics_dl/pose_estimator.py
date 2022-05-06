@@ -73,7 +73,9 @@ class Pose_detector:
         self._vis = vis
         rospy.wait_for_service(emergency_srv)
         print("Service detected")
-        self.emergency_client = rospy.ServiceProxy(emergency_srv,GetImage)
+        self.emergency_client = rospy.ServiceProxy(emergency_srv, GetImage)
+
+
     def _cb(self,data):
         #print("hiihi")
         try:
@@ -81,11 +83,15 @@ class Pose_detector:
         except CvBridgeError as e:
             print(e)
         self.__process_pose(cv_image)
+
+
     def _comp_cb(self,data):
         if self.emergency_flag:
             res = self.emergency_client(data)
             print("RESPONSED")
             print("SERVICE SUCCESS? : ",res.success)
+
+
     def __process_pose(self,imageToProcess):
         datum = op.Datum()
         datum.cvInputData = imageToProcess
@@ -101,25 +107,31 @@ class Pose_detector:
         #Todo:insert no detection sign
         try:
             for person in datum.poseKeypoints:
-               if person[1][1]==0:
-                   continue
-               #print("neck: ",person[1][1])
-               if person[1][1]>NECK_TH:
-                   #print ("person neck is over floor")
-                   if person[8][0]==0:
-                       continue
-                   angle=np.abs(np.arctan2(person[1][1]-person[8][1],person[1][0]-person[8][0]))*180/np.pi
-                   print ("angle",angle)
-                   if angle<30 or angle>150:
-                       _safe = False
-                       self.emergency_flag = True
-                       print("People fall down! Emergency!")
+                if person[1][1]==0:
+                    continue
+
+                #print("neck: ",person[1][1])
+                if person[1][1]>NECK_TH:
+                    #print ("person neck is over floor")
+                    if person[8][0]==0:
+                        continue
+
+                    angle=np.abs(np.arctan2(person[1][1]-person[8][1],person[1][0]-person[8][0]))*180/np.pi
+                    print ("angle",angle)
+
+                    if angle<30 or angle>150:
+                        _safe = False
+                        self.emergency_flag = True
+                        print("People fall down! Emergency!")
+
             if _safe:
                 self.emergency_flag = False
                 #print("All people detected")
+
         except:
             self.emergency_flag = False #Need more inspection...
             pass
+        
         if self._vis == True:
             cv2.imshow("OpenPose 1.7.0 - ROS_ROBOT_VERSION_BTEAM", datum.cvOutputData)
             cv2.waitKey(3)
@@ -129,8 +141,10 @@ class Pose_detector:
 if __name__ == '__main__':
     rospy.init_node('sample_openpose')
     Pose_detector(opWrapper,vis=True)
+
     try:
         rospy.spin()
+
     except KeyboardInterrupt:
         print("Shutting down")
         cv2.destroyAllWindows()

@@ -9,9 +9,13 @@ from visualization_msgs.msg import Marker, MarkerArray
 from nav_msgs.msg import Odometry
 from std_msgs.msg import ColorRGBA
 import numpy as np
+
+
 threshold_dist = 3.0
 stop_threshold = 5.0
 no_human_endurance_time = 5.0 # time to stop if there's no human
+
+
 class Human_follower(DetectorManager):
     def __init__(self, follower_mode=False,speed = 0.5):
         super().__init__()
