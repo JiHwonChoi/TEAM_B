@@ -21,39 +21,56 @@ function Start (props) {
         
         //api 지속적으로 새로고침 하는 함수 
         //socket 안되면 이걸로라도
-        function getapi (i){
-            let timer = setInterval(async ()=>{
-                i=i+1
-                let my_url='https://jsonplaceholder.typicode.com/todos/'+i
-                let response = await axios.get(my_url)
-                console.log(response.data)
-                let title = response.data.title
-                setTitle(title)
-                if(i>10){
-                    clearTimeout(timer)
-                    console.log('clear')
-                }
-                //받아온 정보로 state를 지속적으로 업데이트 하기
+        const getapi  = async () => {
+
+                
+                // let title = response
+                // setTitle(title)
+
+
+            // let timer = setInterval(async ()=>{
+            //     i=i+1
+                
+            //     if(i>10){
+            //         clearTimeout(timer)
+            //         console.log('clear')
+            //     }
+            //     //받아온 정보로 state를 지속적으로 업데이트 하기
         
-            },200)    
+            // },200)    
         }
 
 
         //socket 사용하는 부분
-        useEffect(async ()=>{
-            
-            //소켓 주소 맞게 입력해주세요
-            const socket = io.connect('http://13.124.209.232:5000')
+        useEffect( ()=>{
 
-            //------소켓이 연결이 안된 상태에서 아래를 활성화 하면 앱이 멈춥니다------
+            async function fetchData() {
+                let my_url='https://jsonplaceholder.typicode.com/todos/'
+                let response = await axios.get(my_url)
+                console.log(response.data)
+            }
+
+            fetchData()
+        },[])
+            
+            // //소켓 주소 맞게 입력해주세요
+            // const socket = io.connect('http://13.124.209.232:5000')
+            // console.log(socket)
+
+            // //------소켓이 연결이 안된 상태에서 아래를 활성화 하면 앱이 멈춥니다------
             // socket.on('odom',(data)=>{
             //     let msg = '테스트 성공'+data
             //     setTitle(msg)
             // })
-            
 
-        },[])
+            // const webSocketUrl = `ws://websocket.com`;
+            // let ws = new WebSocket(webSocketUrl);
+            // ws.onopen = () => {
+            //     console.log("connected to " + webSocketUrl);
+            // }
 
+        // },[])
+        
         return(
             <div>
                 {console.log('render')}
@@ -62,7 +79,6 @@ function Start (props) {
                     <br></br><br></br><br></br>
                     
                     {title}
-
 
                     
                     {article}
