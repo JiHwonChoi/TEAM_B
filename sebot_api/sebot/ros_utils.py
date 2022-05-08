@@ -13,7 +13,7 @@ class SeBot:
         #Init ros web socket
         self.client = roslibpy.Ros(host=robot_ip, port=9090)
         self.client.run()
-        
+
         self.db = db
 
         # robot pose
@@ -66,7 +66,7 @@ class SeBot:
 
 
     def upload_image(self, request, response):
-        image = request['image']
+        image = request['image']['data']
         res = self.db.image_upload(image)
         response['emergency'] = res
         return res

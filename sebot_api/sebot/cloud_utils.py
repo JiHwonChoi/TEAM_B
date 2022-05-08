@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
 
-import os
-import sys
 from datetime import datetime
 import boto3
 
@@ -25,6 +23,6 @@ class Cloud:
             )
             return True
 
-        except:
+        except Exception as e:
             return False
 
