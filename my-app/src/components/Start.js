@@ -55,13 +55,11 @@ function Start (props) {
             //------소켓이 연결이 안된 상태에서 아래를 활성화 하면 앱이 멈춥니다------
             socket.on('connect', function() {
                 
-                socket.emit( 'my event', {
-                  data: 'User Connected'
-                })
+                socket.emit( 'robot location')
             })
             })
 
-            socket.on('server response', function(msg){
+            socket.on('state', function(msg){
                 console.log(msg)
             })
         

@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
 
-import json
 import cv2
-import psycopg2
 import time
-import roslibpy
-import argparse
 from flask import Flask, request, session, render_template, redirect, url_for, Response, stream_with_context, jsonify
 from flask_socketio import SocketIO
 from flask_cors import cross_origin, CORS
@@ -37,6 +33,12 @@ def handle_my_custom_event(json):
     print('received my event: ' + str(json))
     socketio.emit('server response', json, callback=messageReceived)
 
+@socketio.on('robot location')
+def robot_location():
+    map = cv2.imread('map.pgm')
+    map = cv2.circle(map, (int(10), int(10)), 5, (0, 0, 255), -1)
+    map = cv2.imencode('_.jpg', map)[1].tobytes()
+    socketio.emit('state', {'map': map, 'arrival': False})
 
 if __name__ == "__main__":
     app.secret_key = '20200601'
