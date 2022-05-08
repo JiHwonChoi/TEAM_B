@@ -124,7 +124,7 @@ def logout():
 def robot_location():
     map = db.map.copy()
     map = cv2.circle(map, (int(sebot.x), int(sebot.y)), 5, (0, 0, 255), -1)
-    map = cv2.imencode(map, cv2.IMREAD_COLOR)
+    map = cv2.imencode('_.jpg', map)[1].tobytes()
     socketio.emit('state', {'map': map, 'arrival': False})
 
 

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
 
-import threading
-import time
 import rospy
 import roslibpy
 from sensor_msgs.msg import CompressedImage
@@ -14,9 +12,8 @@ class SeBot:
     def __init__(self, db, robot_ip):
         #Init ros web socket
         self.client = roslibpy.Ros(host=robot_ip, port=9090)
-        self.client.on_ready(run_in_thread=True)
-        self.client.run_forever()
-
+        self.client.run()
+        
         self.db = db
 
         # robot pose
