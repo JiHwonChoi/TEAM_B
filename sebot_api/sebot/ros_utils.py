@@ -3,6 +3,9 @@
 
 import rospy
 import roslibpy
+import base64
+import numpy as np
+import cv2
 from sensor_msgs.msg import CompressedImage
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseStamped
@@ -66,8 +69,9 @@ class SeBot:
 
 
     def upload_image(self, request, response):
-        image = request['image']['data']
-        res = self.db.image_upload(image)
+        base64_bytes = request['image']['data'].encode('ascii')
+        image_bytes = base64.b64decode(base64_bytes)
+        res = self.db.image_upload(image_bytes)
         response['emergency'] = res
         return res
 

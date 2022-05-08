@@ -18,7 +18,7 @@ class Cloud:
             self.s3.put_object(
                 Bucket = CLOUD['BUCKET_NAME'],
                 Body = image,
-                Key = f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S:%06m")}.jpg',
+                Key = f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S:%06m")}.jpeg',
                 ContentType = 'image/jpeg'
             )
             return True
