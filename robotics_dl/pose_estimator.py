@@ -11,9 +11,10 @@ from cv_bridge import CvBridge,CvBridgeError
 import numpy as np
 from sebot_service.srv import GetImage
 import time
-HEIGHT=1080
-WIDTH=1920
-NECK_TH=450
+HEIGHT=540
+WIDTH=960
+NECK_TH=450/2
+
 '''
 -------PARAMETERS-----------
 '''
@@ -74,6 +75,7 @@ class Pose_detector:
         rospy.wait_for_service(emergency_srv)
         print("Service detected")
         self.emergency_client = rospy.ServiceProxy(emergency_srv,GetImage)
+        #print("GOGOGOOGOGOGO")
     def _cb(self,data):
         #print("hiihi")
         try:
@@ -82,15 +84,15 @@ class Pose_detector:
             print(e)
         self.__process_pose(cv_image)
     def _comp_cb(self,data):
+        #rospy.loginfo("RESPONSED")
         if self.emergency_flag:
+            rospy.loginfo("RESPONSED")
             res = self.emergency_client(data)
-            print("RESPONSED")
-            print("SERVICE SUCCESS? : ",res.success)
+            rospy.loginfo("SERVICE SUCCESS? : ",res.success)
     def __process_pose(self,imageToProcess):
         datum = op.Datum()
         datum.cvInputData = imageToProcess
         self.opWrapper.emplaceAndPop(op.VectorDatum([datum]))
-        #print("dd")
         # Display Image
         #print ("input",datum.cvInputData.shape)
         #print ("output", datum.cvOutputData.shape)
@@ -101,6 +103,7 @@ class Pose_detector:
         #Todo:insert no detection sign
         try:
             for person in datum.poseKeypoints:
+               #print("person detected")
                if person[1][1]==0:
                    continue
                #print("neck: ",person[1][1])
@@ -109,11 +112,13 @@ class Pose_detector:
                    if person[8][0]==0:
                        continue
                    angle=np.abs(np.arctan2(person[1][1]-person[8][1],person[1][0]-person[8][0]))*180/np.pi
-                   print ("angle",angle)
-                   if angle<30 or angle>150:
+                   #print ("angle",angle)
+                   #print("person hip",person[8][1])
+                   if angle<30 or angle>150 or person[8][1]>400:
                        _safe = False
                        self.emergency_flag = True
-                       print("People fall down! Emergency!")
+                       #rospy.loginfo("People fall down! Emergency!")
+            rospy.loginfo(f"Emergency flag: {self.emergency_flag}")
             if _safe:
                 self.emergency_flag = False
                 #print("All people detected")
