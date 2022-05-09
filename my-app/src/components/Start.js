@@ -18,6 +18,7 @@ function Start (props) {
         
         const [article, setArticle] = useState(<Homelogo />)
         const [title, setTitle] = useState('소켓통신 실패')
+        const [imgurl, setImgurl] = useState('')
         
         //api 지속적으로 새로고침 하는 함수 
         //socket 안되면 이걸로라도
@@ -47,7 +48,7 @@ function Start (props) {
         const socket = socketio.connect('http://127.0.0.1:5000')
 
         //socket 사용하는 부분
-        useEffect(async ()=>{
+        useEffect( ()=>{
             
             //소켓 주소 맞게 입력해주세요
             
@@ -57,11 +58,26 @@ function Start (props) {
                 
                 socket.emit( 'robot location')
             })
+            }, [])
+
+            socket.on('state', (msg) => {
+                console.log(msg)
+
+                var arrayBufferView = new Uint8Array( msg.map );
+                var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+                var urlCreator = window.URL || window.webkitURL;
+                var imageUrl = urlCreator.createObjectURL( blob );
+                console.log('imageurl here:', imageUrl)
+
+                // let blob = new Blob([new ArrayBuffer(data)], { type: "image/png" });
+                // const url = window.URL.createObjectURL(blob); 
+                imageSet(imageUrl)
+                
             })
 
-            socket.on('state', function(msg){
-                console.log(msg)
-            })
+        function imageSet (imageUrl){
+            setImgurl(imageUrl)
+        }
         
         // useEffect( ()=>{
         //     console.log("hello")
@@ -87,6 +103,7 @@ function Start (props) {
                     
                     {article}
                     <br></br><br></br><br></br>
+                    <img src={imgurl}></img>
                     {/* {title} */}
                     <Navigation onChange={function(idx){
                         console.log('this is onChange function',idx)
