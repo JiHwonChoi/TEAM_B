@@ -74,14 +74,9 @@ class Pose_detector:
         self._vis = vis
         rospy.wait_for_service(emergency_srv)
         print("Service detected")
-<<<<<<< HEAD
         self.emergency_client = rospy.ServiceProxy(emergency_srv,GetImage)
         #print("GOGOGOOGOGOGO")
-=======
-        self.emergency_client = rospy.ServiceProxy(emergency_srv, GetImage)
 
-
->>>>>>> e664aa0565d29bd2b4708c88d64832f32cebbdfa
     def _cb(self,data):
         #print("hiihi")
         try:
@@ -96,14 +91,8 @@ class Pose_detector:
         if self.emergency_flag:
             rospy.loginfo("RESPONSED")
             res = self.emergency_client(data)
-<<<<<<< HEAD
             rospy.loginfo("SERVICE SUCCESS? : ",res.success)
-=======
-            print("RESPONSED")
-            print("SERVICE SUCCESS? : ",res.success)
 
-
->>>>>>> e664aa0565d29bd2b4708c88d64832f32cebbdfa
     def __process_pose(self,imageToProcess):
         datum = op.Datum()
         datum.cvInputData = imageToProcess
@@ -118,7 +107,6 @@ class Pose_detector:
         #Todo:insert no detection sign
         try:
             for person in datum.poseKeypoints:
-<<<<<<< HEAD
                #print("person detected")
                if person[1][1]==0:
                    continue
@@ -135,25 +123,7 @@ class Pose_detector:
                        self.emergency_flag = True
                        #rospy.loginfo("People fall down! Emergency!")
             rospy.loginfo(f"Emergency flag: {self.emergency_flag}")
-=======
-                if person[1][1]==0:
-                    continue
 
-                #print("neck: ",person[1][1])
-                if person[1][1]>NECK_TH:
-                    #print ("person neck is over floor")
-                    if person[8][0]==0:
-                        continue
-
-                    angle=np.abs(np.arctan2(person[1][1]-person[8][1],person[1][0]-person[8][0]))*180/np.pi
-                    print ("angle",angle)
-
-                    if angle<30 or angle>150:
-                        _safe = False
-                        self.emergency_flag = True
-                        print("People fall down! Emergency!")
-
->>>>>>> e664aa0565d29bd2b4708c88d64832f32cebbdfa
             if _safe:
                 self.emergency_flag = False
                 #print("All people detected")
