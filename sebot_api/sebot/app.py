@@ -123,7 +123,7 @@ def logout():
 @socketio.on('robot location')
 def robot_location():
     map = db.map.copy()
-    map = cv2.circle(map, (int(sebot.x), int(sebot.y)), 5, (0, 0, 255), -1)
+    map = cv2.circle(map, (int((50+sebot.x)*10), int((50-sebot.y)*10)), 5, (0, 0, 255), -1)
     map = cv2.imencode('_.jpg', map)[1].tobytes()
     socketio.emit('state', {'map': map, 'arrival': False})
 
