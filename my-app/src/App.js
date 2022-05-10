@@ -9,14 +9,21 @@ import RegisterPage from './components/RegisterPage';
 import React from "react";
 import Walking from './components/Walking';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { socket, SocketContext } from "src/service/socket";
 
 const App =() => {
+  useEffect(() => {
+    return () => {
+      socket.disconnect();
+    }
+  }, []);
   return (
+
+    <SocketContext.Provider value={socket}>
     <div className="App">
 
 
       <BrowserRouter>
-    
         <Routes>
           {/* <Route path="/" element={<LoginPage />}></Route> */}
           <Route path="/" element={<Start />}></Route>
@@ -30,6 +37,7 @@ const App =() => {
       </BrowserRouter>
       
     </div>
+    </SocketContext.Provider>
   )
 }
 

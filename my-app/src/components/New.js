@@ -1,7 +1,9 @@
-import React from 'react'
+import React, {useState} from 'react'
 import './new.css'
 
-function New() {
+function New(props) {
+    props.onLoad()
+
     return (
         <div>
             <p>This is new page</p>
@@ -14,7 +16,7 @@ function New() {
                 </div>
 
             <div className='robot_current'>
-                display robot location
+                로봇의 현재 위치 표시
             </div>
             <div className='detail'>goto detail page</div>
             <div className='to_my_location'>goto mylocation page</div>
