@@ -39,7 +39,11 @@ def robot_location():
     map = cv2.circle(map, (int(500), int(500)), 5, (0, 0, 255), -1)
     map = cv2.imencode('_.jpg', map)[1].tobytes()
     print('why multiple time')
-    socketio.emit('state', {'map': map, 'arrival': False})
+    i= 0
+    while (i<10):
+        time.sleep(3)
+        socketio.emit('state', {'map': map, 'arrival': False})
+        i+=1
 
 if __name__ == "__main__":
     app.secret_key = '20200601'

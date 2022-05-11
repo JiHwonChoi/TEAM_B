@@ -13,16 +13,26 @@ import { socket, SocketContext } from "./service/socket";
 
 const App =() => {
   useEffect(() => {
+
+    // socket.on('state', (msg) => {
+    //   console.log('received')
+    //   //요기에다가 추가하면 됨
+      
+    // })
+
     return () => {
+
+      // socket.off('state', (msg) => {
+      //   console.log('received')
+      //   //요기에다가 추가하면 됨
+        
+      // })
+
       socket.disconnect();
     }
   }, []);
 
-  socket.on('state', (msg) => {
-    console.log('received')
-    //요기에다가 추가하면 됨
-    
-})
+  
 
 
   return (

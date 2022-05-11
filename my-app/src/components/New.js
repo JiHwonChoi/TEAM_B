@@ -11,10 +11,21 @@ function New(props) {
     useEffect( ()=>{
         socket.emit( 'robot location')
         console.log('!!!request location!!!')
+        socket.on('state', (msg) => {
+            handlestate(msg)
+        })
+
+        return () => {
+            socket.off('state', (msg) => {
+                handlestate(msg)
+            })
+           
+        }
     }, [])
 
-    socket.on('state', (msg) => {
-        // console.log('received')
+    
+
+    const handlestate  = (msg) => {
         console.log(msg)
         var arrayBufferView = new Uint8Array( msg.map );
         var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
@@ -22,8 +33,7 @@ function New(props) {
         var imageUrl = urlCreator.createObjectURL( blob );
         // console.log('imageurl here:', imageUrl)
         setImgurl(imageUrl)
-        
-    })
+    }
 
     return (
         <div>
@@ -38,8 +48,8 @@ function New(props) {
             <div className='robot_current'>
                 <img src ={imgurl}></img>
             </div>
-            <div className='detail'>goto detail page</div>
-            <div className='to_my_location'>goto mylocation page</div>
+            <div className='detail'>산책하기</div>
+            <div className='to_my_location'>내 위치로 부르기</div>
             <div className='take_stroll'></div>
 
         </div>
