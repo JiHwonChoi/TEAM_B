@@ -6,10 +6,10 @@ import NotFound from './components/NotFound';
 import Start from './components/Start';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
-import React from "react";
+import React , {useEffect} from "react";
 import Walking from './components/Walking';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { socket, SocketContext } from "src/service/socket";
+import { socket, SocketContext } from "./service/socket";
 
 const App =() => {
   useEffect(() => {

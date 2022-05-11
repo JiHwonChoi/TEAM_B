@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import './start.css'
 import New from './New';
 import Homelogo from './Homelogo';
@@ -9,6 +9,8 @@ import Profile from './Profile';
 import Navigation from './Navigation';
 import axios from 'axios';
 import socketio from 'socket.io-client'
+import { SocketContext } from "../service/socket";
+
 
 
 
@@ -19,9 +21,10 @@ function Start (props) {
         const [article, setArticle] = useState(<Homelogo />)
         const [title, setTitle] = useState('소켓통신 실패')
         const [imgurl, setImgurl] = useState('')
+        const socket = useContext(SocketContext);
         
 
-        const socket = socketio.connect('http://127.0.0.1:5000')
+        // const socket = socketio.connect('http://127.0.0.1:5000')
         //socket 사용하는 부분
         useEffect( ()=>{
             
@@ -65,7 +68,7 @@ function Start (props) {
                     
                     {article}
                     <br></br><br></br><br></br>
-                    {/* <img src={imgurl}></img> */}
+                    <img src={imgurl}></img>
                     {/* {title} */}
                     <Navigation onChange={function(idx){
                         console.log('this is onChange function',idx)
