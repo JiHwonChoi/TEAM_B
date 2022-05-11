@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import './start.css'
 import New from './New';
 import Homelogo from './Homelogo';
@@ -9,6 +9,8 @@ import Profile from './Profile';
 import Navigation from './Navigation';
 import axios from 'axios';
 import socketio from 'socket.io-client'
+import { SocketContext } from "../service/socket";
+
 
 
 
@@ -19,76 +21,39 @@ function Start (props) {
         const [article, setArticle] = useState(<Homelogo />)
         const [title, setTitle] = useState('소켓통신 실패')
         const [imgurl, setImgurl] = useState('')
+        const socket = useContext(SocketContext);
         
-        //api 지속적으로 새로고침 하는 함수 
-        //socket 안되면 이걸로라도
-        
-        // async function getapi (){
-        //     let my_url='http://127.0.0.1:5000/robot_state'
-        //         let response = axios.get(my_url)
-        //         console.log(response)
-        //         let title = response
-        //         setTitle(title)
-            // let timer = setInterval(async ()=>{
-            //     i=i+1
-            //     let my_url='https://jsonplaceholder.typicode.com/todos/'+i
-            //     let response = await axios.get(my_url)
-            //     console.log(response.data)
-            //     let title = response.data.title
-            //     setTitle(title)
-            //     if(i>10){
-            //         clearTimeout(timer)
-            //         console.log('clear')
-            //     }
-            //     //받아온 정보로 state를 지속적으로 업데이트 하기
-        
-            // },200)    
-        // }
 
-        const socket = socketio.connect('http://127.0.0.1:5000')
-
+        // const socket = socketio.connect('http://127.0.0.1:5000')
         //socket 사용하는 부분
         useEffect( ()=>{
             
             //소켓 주소 맞게 입력해주세요
-            
-
             //------소켓이 연결이 안된 상태에서 아래를 활성화 하면 앱이 멈춥니다------
             socket.on('connect', function() {
-                
-                socket.emit( 'robot location')
+                console.log("socket server connected.");
             })
             }, [])
 
             socket.on('state', (msg) => {
+                console.log('received')
                 console.log(msg)
-
                 var arrayBufferView = new Uint8Array( msg.map );
                 var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
                 var urlCreator = window.URL || window.webkitURL;
                 var imageUrl = urlCreator.createObjectURL( blob );
                 console.log('imageurl here:', imageUrl)
-
-                // let blob = new Blob([new ArrayBuffer(data)], { type: "image/png" });
-                // const url = window.URL.createObjectURL(blob); 
                 imageSet(imageUrl)
                 
             })
 
+        function showLocation (){
+            socket.emit( 'robot location')
+        }
         function imageSet (imageUrl){
             setImgurl(imageUrl)
         }
-        
-        // useEffect( ()=>{
-        //     console.log("hello")
-        //     async function fetchData() {
-        //         let my_url='http://127.0.0.1:5000/robot_state'
-        //         let response = await axios.get(my_url)
-        //         console.log(response.data)
-        //     }
-
-        //     fetchData()
-        // },[])
+    
 
         return(
             <div>
@@ -108,7 +73,9 @@ function Start (props) {
                     <Navigation onChange={function(idx){
                         console.log('this is onChange function',idx)
                         if(idx=='plus'){
-                            setArticle(<New />)
+                            setArticle(<New onLoad = {function(){
+                                showLocation()
+                            }} imgurl ={imgurl} />)
                         }
                         else if (idx=='search'){
                             setArticle(<Search />)
