@@ -11,6 +11,35 @@ import Walking from './components/Walking';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { socket, SocketContext } from "./service/socket";
 
+const useNotification = (title, options) => {
+  if (!("Notification" in window)) {
+    return;
+  }
+  const fireNotif = () => {
+    /* 권한 요청 부분 */
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          /* 권한을 요청받고 nofi를 생성해주는 부분 */
+          new Notification(title, options);
+          console.log('1')
+        } 
+        else {
+          console.log("2")
+          return;
+        }
+      });
+    } 
+    else {
+      console.log("3")
+      /* 권한이 있을때 바로 noti 생성해주는 부분 */
+      new Notification(title, options);
+    }
+  };
+  console.log("4")
+  return fireNotif();
+};
+
 const App =() => {
   useEffect(() => {
     return () => {
@@ -18,11 +47,15 @@ const App =() => {
     }
   }, []);
 
+  
+
   socket.on('state', (msg) => {
     // console.log('received')
     console.log('received')
     //요기에다가 추가하면 됨
-    
+    useNotification("EMergency alert", {
+      body: "emergency is occured" });
+    console.log("ok")
 })
 
 
