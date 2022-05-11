@@ -1,8 +1,29 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import './new.css'
+import { SocketContext } from "../service/socket";
+
 
 function New(props) {
-    props.onLoad()
+
+    const [imgurl, setImgurl] = useState('')
+    const socket = useContext(SocketContext);
+    
+    useEffect( ()=>{
+        socket.emit( 'robot location')
+        console.log('!!!request location!!!')
+    }, [])
+
+    socket.on('state', (msg) => {
+        // console.log('received')
+        console.log(msg)
+        var arrayBufferView = new Uint8Array( msg.map );
+        var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+        var urlCreator = window.URL || window.webkitURL;
+        var imageUrl = urlCreator.createObjectURL( blob );
+        console.log('imageurl here:', imageUrl)
+        setImgurl(imageUrl)
+        
+    })
 
     return (
         <div>
@@ -17,6 +38,7 @@ function New(props) {
 
             <div className='robot_current'>
                 로봇의 현재 위치 표시
+                <img src ={imgurl}></img>
             </div>
             <div className='detail'>goto detail page</div>
             <div className='to_my_location'>goto mylocation page</div>

@@ -36,8 +36,9 @@ def handle_my_custom_event(json):
 @socketio.on('robot location')
 def robot_location():
     map = cv2.imread('map.pgm')
-    map = cv2.circle(map, (int(10), int(10)), 5, (0, 0, 255), -1)
+    map = cv2.circle(map, (int(500), int(500)), 5, (0, 0, 255), -1)
     map = cv2.imencode('_.jpg', map)[1].tobytes()
+    print('why multiple time')
     socketio.emit('state', {'map': map, 'arrival': False})
 
 if __name__ == "__main__":
