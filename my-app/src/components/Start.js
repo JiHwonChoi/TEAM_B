@@ -19,7 +19,6 @@ import { SocketContext } from "../service/socket";
 function Start (props) {
         
         const [article, setArticle] = useState(<Homelogo />)
-        const [title, setTitle] = useState('소켓통신 실패')
         const [imgurl, setImgurl] = useState('')
         const socket = useContext(SocketContext);
         
@@ -59,12 +58,6 @@ function Start (props) {
             <div>
                 {console.log('render')}
                 <div className='home-background'>
-                    socketio test 입니다
-                    <br></br><br></br><br></br>
-                    
-                    {title}
-
-
                     
                     {article}
                     <br></br><br></br><br></br>
