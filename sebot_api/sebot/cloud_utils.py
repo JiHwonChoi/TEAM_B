@@ -15,14 +15,15 @@ class Cloud:
 
     def upload_image(self, image):
         try:
+            file_name = f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S:%06m")}.jpeg'
             self.s3.put_object(
                 Bucket = CLOUD['BUCKET_NAME'],
                 Body = image,
-                Key = f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S:%06m")}.jpeg',
+                Key = file_name,
                 ContentType = 'image/jpeg'
             )
-            return True
+            return file_name, True
 
         except Exception as e:
-            return False
+            return None, False
 

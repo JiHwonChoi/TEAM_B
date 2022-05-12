@@ -36,7 +36,11 @@ class Database:
 
     def image_upload(self, image):
         res = self.cloud.upload_image(image)
-        return res
+
+        if res[1]:
+            query = 'INSERT INTO emergency("file_name") VALUES(%s)'
+            self.execute(query, res[0])
+        return res[1]
 
     def get_map(self):
         img = cv2.imread('map.pgm')

@@ -120,37 +120,7 @@ def logout():
     return redirect(url_for('main'))
 
 
-@socketio.on('robot location')
-def robot_location():
-    map = db.map.copy()
-    map = cv2.circle(map, (int((50+sebot.x)*10), int((50-sebot.y)*10)), 5, (0, 0, 255), -1)
-    map = cv2.imencode('_.jpg', map)[1].tobytes()
-    socketio.emit('state', {'map': map, 'arrival': False})
-
-
-@app.route("/odom", methods=['GET'])
-def odom():
-    if not sebot.client.is_connected:
-        return "ROBOT_IS_OFF", 406
-
-    if sebot.x is None or sebot.y is None or sebot.z is None:
-        return "NOT_INTIALIZED", 406
-
-    # change it to socket io
-    def generate():
-        while 1:
-            yield f'x: {sebot.x}, y: {sebot.y}, reached:{sebot.reached}, step:{sebot.active_step}'
-            time.sleep(5)
-
-    return app.response_class(stream_with_context(generate()))
-
-
-@app.route("/get_image", methods=['POST'])
-def get_image():
-    #For manager
-    return 400
-
-
+# Send Destination
 @app.route("/call_sebot", methods=['POST'])
 def call_sebot():
     if request.headers["Content-Type"] != "application/json":
@@ -169,23 +139,28 @@ def call_sebot():
     if not sebot.idle:
         return "SEBOT_BUSY", 423
     
-    # SEND TARGET TO ROBOT
-    sebot.idle = False
-    sebot.reached = 0
-    sebot.user_path.append(start_point)
 
-    goal_publisher = roslibpy.Topic(sebot.client, "move_base_simple/goal", "geometry_msgs/PoseStamped")
-    goal_publisher.publish(roslibpy.Message({"header": {"frame_id": "map"},
-                                                    "pose": {"position": {"x": start_point[0], "y": start_point[1]},
-                                                            "orientation": {"z": 1}
-                                                            }
-                                                }))
-    goal_publisher.unadvertise()
-    sebot.active_step += 1
+    ros_request = roslibpy.ServiceRequest({"goal": {
+        "header": {"frame_id": "map"},
+        "pose": {"position": {"x": start_point[0], "y": start_point[1]},
+                "orientation": {"w": 1}
+                }
+    }})
 
-    return "SUCCESS", 200
+    result = sebot.goal_srv.call(ros_request)
+    
+    if result['response']:
+        sebot.idle = False
+        sebot.arrival = False
+        sebot.user_path.append(start_point)
+        sebot.active_step = (sebot.active_step + 1) % 3
+
+        return "SUCCESS", 200
+    
+    return "FAIL", 400
 
 
+# Send Destination
 @app.route("/set_dest", methods=['POST'])
 def set_dest():
     if request.headers["Content-Type"] != "application/json":
@@ -193,27 +168,59 @@ def set_dest():
     
     data = json.loads(request.get_data()) # json error detector needed
 
-    if (not 'dest' in data):
+    if (not 'dst' in data):
         return "INVALID_INPUT", 406
 
-    dst_point = data['dest']
+    dst_point = data['dst']
 
-    if not type(dst_point) is list or len(dst_point) != 2 or not dst_point[0].isdigt() or not dst_point[1].isdigit():
+    if not type(dst_point) is list or len(dst_point) != 2 or not type(dst_point[0]) is int or not type(dst_point[1]) is int:
         return "INVALID_INPUT", 406
+
+    if not sebot.idle:
+        return "SEBOT_BUSY", 423
     
-    # SEND TARGET TO ROBOT
-    sebot.reached = 0
 
-    goal_publisher = roslibpy.Topic(sebot.client, "move_base_simple/goal", "geometry_msgs/PoseStamped")
-    goal_publisher.publish(roslibpy.Message({"header": {"frame_id": "map"},
-                                                    "pose": {"position": {"x": dst_point[0], "y": dst_point[1]},
-                                                            "orientation": {"z": 1}
-                                                            }
-                                                }))
-    goal_publisher.unadvertise()
-    sebot.active_step = (sebot.active_step + 1) % 3
+    ros_request = roslibpy.ServiceRequest({"goal": {
+        "header": {"frame_id": "map"},
+        "pose": {"position": {"x": dst_point[0], "y": dst_point[1]},
+                "orientation": {"w": 1}
+                }
+    }})
 
-    return "SUCCESS", 200
+    result = sebot.goal_srv.call(ros_request)
+    
+    if result['response']:
+        sebot.arrival = False
+        # sebot.user_path.append(dst_point)
+        sebot.active_step = (sebot.active_step + 1) % 3
+
+        return "SUCCESS", 200
+    
+    return "FAIL", 400
+
+
+# End strolling
+@app.route("/end_strolling", methods=['POST'])
+def end_strolling():
+    pass
+
+
+@app.route("/get_image", methods=['POST'])
+def get_image():
+    #For manager
+    return 400
+
+# Socket
+@socketio.on('robot location')
+def robot_location():
+    map = db.map.copy()
+    map = cv2.circle(map, (int((50+sebot.x)*10), int((50-sebot.y)*10)), 5, (0, 0, 255), -1)
+    map = cv2.imencode('_.jpg', map)[1].tobytes()
+
+    socketio.emit('state', {'map': map, 'arrival': sebot.arrival})
+
+    if sebot.arrival:
+        sebot.arrival = False
 
 
 if __name__ == "__main__":
@@ -227,4 +234,4 @@ if __name__ == "__main__":
     app.secret_key = '20200601'
     # app.debug = True
     # app.run(host="0.0.0.0", port=5000)
-    socketio.run(app, debug=True)
+    socketio.run(app)
