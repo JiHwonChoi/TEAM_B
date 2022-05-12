@@ -7,6 +7,7 @@ import Home from './Home';
 import Notification from './Notification';
 import Profile from './Profile';
 import Navigation from './Navigation';
+import Walking from './Walking';
 import axios from 'axios';
 import socketio from 'socket.io-client'
 import { SocketContext } from "../service/socket";
@@ -52,6 +53,33 @@ function Start (props) {
         // function imageSet (imageUrl){
         //     setImgurl(imageUrl)
         // }
+
+        function callWalkpath (){
+            setArticle(<Walking></Walking>)
+        }
+
+        function nav_page_change(idx){
+            if(idx=='plus'){
+                setArticle(<New pageshift={
+                    callWalkpath
+                } />)
+            }
+            else if (idx=='search'){
+                setArticle(<Search />)
+            }
+            else if (idx=='home_button'){
+                setArticle(<Home />)
+            }
+            else if (idx=='noti'){
+                setArticle(<Notification />)
+            }
+            else if (idx=='profile'){
+                setArticle(<Profile />)
+            }
+            else{
+                setArticle(<Homelogo />)
+            }
+        }
     
 
         return(
@@ -65,30 +93,7 @@ function Start (props) {
                     {/* {title} */}
                     <Navigation onChange={function(idx){
                         console.log('this is onChange function',idx)
-                        if(idx=='plus'){
-                            setArticle(<New/>)
-                        }
-                        else if (idx=='search'){
-                            setArticle(<Search />)
-                        }
-                        else if (idx=='home_button'){
-                            setArticle(<Home />)
-                        }
-                        else if (idx=='noti'){
-                            setArticle(<Notification />)
-                        }
-                        else if (idx=='profile'){
-                            setArticle(<Profile />)
-                        }
-                        else{
-                            setArticle(<Homelogo />)
-                        }
-                        
-                        // let i = 0
-                        // getapi()
-
-
-
+                        nav_page_change(idx)
                     } }></Navigation>
                 </div>
 

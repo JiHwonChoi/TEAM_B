@@ -48,7 +48,7 @@ function New(props) {
             <div className='robot_current'>
                 <img src ={imgurl}></img>
             </div>
-            <div className='detail'>산책하기</div>
+            <div className='detail' onClick={props.pageshift} >산책하기</div>
             <div className='to_my_location'>내 위치로 부르기</div>
             <div className='take_stroll'></div>
 

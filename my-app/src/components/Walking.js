@@ -7,8 +7,20 @@ class Walking extends Component {
 
         return(
             <div>
-			<h1>page1</h1>
-            <Navigation></Navigation>
+			<div className='title'>
+                <div className='big_title'>로봇 역할 카테고리</div>
+                <div className='small_title'>산책로를 선택해주세요</div>
+            </div>
+            <div className='search_tab'>
+                    search tab
+                </div>
+
+            <div className='robot_current'>
+                지도 이미지 표시
+            </div>
+            <div className='detail' >지도 선택하기</div>
+            <div className='to_my_location'>산책 시작하기</div>
+            <div className='take_stroll'></div>
 		    </div>
 
         );
