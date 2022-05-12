@@ -61,6 +61,7 @@ add_service_files(
   FILES
   GetImage.srv
   SetGoal.srv
+  SendArrival.srv
 )
 
 ## Generate actions in the 'action' folder
