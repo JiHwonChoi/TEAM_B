@@ -7,7 +7,8 @@ from sebot_service.srv import *
 import rospy
 import numpy as np
 PATH_A =np.array([(22.9,64.64),(16.87,72.46),(16.48,74.68),(13.0,76.8),(4.016,81.5),(-6.595,84.42),(-12.88,70.96),(-9.65,65.53),(-2.78,62.78)])
-goal_srv = '/goal_srv'
+goal_srv = '/goal_sign'
+arrival_srv = '/arrival_sign'
 class Nav_goal_control:
     def __init__(self,speed = 0.7,goal_threshold = 0.3,path = 'A',srv_mode = False):
         self.MoveBaseClient = actionlib.SimpleActionClient("move_base", MoveBaseAction)

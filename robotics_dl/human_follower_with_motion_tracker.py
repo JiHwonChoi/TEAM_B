@@ -3,6 +3,7 @@ import rospy
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Twist, Vector3, PoseWithCovariance, Pose, Point
 from std_msgs.msg import Bool
+from yolov3_pytorch_ros.msg import BoundingBoxes,BoundingBox
 from sort_track.msg import IntList
 from detector import DetectorManager
 import time
@@ -12,9 +13,9 @@ from std_msgs.msg import ColorRGBA
 from cv_bridge import CvBridge
 import cv2
 import numpy as np
-threshold_dist = 1.5
+threshold_dist = 3.0
 stop_threshold = 5.0
-no_human_endurance_time = 3.0 # time to stop if there's no human
+no_human_endurance_time = 6.0 # time to stop if there's no human
 WIDTH = 960
 HEIGHT = 540
 class Human_follower(DetectorManager):
@@ -47,6 +48,16 @@ class Human_follower(DetectorManager):
         self.angular = Vector3(0,0,0)
     def _vis_cb(self,data):
         self.vis_img = self.bridge.imgmsg_to_cv2(data, "8UC3")
+    def __get_human_depth(self,bbox):
+        rospy.loginfo(len(self.detection_results.bounding_boxes))
+
+        for detection_result in self.detection_results.bounding_boxes:
+            #rospy.loginfo(f"detection_result {np.abs(int(detection_result.xmin - bbox[0])) <= 2 and np.abs(int(detection_result.ymax - bbox[3]))}")
+            #rospy.loginfo(f"loss {int(detection_result.xmin - bbox[0])} , {detection_result.ymax - bbox[3]}")
+            if np.abs(int(detection_result.xmin - bbox[0])) <= 2 and np.abs(int(detection_result.ymax - bbox[3])) <=2:
+                #rospy.loginfo(detection_result.depth)
+                return detection_result.depth
+
     def _track_cb(self,data):
         #print(data.data)
         vis_img = self.vis_img
@@ -55,18 +66,20 @@ class Human_follower(DetectorManager):
         thickness = int(3)
         #
         if len(data.data)==0 or self.last_data == data.data:
-            rospy.loginfo("No Human found...")
+            #rospy.loginfo("No Human found...")
             cv2.putText(vis_img,"Move toward to identify you.",(50,50),font,fontScale,(255,255,0),thickness,cv2.LINE_AA)
             rospy.sleep(.5)
         else:
-            rospy.loginfo("Human Recognized")
-            xmin,ymin,xmax,ymax,depth,idx = data.data
+            #rospy.loginfo("Human Recognized")
+            xmin,ymin,xmax,ymax,_,idx = data.data
+            _thres = 50
+            depth = self.__get_human_depth([xmin,ymin,xmax,ymax])
             if not self.no_human_flag and self.actor_idx == int(idx) :
                 self.endurance_time = time.time()
-                self.actor_depth = depth
-                self.last_data = data.data
-            _thres = 50
 
+                self.last_data = data.data
+            elif not self.no_human_flag:
+                pass
             else:
                 if depth < threshold_dist:
                     #if human is in the center and close enough
@@ -84,9 +97,9 @@ class Human_follower(DetectorManager):
                         pass
                 else:
                     _word = "MOVE TO the CENTER AND COME NEARBY"
-                    rospy.loginfo("MOVE TO the CENTER AND COME NEARBY")
+                    #rospy.loginfo("MOVE TO the CENTER AND COME NEARBY")
                     cv2.putText(vis_img, _word, (50, 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
-        cv2.putText(vis_img,f"Target_actor: {self.actor_idx}",(50,HEIGHT-50),font,fontScale,(255,255,0),thickness,cv2.LINE_AA)
+        cv2.putText(vis_img,f"Target_actor: {self.actor_idx}, Depth:{self.actor_depth}",(50,HEIGHT-50),font,fontScale,(255,255,0),thickness,cv2.LINE_AA)
         #print("vis_img",vis_img)
         cv2.imshow('track_result',vis_img)
         cv2.waitKey(25)
@@ -176,7 +189,7 @@ class Human_follower(DetectorManager):
 
 if __name__ == '__main__':
     rospy.init_node("human_follower")
-    human_follower=Human_follower(True)
+    human_follower=Human_follower(False)
     while True:
         human_follower.modify_speed()
         rospy.sleep(.1)

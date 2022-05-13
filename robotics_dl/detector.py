@@ -72,7 +72,6 @@ class DetectorManager():
         self.gpu_id = rospy.get_param('~gpu_id', 0)
         self.network_img_size = rospy.get_param('~img_size', 288) #288 for yolo_tiny_weight
         self.publish_image = rospy.get_param('~publish_image',"true")
-        
         # Initialize width and height
         self.h = 0
         self.w = 0
@@ -207,6 +206,7 @@ class DetectorManager():
         # Append in overall detection message
         #print("detection_results",detection_results)
         self.pub_.publish(detection_results)
+        self.detection_results = detection_results
         return True
     
 
