@@ -53,7 +53,7 @@ const App =() => {
     // console.log('received')
     console.log('received')
     //요기에다가 추가하면 됨
-    useNotification("EMergency alert", {
+    useNotification("Emergency alert", {
       body: "emergency is occured" });
     console.log("ok")
 })
@@ -67,8 +67,8 @@ const App =() => {
 
       <BrowserRouter>
         <Routes>
-          {/* <Route path="/" element={<LoginPage />}></Route> */}
-          <Route path="/" element={<Start />}></Route>
+          <Route path="/" element={<LoginPage />}></Route>
+          {/* <Route path="/" element={<Start />}></Route> */}
           <Route path="/register" element={<RegisterPage />}></Route>
           <Route path="*" element={<NotFound />}></Route>
           <Route path="/Page1" element={<Page1></Page1>}></Route>

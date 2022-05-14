@@ -34,7 +34,12 @@ class Login extends React.Component {
         this.login().then((res)=> {
             console.log(res.data);
             if (res.status == 200){
-                this.props.onSuccess()
+                if(res.data.data == true){
+                    this.props.onSuccess_admin()
+                }
+                else{
+                    this.props.onSuccess_user()
+                }
             }
         })
     }

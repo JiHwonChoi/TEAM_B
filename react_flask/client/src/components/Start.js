@@ -7,12 +7,8 @@ import Home from './Home';
 import Notification from './Notification';
 import Profile from './Profile';
 import Navigation from './Navigation';
-import Register from './Register';
 import axios from 'axios';
-import Login from './Login';
-
-
-
+import io from 'socket.io-client'
 
 
 
@@ -21,8 +17,30 @@ function Start (props) {
         const [article, setArticle] = useState(<Homelogo />)
         const [title, setTitle] = useState('empty')
 
-        //api 지속적으로 새로고침 하는 함수
+        function socket_test (){
+            // let socket = new WebSocket("ws://13.124.209.232:5000/odom2");
+            const socket = io.connect('http://13.124.209.232:5000')
+            console.log('websocket:',socket)
+            let message =''
+            // socket.onopen = function(e) {
+            //     alert("[open] Connection established & send");
+            //     socket.send("what is this?");
+            // };
+            
+            // socket.onmessage = ( event )=> { 
+            //     message = event.data
+            //     console.log('message from server', message)
+            //     setTitle(message)
+            //     }
+
+            //socket 닫기 필요해
+        }
+        
+
+        
+
         // function getapi (i){
+
         //     let timer = setInterval(async ()=>{
         //         i=i+1
         //         let my_url='https://jsonplaceholder.typicode.com/todos/'+i
@@ -36,7 +54,9 @@ function Start (props) {
         //         }
         //         //받아온 정보로 state를 지속적으로 업데이트 하기
         
-        //     },200)    
+        //     },200)
+        
+            
         // }
 
 
@@ -56,7 +76,7 @@ function Start (props) {
                     
                     {article}
                     <br></br><br></br><br></br>
-                    {title}
+                    {/* {title} */}
                     <Navigation onChange={function(idx){
                         console.log('this is onChange function',idx)
                         if(idx=='plus'){
@@ -75,9 +95,10 @@ function Start (props) {
                             setArticle(<Profile />)
                         }
                         else{
-                            setArticle(<Home />)
+                            setArticle(<Homelogo />)
                         }
                         
+
 
 
                     } }></Navigation>
