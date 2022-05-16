@@ -62,17 +62,17 @@ function Callrobot (props) {
 
        function gowalk(){
 
-        // fetch("http://127.0.0.1:5000/call_sebot",{
-        //     method: "POST",
-        //     headers:{
-        //         "Content-Type":"application/json",
-        //         'Access-Control-Allow-Origin': '*',
-        //     },
-        //     body: JSON.stringify({idx: 1})
-        // }).then((res)=>{
-        //     console.log(res)
-        // })
-        // console.log('fetch')
+        fetch("http://127.0.0.1:5000/call_sebot",{
+            method: "POST",
+            headers:{
+                "Content-Type":"application/json",
+                'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({idx: 1})
+        }).then((res)=>{
+            console.log(res)
+        })
+        console.log('fetch')
 
         // console.log('gowalk')
         // socket.emit('walksign', {'roomidx': roomidx})
