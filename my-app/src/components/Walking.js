@@ -1,15 +1,19 @@
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import Navigation from './Navigation';
 import './walking.css';
+import { SocketContext } from "../service/socket";
 
-function Walking () {
+
+function Walking (props) {
 
         const[left,setLeft] = useState(0)
-        const[location, setLocation] = useState('101호')
+        const[location, setLocation] = useState('000호')
         const[xclick, setx] = useState(50)
         const[yclick, sety] = useState(50)
+        const[roomidx, setroomidx] = useState(0)
+        const socket = useContext(SocketContext);
 
-        function goleft(){ // 0 327
+        function goleft(){
             let left_margin = left
             left_margin+=327
             if (left_margin>327){
@@ -33,12 +37,10 @@ function Walking () {
         }
 
         function imgClick(e){
-            console.log(e);
-            console.log('click!');
-            console.log(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
 
             setx(e.nativeEvent.offsetX-12)
             sety(e.nativeEvent.offsetY-20)
+            roomWhere(e.nativeEvent.offsetX-12,e.nativeEvent.offsetY-20)
             // this.setState(
             //     {
             //         clicked:{x:e.nativeEvent.offsetX, y: e.nativeEvent.offsetY},
@@ -46,17 +48,67 @@ function Walking () {
             //     }
             // )
        }
+
+       function roomWhere(x,y){
+           if(80<x && x<120 && 60<y && y<80){
+               setLocation('101호 로 호출하기')
+               setroomidx(1)
+           }
+           else{
+               setLocation('이 위치로는 호출할 수 없습니다')
+           }
+           
+       }
+
+       function postData(url = '', data = {}) {
+        // Default options are marked with *
+          return fetch(url, {
+              method: 'POST', // *GET, POST, PUT, DELETE, etc.
+              mode: 'cors', // no-cors, cors, *same-origin
+              cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+              credentials: 'same-origin', // include, *same-origin, omit
+              headers: {
+                  'Content-Type': 'application/json',
+                  // 'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              redirect: 'follow', // manual, *follow, error
+              referrer: 'no-referrer', // no-referrer, *client
+              body: JSON.stringify(data), // body data type must match "Content-Type" header
+          })
+          .then(response => response.json()); // parses JSON response into native JavaScript objects
+      }
+
+       function gowalk(){
+
+        // postData("http://127.0.0.1:5000", {idx: 1})
+
+        fetch("http://127.0.0.1:5000/call_sebot",{
+            method: "POST",
+            headers:{
+                "Content-Type":"application/json",
+                'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({idx: 1})
+        }).then((res)=>{
+            console.log(res)
+        })
+        console.log('fetch')
+
+        // console.log('gowalk')
+        // socket.emit('walksign', {'roomidx': roomidx})
+        // props.pageshift()
+
+       }
+
+       
         
 
         return(
             <div>
 			<div className='title'>
                 <div className='big_title'>로봇 호출 위치 선택</div>
-                <div className='small_title'>현재 위치는 {location} 입니다</div>
+                <div className='small_title'>{location}</div>
             </div>
-            <div className='search_tab'>
-                    search tab
-                </div>
 
             <div className='slidewrap'>
                 <img className='marker' src='marker.png' style={{left:xclick+'px', top:yclick+'px'}}></img>
@@ -73,7 +125,7 @@ function Walking () {
                 </div>
             </div>
             <div> clicked! x:{xclick} y:{yclick}</div>
-            <div className='to_my_location'>산책 시작하기</div>
+            <div className='to_my_location' onClick={gowalk}>산책 시작하기</div>
             <div className='take_stroll'></div>
 		    </div>
 

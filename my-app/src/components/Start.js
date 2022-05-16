@@ -8,6 +8,7 @@ import Notification from './Notification';
 import Profile from './Profile';
 import Navigation from './Navigation';
 import Walking from './Walking';
+import Nowcalling from './Nowcalling';
 import axios from 'axios';
 import socketio from 'socket.io-client'
 import { SocketContext } from "../service/socket";
@@ -55,7 +56,14 @@ function Start (props) {
         // }
 
         function callWalkpath (){
-            setArticle(<Walking></Walking>)
+            setArticle(<Walking pageshift={
+                callNowcalling
+            }></Walking>)
+        }
+
+        function callNowcalling(){
+            console.log('hey')
+            setArticle(<Nowcalling></Nowcalling>)
         }
 
         function nav_page_change(idx){

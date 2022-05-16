@@ -3,7 +3,7 @@ import './new.css'
 import { SocketContext } from "../service/socket";
 
 
-function New(props) {
+function Nowcalling(props) {
 
     const [imgurl, setImgurl] = useState('')
     const socket = useContext(SocketContext);
@@ -38,22 +38,22 @@ function New(props) {
     return (
         <div>
             <div className='title'>
-                <div className='big_title'>로봇 호출</div>
-                <div className='small_title'>호출할 로봇을 지정후 기능을 선택해주세요</div>
+                <div className='big_title'>로봇 호출중 입니다.</div>
+                <div className='small_title'>로봇 호출중 입니다.</div>
             </div>
             <div className='search_tab'>
-                    1층 1호기
+                    search tab
                 </div>
 
             <div className='robot_current'>
                 <img src ={imgurl}></img>
             </div>
             <div className='detail' onClick={props.pageshift} >산책하기</div>
-            <div className='to_my_location'>내 위치로 부르기</div>
+            <div className='to_my_location'>취소하기</div>
             <div className='take_stroll'></div>
 
         </div>
     )
 }
 
-export default New;
+export default Nowcalling;

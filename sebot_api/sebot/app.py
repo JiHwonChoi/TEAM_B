@@ -24,6 +24,10 @@ def robot_state():
 
     return app.response_class(stream_with_context(generate()))
 
+@app.route("/call_sebot", methods=['POST'])
+def callsebot():
+    print('!!!!!!!!!!received~!!!!')
+
 
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
@@ -39,6 +43,12 @@ def robot_location():
     map = cv2.circle(map, (int(500), int(500)), 5, (0, 0, 255), -1)
     map = cv2.imencode('_.jpg', map)[1].tobytes()
     socketio.emit('state', {'map': map, 'arrival': False})
+
+@socketio.on('walksign')
+def handle_my_custom_event(json):
+    print('!!!received walksignt: ' + str(json))
+    print('here is room idx ',json['roomidx'])
+    # socketio.emit('server response', json, callback=messageReceived)
 
 
 if __name__ == "__main__":

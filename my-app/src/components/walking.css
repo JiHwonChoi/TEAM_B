@@ -3,9 +3,9 @@
     overflow:hidden;
     position: absolute;
     width: 327px;
-    height: 284px;
+    height: 400px;
     left: 25px;
-    top: 285px;
+    top: 177px;
     border: solid black 1px;
 }
 
@@ -22,8 +22,11 @@
 .slide img{
     position: static;
     width: 327px;
-    height: 284px;
+    height: 400px;
+    left: 0px;
     object-fit: cover;
+
+    
 }
 
 .map_navigate_wrapper{

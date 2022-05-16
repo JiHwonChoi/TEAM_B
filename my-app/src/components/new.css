@@ -2,6 +2,10 @@
     border: solid black 1px;
 } */
 
+div{
+    vertical-align: middle;    
+}
+
 .title{
     /* Title */
 
