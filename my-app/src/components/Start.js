@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react'
 import './start.css'
-import New from './New';
+import New from './Courseselection';
 import Homelogo from './Homelogo';
 import Search from './Search';
 import Home from './Home';
@@ -9,6 +9,7 @@ import Profile from './Profile';
 import Navigation from './Navigation';
 import Walking from './Walking';
 import Nowcalling from './Nowcalling';
+import Callrobot from './CallRobot';
 import axios from 'axios';
 import socketio from 'socket.io-client'
 import { SocketContext } from "../service/socket";
@@ -55,10 +56,10 @@ function Start (props) {
         //     setImgurl(imageUrl)
         // }
 
-        function callWalkpath (){
-            setArticle(<Walking pageshift={
-                callNewpage
-            }></Walking>)
+        function callrobot (){
+            setArticle(<Callrobot gocall={
+                callNowcalling
+            }></Callrobot>)
         }
 
         function callNowcalling(){
@@ -68,14 +69,14 @@ function Start (props) {
 
         function callNewpage(){
             setArticle(<New pageshift={
-                callWalkpath
+                callrobot
             } />)
         }
 
         function nav_page_change(idx){
             if(idx=='plus'){
                 setArticle(<New pageshift={
-                    callWalkpath
+                    callrobot
                 } />)
             }
             else if (idx=='search'){
