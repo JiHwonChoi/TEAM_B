@@ -12,7 +12,8 @@ function Nowcalling(props) {
         socket.emit( 'robot location')
         console.log('!!!request location!!!')
         socket.on('state', (msg) => {
-            if(msg.arrival ==="True"){
+            console.log(msg.arrival)
+            if(msg.arrival){
                 socket.off('state')
                 alert('!도착!')
             }

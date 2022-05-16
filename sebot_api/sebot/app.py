@@ -228,10 +228,12 @@ def robot_location():
     map = cv2.circle(map, (int((50+sebot.x)*10), int((50-sebot.y)*10)), 5, (0, 0, 255), -1)
     map = cv2.imencode('_.jpg', map)[1].tobytes()
     print('hihihihii')
-    socketio.emit('state', {'map': map, 'arrival': sebot.arrival})
 
+    socketio.emit('state', {'map': map, 'arrival': sebot.arrival})
+    
     if sebot.arrival:
         sebot.arrival = False
+    time.sleep(1)
 
 
 if __name__ == "__main__":
