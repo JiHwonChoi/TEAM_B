@@ -123,22 +123,29 @@ def logout():
 # Send Destination
 @app.route("/call_sebot", methods=['POST'])
 def call_sebot():
+    print('call sebot')
     if request.headers["Content-Type"] != "application/json":
         return "INVALID_ACCESS", 406
     
     data = json.loads(request.get_data()) # json error detector needed
 
-    if (not 'start' in data):
+    if (not 'idx' in data):
         return "INVALID_INPUT", 406
 
-    start_point = data['start']
+    idx = data['idx']
 
-    if not type(start_point) is list or len(start_point) != 2 or not type(start_point[0]) is int or not type(start_point[1]) is int:
+    if not type(idx) is int:
         return "INVALID_INPUT", 406
 
     if not sebot.idle:
         return "SEBOT_BUSY", 423
+
+    start_point = [3, 2]
     
+    if idx == 1:
+        start_point = [-9.5, 9.5]
+    
+
 
     ros_request = roslibpy.ServiceRequest({"goal": {
         "header": {"frame_id": "map"},
@@ -146,9 +153,9 @@ def call_sebot():
                 "orientation": {"w": 1}
                 }
     }})
-
+    print('before call')
     result = sebot.goal_srv.call(ros_request)
-    
+    print('after call')
     if result['response']:
         sebot.idle = False
         sebot.arrival = False

@@ -54,6 +54,14 @@ class SeBot:
         
         # Robot Destination Service
         self.goal_srv = roslibpy.Service(self.client, "/goal_sign", "sebot_service/SetGoal")
+        # ros_request = roslibpy.ServiceRequest({"goal": {
+        #             "header": {"frame_id": "map"},
+        #             "pose": {"position": {"x": self.path[self.path_counter][0], "y": self.path[self.path_counter][1]},
+        #                     "orientation": {"w": 1}
+        #                     }
+        #         }})
+        # result = self.goal_srv.call(ros_request)
+        # self.path_counter = (self.path_counter + 1) % (len(self.path))
         # Call Once when Init
 
         rospy.loginfo(f'SEBOT INIT Successfully')
@@ -65,11 +73,11 @@ class SeBot:
         self.client.close()
 
     def get_arrival(self, request, response):
-        response['response'] = False
-
+        response = False
+        
         if request['arrival'] == True:
             self.arrival = True
-            response['response'] = True
+            response = True
 
             if self.idle:
                 ros_request = roslibpy.ServiceRequest({"goal": {
@@ -83,8 +91,8 @@ class SeBot:
                 if result['response']:
                     self.path_counter = (self.path_counter + 1) % (len(self.path))
 
-                response['response'] = response['response'] & result['response']
-
+                response = response & result['response']
+        print(response)
         return response
 
 
@@ -127,4 +135,4 @@ class SeBot:
         self.qy = msg["pose"]["pose"]["orientation"]["y"]
         self.qz = msg["pose"]["pose"]["orientation"]["z"]
         self.qw = msg["pose"]["pose"]["orientation"]["w"]
-        time.sleep(1)
+        # print(self.x, self.y, self.z)
