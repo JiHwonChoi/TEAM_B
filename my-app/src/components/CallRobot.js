@@ -4,7 +4,7 @@ import './walking.css';
 import { SocketContext } from "../service/socket";
 
 
-function Walking (props) {
+function Callrobot (props) {
 
         const[left,setLeft] = useState(0)
         const[location, setLocation] = useState('000호')
@@ -62,21 +62,21 @@ function Walking (props) {
 
        function gowalk(){
 
-        fetch("http://127.0.0.1:5000/call_sebot",{
-            method: "POST",
-            headers:{
-                "Content-Type":"application/json",
-                'Access-Control-Allow-Origin': '*',
-            },
-            body: JSON.stringify({idx: 1})
-        }).then((res)=>{
-            console.log(res)
-        })
-        console.log('fetch')
+        // fetch("http://127.0.0.1:5000/call_sebot",{
+        //     method: "POST",
+        //     headers:{
+        //         "Content-Type":"application/json",
+        //         'Access-Control-Allow-Origin': '*',
+        //     },
+        //     body: JSON.stringify({idx: 1})
+        // }).then((res)=>{
+        //     console.log(res)
+        // })
+        // console.log('fetch')
 
         // console.log('gowalk')
         // socket.emit('walksign', {'roomidx': roomidx})
-        props.pageshift()
+        props.gocall()
 
        }
 
@@ -85,6 +85,7 @@ function Walking (props) {
 
         return(
             <div>
+                call robot page
 			<div className='title'>
                 <div className='big_title'>로봇 호출 위치 선택</div>
                 <div className='small_title'>{location}</div>
@@ -113,4 +114,4 @@ function Walking (props) {
     }
 
 
-export default Walking;
+export default Callrobot;

@@ -12,7 +12,7 @@ function New(props) {
         socket.emit( 'robot location')
         console.log('!!!request location!!!')
         socket.on('state', (msg) => {
-            if(msg.arrival === 'True'){
+            if(msg.arrival ==="True"){
                 socket.off('state')
             }
             else{
@@ -36,14 +36,14 @@ function New(props) {
         var imageUrl = urlCreator.createObjectURL( blob );
         console.log('imageurl here:', imageUrl)
         setImgurl(imageUrl)
-        socket.emit( 'robot location')
     }
 
     return (
         <div>
+            course selection page
             <div className='title'>
-                <div className='big_title'>로봇 호출</div>
-                <div className='small_title'>호출할 로봇을 지정후 기능을 선택해주세요</div>
+                <div className='big_title'>코스 선택</div>
+                <div className='small_title'>산책할 코스를 선택해주세요</div>
             </div>
             <div className='search_tab'>
                     1층 1호기
