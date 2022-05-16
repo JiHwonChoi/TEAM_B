@@ -12,7 +12,7 @@ function New(props) {
         socket.emit( 'robot location')
         console.log('!!!request location!!!')
         socket.on('state', (msg) => {
-            if(msg.arrival ===True){
+            if(msg.arrival ==="True"){
                 socket.off('state')
             }
             else{
