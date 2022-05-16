@@ -6,6 +6,11 @@ import time
 from flask import Flask, request, session, render_template, redirect, url_for, Response, stream_with_context, jsonify
 from flask_socketio import SocketIO
 from flask_cors import cross_origin, CORS
+import argparse
+import roslibpy
+import json
+from db_utils import Database
+from ros_utils import SeBot
 # from PIL import Image
 # from ros_utils import SeBot
 # from db_utils import Database
@@ -120,6 +125,7 @@ def logout():
 
 # Send Destination
 @app.route("/call_sebot", methods=['POST'])
+@cross_origin()
 def call_sebot():
     print('call sebot')
     if request.headers["Content-Type"] != "application/json":
@@ -221,7 +227,7 @@ def robot_location():
     map = db.map.copy()
     map = cv2.circle(map, (int((50+sebot.x)*10), int((50-sebot.y)*10)), 5, (0, 0, 255), -1)
     map = cv2.imencode('_.jpg', map)[1].tobytes()
-
+    print('hihihihii')
     socketio.emit('state', {'map': map, 'arrival': sebot.arrival})
 
     if sebot.arrival:

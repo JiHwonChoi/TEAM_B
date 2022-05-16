@@ -31,8 +31,9 @@ function New(props) {
         var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
         var urlCreator = window.URL || window.webkitURL;
         var imageUrl = urlCreator.createObjectURL( blob );
-        // console.log('imageurl here:', imageUrl)
+        console.log('imageurl here:', imageUrl)
         setImgurl(imageUrl)
+        socket.emit('robot location')
     }
 
     return (
