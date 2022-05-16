@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
 
-import os
-import sys
 import psycopg2
-
+import cv2
 from config import DB
 from cloud_utils import Cloud
 
@@ -18,6 +16,8 @@ class Database:
         self.cursor = self.db.cursor()
 
         self.cloud = Cloud()
+        self.map = self.get_map()
+
 
     def __del__(self):
         self.db.close()
@@ -36,4 +36,17 @@ class Database:
 
     def image_upload(self, image):
         res = self.cloud.upload_image(image)
-        return res
+
+        if res[1]:
+            query = 'INSERT INTO emergency("file_name") VALUES(%s)'
+            self.execute(query, res[0])
+        return res[1]
+
+    def get_map(self):
+        img = cv2.imread('map.pgm')
+        return img
+
+if __name__=="__main__":
+    db = Database()
+    cv2.imshow("map test", db.map)
+    cv2.waitKey(0)
