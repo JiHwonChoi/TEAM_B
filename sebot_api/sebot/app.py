@@ -14,6 +14,7 @@ from ros_utils import SeBot
 from db_utils import Database
 
 app = Flask(__name__)
+app.host = '0.0.0.0'
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 @app.route('/main')
@@ -141,7 +142,7 @@ def call_sebot():
         return "SEBOT_BUSY", 423
 
     start_point = [3, 2]
-    
+
     if idx == 1:
         start_point = [-9.5, 9.5]
     
