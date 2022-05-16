@@ -109,7 +109,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES sebot_service
-  CATKIN_DEPENDS geometry_msgs nav_msgs rospy sensor_msgs message_runtime
+  CATKIN_DEPENDS geometry_msgs nav_msgs rospy sensor_msgs message_runtime std_msgs
 #  DEPENDS system_lib
 )
 

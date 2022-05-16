@@ -73,27 +73,25 @@ class SeBot:
         self.client.close()
 
     def get_arrival(self, request, response):
-        response = False
-        
         if request['arrival'] == True:
             self.arrival = True
-            response = True
+            response['response'] = True
 
-            if self.idle:
-                ros_request = roslibpy.ServiceRequest({"goal": {
-                    "header": {"frame_id": "map"},
-                    "pose": {"position": {"x": self.path[self.path_counter][0], "y": self.path[self.path_counter][1]},
-                            "orientation": {"w": 1}
-                            }
-                }})
-                result = self.goal_srv.call(ros_request)
+        #     # if self.idle:
+        #     #     ros_request = roslibpy.ServiceRequest({"goal": {
+        #     #         "header": {"frame_id": "map"},
+        #     #         "pose": {"position": {"x": self.path[self.path_counter][0], "y": self.path[self.path_counter][1]},
+        #     #                 "orientation": {"w": 1}
+        #     #                 }
+        #     #     }})
+        #     #     result = self.goal_srv.call(ros_request)
 
-                if result['response']:
-                    self.path_counter = (self.path_counter + 1) % (len(self.path))
+        #     #     if result['response']:
+        #     #         self.path_counter = (self.path_counter + 1) % (len(self.path))
 
-                response = response & result['response']
-        print(response)
-        return response
+        #     #     response = response & result['response']
+        # print(response)
+        return True
 
 
     def upload_image(self, request, response):
@@ -101,7 +99,7 @@ class SeBot:
         image_bytes = base64.b64decode(base64_bytes)
         res = self.db.image_upload(image_bytes)
         response['emergency'] = res
-        return response
+        return True
 
 
     def get_closest(self):
