@@ -57,13 +57,19 @@ function Start (props) {
 
         function callWalkpath (){
             setArticle(<Walking pageshift={
-                callNowcalling
+                callNewpage
             }></Walking>)
         }
 
         function callNowcalling(){
             console.log('hey')
             setArticle(<Nowcalling></Nowcalling>)
+        }
+
+        function callNewpage(){
+            setArticle(<New pageshift={
+                callWalkpath
+            } />)
         }
 
         function nav_page_change(idx){

@@ -12,13 +12,16 @@ function New(props) {
         socket.emit( 'robot location')
         console.log('!!!request location!!!')
         socket.on('state', (msg) => {
-            handlestate(msg)
+            if(msg.arrival ===True){
+                socket.off('state')
+            }
+            else{
+                handlestate(msg)
+            }
         })
 
         return () => {
-            socket.off('state', (msg) => {
-                handlestate(msg)
-            })
+            socket.off('state')
            
         }
     }, [])
@@ -26,14 +29,13 @@ function New(props) {
     
 
     const handlestate  = (msg) => {
-        console.log(msg)
+        // console.log(msg)
         var arrayBufferView = new Uint8Array( msg.map );
         var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
         var urlCreator = window.URL || window.webkitURL;
         var imageUrl = urlCreator.createObjectURL( blob );
         console.log('imageurl here:', imageUrl)
         setImgurl(imageUrl)
-        socket.emit('robot location')
     }
 
     return (
