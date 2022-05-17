@@ -39,11 +39,6 @@ class Register extends React.Component {
         return post(url, formData, config);
     }
 
-    // goLogin = () => {
-    //     let navigate = useNavigate()
-        
-    // }
-
     handleFormSubmit = (event) => {
         console.log(this.props.navigation)
         event.preventDefault();

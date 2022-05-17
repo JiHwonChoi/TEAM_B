@@ -1,13 +1,14 @@
 import React from 'react';
 import {post} from 'axios';
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 axios.defaults.withCredentials = false;
 axios.defaults.baseURL = "localhost:5000";
 
 class Register extends React.Component {
+
     constructor(props){
         super(props)
         this.state = {
@@ -37,18 +38,23 @@ class Register extends React.Component {
         formData.append('regi_number', this.state.regi_number);
         return post(url, formData, config);
     }
-    
+
     handleFormSubmit = (event) => {
-        //let navigate= useNavigate()
+        console.log(this.props.navigation)
         event.preventDefault();
         this.register().then((res)=> {
             console.log(res)
             if (res.status == 200){
-                //navigate('/')
+                console.log('hello')
+                this.props.navigate('/')
+                
+                
             }
         })
        
     }
+
+    
 
     handleValueChange = (event) => {
         let nextState = {};

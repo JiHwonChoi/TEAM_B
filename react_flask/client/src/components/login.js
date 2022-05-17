@@ -41,10 +41,6 @@ class Login extends React.Component {
                     this.props.onSuccess_user()
                 }
             }
-            //console.log(res.data.data);
-            //if(res.data.data == true){
-            //    this.props.onSuccess()
-            
         })
     }
 
