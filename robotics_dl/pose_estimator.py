@@ -88,9 +88,9 @@ class Pose_detector:
 
 
     def _comp_cb(self,data):
-        #rospy.loginfo("RESPONSED")
-        _time_gap = 3 #time which another emergency call happened
-        if self.emergency_flag and not time.time() - self.last_service_time > _time_gap:
+        _time_gap = 3
+        rospy.loginfo(f"Comp_cb {self.emergency_flag} {(time.time() - self.last_service_time > 3)}")
+        if self.emergency_flag and (time.time() - self.last_service_time > _time_gap):
             rospy.loginfo("REUESTING")
             res = self.emergency_client(data)
             rospy.loginfo("SERVICE SUCCESS? : ",res.success)
@@ -111,6 +111,10 @@ class Pose_detector:
         _safe = True
         #Todo:insert no detection sign
         try:
+            if datum.poseKeypoints is None:
+                #rospy.loginfo("No Human")
+                self.emergency_flag = True
+                return
             for person in datum.poseKeypoints:
                #print("person detected")
                if person[1][1]==0:

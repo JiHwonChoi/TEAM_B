@@ -60,6 +60,7 @@ class Human_follower(DetectorManager):
         self.last_service_time = 0
     def _comp_cb(self, data):
         self.comp_data = data
+        #rospy.loginfo(self.no_human_flag)
         if self.no_human_flag and time.time() - self.last_service_time > 3:
             rospy.loginfo("REUESTING")
             res = self.emergency_client(self.comp_data)
@@ -70,8 +71,9 @@ class Human_follower(DetectorManager):
         self.vis_img = self.bridge.imgmsg_to_cv2(data, "8UC3")
         #self.vis_img_for_pub = self.vis_img
         #rospy.loginfo(type(self.vis_img_for_pub))
-        cv2.imshow('track_result', self.vis_img_for_pub)
-        cv2.waitKey(25)
+        try:
+            cv2.imshow('track_result', self.vis_img_for_pub)
+            cv2.waitKey(25)
     def __get_human_depth(self,bbox):
         rospy.loginfo(len(self.detection_results.bounding_boxes))
 
