@@ -72,6 +72,7 @@ class Pose_detector:
         self.cnt=0
         self.emergency_flag = False
         self._vis = vis
+        self.last_service_time = 0
         rospy.wait_for_service(emergency_srv)
         print("Service detected")
         self.emergency_client = rospy.ServiceProxy(emergency_srv,GetImage)
@@ -88,10 +89,14 @@ class Pose_detector:
 
     def _comp_cb(self,data):
         #rospy.loginfo("RESPONSED")
-        if self.emergency_flag:
-            rospy.loginfo("RESPONSED")
+        _time_gap = 3 #time which another emergency call happened
+        if self.emergency_flag and not time.time() - self.last_service_time > _time_gap:
+            rospy.loginfo("REUESTING")
             res = self.emergency_client(data)
             rospy.loginfo("SERVICE SUCCESS? : ",res.success)
+            if res.success:
+                self.last_service_time = time.time()
+
 
     def __process_pose(self,imageToProcess):
         datum = op.Datum()

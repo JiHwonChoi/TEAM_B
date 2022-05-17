@@ -11,6 +11,8 @@ from visualization_msgs.msg import Marker, MarkerArray
 from nav_msgs.msg import Odometry
 from std_msgs.msg import ColorRGBA
 from cv_bridge import CvBridge
+from sebot_service.srv import GetImage
+from sensor_msgs.msg import Image, CompressedImage
 import cv2
 import numpy as np
 threshold_dist = 3.0
@@ -18,6 +20,8 @@ stop_threshold = 5.0
 no_human_endurance_time = 6.0 # time to stop if there's no human
 WIDTH = 960
 HEIGHT = 540
+emergency_srv = '/emergency_sign'
+image_topic = '/rear_camera/rgb/image_raw'
 class Human_follower(DetectorManager):
     def __init__(self, follower_mode=False,speed = 0.5, theta = 0.2):
         super().__init__(False)
@@ -37,7 +41,9 @@ class Human_follower(DetectorManager):
         self.vel_pub = rospy.Publisher('/cmd_vel',Twist,queue_size=1)
         rospy.Subscriber('/sort_track_deep', IntList, self._track_cb,queue_size=1)
         rospy.Subscriber('/sort_vis',Image,self._vis_cb,queue_size=10)
+        self.track_pub = rospy.Publisher('/track_pub',Image,queue_size=1)
         self.actor_idx = None
+        self.comp_img_sub = rospy.Subscriber(image_topic + '/compressed', CompressedImage, self._comp_cb)
         self.actor_depth = float('inf')
         self.endurance_time = time.time()
         self.last_data = [0,0,0,0,0,0]
@@ -46,8 +52,26 @@ class Human_follower(DetectorManager):
         self.initial_endurance = time.time()
         self.linear = Vector3(0,0,0)
         self.angular = Vector3(0,0,0)
+        self.vis_img_for_pub = None
+        rospy.wait_for_service(emergency_srv)
+        print("Service detected")
+        self.emergency_client = rospy.ServiceProxy(emergency_srv, GetImage)
+        self.comp_data = None
+        self.last_service_time = 0
+    def _comp_cb(self, data):
+        self.comp_data = data
+        if self.no_human_flag and time.time() - self.last_service_time > 3:
+            rospy.loginfo("REUESTING")
+            res = self.emergency_client(self.comp_data)
+            rospy.loginfo("SERVICE SUCCESS? : ", res.success)
+            if res.success:
+                self.last_service_time = time.time()
     def _vis_cb(self,data):
         self.vis_img = self.bridge.imgmsg_to_cv2(data, "8UC3")
+        #self.vis_img_for_pub = self.vis_img
+        #rospy.loginfo(type(self.vis_img_for_pub))
+        cv2.imshow('track_result', self.vis_img_for_pub)
+        cv2.waitKey(25)
     def __get_human_depth(self,bbox):
         rospy.loginfo(len(self.detection_results.bounding_boxes))
 
@@ -79,9 +103,18 @@ class Human_follower(DetectorManager):
 
                 self.last_data = data.data
             elif not self.no_human_flag:
+                # cv2.putText(vis_img, f"Target_actor: {self.actor_idx}, Depth:{np.round(self.actor_depth, 3)}",
+                #             (50, HEIGHT - 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
+                cv2.putText(vis_img, f"Target_actor: {self.actor_idx}",
+                                         (50, HEIGHT - 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
+                # print("vis_img",vis_img)
+                rospy.loginfo(type(vis_img))
+                self.track_pub.publish(self.bridge.cv2_to_imgmsg(vis_img,"bgr8"))
+                self.vis_img_for_pub = self.vis_img
+
                 pass
             else:
-                if depth < threshold_dist:
+                if depth < threshold_dist and depth != -1 and depth!= 0:
                     #if human is in the center and close enough
                     if self.actor_idx is None:
                         self.actor_idx = int(idx)
@@ -99,10 +132,13 @@ class Human_follower(DetectorManager):
                     _word = "MOVE TO the CENTER AND COME NEARBY"
                     #rospy.loginfo("MOVE TO the CENTER AND COME NEARBY")
                     cv2.putText(vis_img, _word, (50, 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
-        cv2.putText(vis_img,f"Target_actor: {self.actor_idx}, Depth:{self.actor_depth}",(50,HEIGHT-50),font,fontScale,(255,255,0),thickness,cv2.LINE_AA)
+        #cv2.putText(vis_img,f"Target_actor: {self.actor_idx}, Depth:{np.round(self.actor_depth,3w)}",(50,HEIGHT-50),font,fontScale,(255,255,0),thickness,cv2.LINE_AA)
+        cv2.putText(vis_img, f"Target_actor: {self.actor_idx}",
+                    (50, HEIGHT - 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
         #print("vis_img",vis_img)
-        cv2.imshow('track_result',vis_img)
-        cv2.waitKey(25)
+        self.track_pub.publish(self.bridge.cv2_to_imgmsg(vis_img, "bgr8"))
+        self.vis_img_for_pub = self.vis_img
+
 
     def _vel_cb(self,data):
         self.linear = data.linear

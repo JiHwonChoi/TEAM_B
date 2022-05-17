@@ -30,7 +30,7 @@ class Nav_goal_control:
         rospy.loginfo(req)
         x = req.goal.pose.position.x
         y = req.goal.pose.position.y
-
+        #self.dest = np.array([x,y])
         self.make_goal_pos(x,y)
         return SetGoalResponse(True)
 
@@ -45,7 +45,8 @@ class Nav_goal_control:
             if goal_dist < self.goal_threshold:
                 rospy.loginfo ("We reach the checkpoint")
                 res = self.arrival_client(True)
-                rospy.loginfo(res.response)
+                print(res)
+                rospy.loginfo(res)
                 if not res.response:
                     rospy.loginfo("Arrival Server returns false... something wrong")
         except:
@@ -55,11 +56,12 @@ class Nav_goal_control:
         self.goal.target_pose.header.stamp = rospy.Time.now()
         self.goal.target_pose.pose.position.x = float(x)
         self.goal.target_pose.pose.position.y = float(y)
+        self.dest = np.array([x,y])
         self.goal.target_pose.pose.orientation.w = 1.0
         rospy.loginfo("Sending goal")
         self.MoveBaseClient.send_goal(self.goal)
         #self.MoveBaseClient.wait_for_result()
-        #print("GOAL RESULT",self.MoveBaseClient.get_result())
+        rospy.loginfo(f"GOAL RESULT {self.MoveBaseClient.get_result()}")
     def _odom_cb(self, data):
         x = data.pose.pose.position.x
         y = data.pose.pose.position.y
@@ -71,7 +73,8 @@ class Nav_goal_control:
         if goal_dist < self.goal_threshold:
             rospy.loginfo("We reach the checkpoint")
             res = self.arrival_client(True)
-            rospy.loginfo(res.response)
+            rospy.loginfo(res)
+
             if not res.response:
                 rospy.loginfo("Arrival Server returns false... something wrong")
 
@@ -79,7 +82,7 @@ class Nav_goal_control:
 if __name__=='__main__':
     rospy.init_node('set_path')
     print("INIT NODE")
-    nav_control = Nav_goal_control(goal_threshold=5,srv_mode=True)
+    nav_control = Nav_goal_control(goal_threshold=1,srv_mode=True)
     #human_follower = Human_follower(False)
     while True:
         #print("ddd")
