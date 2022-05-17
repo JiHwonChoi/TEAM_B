@@ -7,6 +7,7 @@ import Start from './components/Start';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import React , {useEffect} from "react";
+import StartAdmin from './components/Start_admin';
 import Walking from './components/Walking';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { socket, SocketContext } from "./service/socket";
@@ -74,6 +75,7 @@ const App =() => {
           <Route path="/Page1" element={<Page1></Page1>}></Route>
           <Route path="/walking" element={<Walking></Walking>}></Route>
           <Route path="/start" element={<Start />}></Route>
+          <Route path="/admin" element={<StartAdmin />}></Route>
         </Routes>
 
       </BrowserRouter>
