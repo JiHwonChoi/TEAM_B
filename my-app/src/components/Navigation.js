@@ -11,9 +11,9 @@ const Navigation =(props) => {
                     <div className='plus' onClick={()=> props.onChange('plus')} >
                         <div className='plus_icon'></div>  
                     </div>
-                    <div className='search' onClick={()=> props.onChange('search')}>
+                    {/* <div className='search' onClick={()=> props.onChange('search')}>
                         <div className='search_icon'></div>
-                    </div>
+                    </div> */}
                     <div className='home-button' onClick={()=> props.onChange('home_button')}>
                         <div className='home_icon'></div>
                     </div>

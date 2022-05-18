@@ -58,5 +58,22 @@
     z-index: 10000;
 }
 
+.letsgowalk{
+    border: solid black 1px;
+    text-align: center;
+    /* Chips-group3 */
+/* Auto layout */
+display: flex;
+flex-direction: column;
+/* align-items: flex-start; */
+padding: 0px;
+position: absolute;
+height: 70px;
+left: 25px;
+right: 23px;
+top: 600px;
+line-height: 70px;
+}
+
 
 

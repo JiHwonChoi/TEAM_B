@@ -7,9 +7,9 @@ import { SocketContext } from "../service/socket";
 function Callrobot (props) {
 
         const[left,setLeft] = useState(0)
-        const[location, setLocation] = useState('000호')
-        const[xclick, setx] = useState(50)
-        const[yclick, sety] = useState(50)
+        const[location, setLocation] = useState('101호 로 호출하기')
+        const[xclick, setx] = useState(99)
+        const[yclick, sety] = useState(71)
         const[roomidx, setroomidx] = useState(0)
         const socket = useContext(SocketContext);
 
@@ -54,6 +54,34 @@ function Callrobot (props) {
                setLocation('101호 로 호출하기')
                setroomidx(1)
            }
+           else if(187<x && x<220 && 58<y && y<85){
+            setLocation('102호 로 호출하기')
+            setroomidx(1)
+            }
+            else if(187<x && x<215 && 130<y && y<280){
+                setLocation('103호 로 호출하기')
+                setroomidx(1)
+                }
+            else if(134<x && x<217 && 295<y && y<330){
+                setLocation('104호 로 호출하기')
+                setroomidx(1)
+                }
+            else if(80<x && x<114 && 290<y && y<329){
+                setLocation('105호 로 호출하기')
+                setroomidx(1)
+                }
+            else if(80<x && x<115 && 213<y && y<282){
+                setLocation('106호 로 호출하기')
+                setroomidx(1)
+                }
+            else if(80<x && x<115 && 136<y && y<210){
+                setLocation('107호 로 호출하기')
+                setroomidx(1)
+                }
+            else if(124<x && x<173 && 83<y && y<137){
+                setLocation('로비로 호출하기')
+                setroomidx(1)
+                }
            else{
                setLocation('이 위치로는 호출할 수 없습니다')
            }
@@ -99,14 +127,15 @@ function Callrobot (props) {
                 </div>
                 
             </div>
-            <div className='map_navigate_wrapper'>
+            {/* <div className='map_navigate_wrapper'>
                 <div className='buttonWrapper' >
                     <div onClick={goleft}> &lt; 이전</div>
                     <div onClick={goright}> 다음 &gt; </div>
                 </div>
-            </div>
+            </div> */}
             <div> clicked! x:{xclick} y:{yclick}</div>
-            <div className='to_my_location' onClick={gowalk}>산책 시작하기</div>
+            <div className='letsgowalk' onClick={gowalk}>
+                <span>산책 시작하기</span></div>
             <div className='take_stroll'></div>
 		    </div>
 
