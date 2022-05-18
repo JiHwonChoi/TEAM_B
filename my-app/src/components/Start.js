@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react'
 import './start.css'
-import New from './Courseselection';
+import CourseSelection from './Courseselection';
 import Homelogo from './Homelogo';
 import Search from './Search';
 import Home from './Home';
@@ -56,6 +56,10 @@ function Start (props) {
         //     setImgurl(imageUrl)
         // }
 
+        function callWalkpage (){
+            setArticle(<Walking />)
+        }
+
         function callrobot (){
             setArticle(<Callrobot gocall={
                 callNowcalling
@@ -64,18 +68,18 @@ function Start (props) {
 
         function callNowcalling(){
             console.log('hey')
-            setArticle(<Nowcalling></Nowcalling>)
+            setArticle(<Nowcalling gowalk={callWalkpage}></Nowcalling>)
         }
 
         function callNewpage(){
-            setArticle(<New pageshift={
+            setArticle(<CourseSelection pageshift={
                 callrobot
             } />)
         }
 
         function nav_page_change(idx){
             if(idx=='plus'){
-                setArticle(<New pageshift={
+                setArticle(<CourseSelection pageshift={
                     callrobot
                 } />)
             }

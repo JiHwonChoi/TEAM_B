@@ -193,3 +193,24 @@ border-radius: 8px; */
     /* overflow: hidden; */
 
 }
+
+.robot_current_walking{
+    border: solid black 1px;
+    /* Content Blocks */
+
+
+/* Auto layout */
+
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+
+position: absolute;
+width: 327px;
+height: 356px;
+left: 25px;
+top: 210px;
+
+overflow: hidden;
+}
