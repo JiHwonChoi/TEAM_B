@@ -102,8 +102,8 @@ function Callrobot (props) {
         })
         console.log('fetch')
 
-        // console.log('gowalk')
-        // socket.emit('walksign', {'roomidx': roomidx})
+        console.log('gowalk')
+        socket.emit('walksign', {'roomidx': roomidx})
         props.gocall()
 
        }
@@ -113,7 +113,7 @@ function Callrobot (props) {
 
         return(
             <div>
-                call robot page
+                callrobot.js
 			<div className='title'>
                 <div className='big_title'>로봇 호출 위치 선택</div>
                 <div className='small_title'>{location}</div>
@@ -136,7 +136,6 @@ function Callrobot (props) {
             <div> clicked! x:{xclick} y:{yclick}</div>
             <div className='letsgowalk' onClick={gowalk}>
                 <span>산책 시작하기</span></div>
-            <div className='take_stroll'></div>
 		    </div>
 
         );

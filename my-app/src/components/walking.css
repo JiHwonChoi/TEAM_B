@@ -1,11 +1,17 @@
 .slidewrap{
     
     overflow:hidden;
-    position: absolute;
+    /* position: absolute;
     width: 327px;
     height: 400px;
     left: 25px;
-    top: 177px;
+    top: 177px; */
+
+    position: absolute;
+    width: 327px;
+    height: 436px;
+    left: 25px;
+    top: 203px;
     border: solid black 1px;
 }
 
@@ -22,7 +28,7 @@
 .slide img{
     position: static;
     width: 327px;
-    height: 400px;
+    height: 436px;
     left: 0px;
     object-fit: cover;
 
@@ -68,11 +74,11 @@ flex-direction: column;
 /* align-items: flex-start; */
 padding: 0px;
 position: absolute;
-height: 70px;
+height: 50px;
 left: 25px;
 right: 23px;
-top: 600px;
-line-height: 70px;
+top: 662px;
+line-height: 50px;
 }
 
 

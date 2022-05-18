@@ -3,7 +3,7 @@ import './new.css'
 import { SocketContext } from "../service/socket";
 
 
-function New(props) {
+function CourseSelection(props) {
 
     const [imgurl, setImgurl] = useState('')
     const socket = useContext(SocketContext);
@@ -50,10 +50,10 @@ function New(props) {
             </div>
             <div className='detail' onClick={props.pageshift} >산책하기</div>
             <div className='to_my_location'>내 위치로 부르기</div>
-            <div className='take_stroll'></div>
+            
 
         </div>
     )
 }
 
-export default New;
+export default CourseSelection;
