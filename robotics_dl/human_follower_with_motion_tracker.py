@@ -23,10 +23,10 @@ HEIGHT = 540
 emergency_srv = '/emergency_sign'
 image_topic = '/rear_camera/rgb/image_raw'
 class Human_follower(DetectorManager):
-    def __init__(self, follower_mode=False,speed = 0.5, theta = 0.2):
+    def __init__(self, follower_mode=False,speed = 0.5, srv_mode = False):
         super().__init__(False)
         self.flag=follower_mode
-        self.no_human_flag = False
+        self.no_human_flag = True
         self.cmd_vel = rospy.Subscriber('/cmd_vel_raw',Twist,self._vel_cb,queue_size=1)
         self.max_vel_x = speed
         self.max_vel_y = speed
@@ -43,7 +43,7 @@ class Human_follower(DetectorManager):
         rospy.Subscriber('/sort_vis',Image,self._vis_cb,queue_size=10)
         self.track_pub = rospy.Publisher('/track_pub',Image,queue_size=1)
         self.actor_idx = None
-        self.comp_img_sub = rospy.Subscriber(image_topic + '/compressed', CompressedImage, self._comp_cb)
+
         self.actor_depth = float('inf')
         self.endurance_time = time.time()
         self.last_data = [0,0,0,0,0,0]
@@ -53,15 +53,18 @@ class Human_follower(DetectorManager):
         self.linear = Vector3(0,0,0)
         self.angular = Vector3(0,0,0)
         self.vis_img_for_pub = None
-        rospy.wait_for_service(emergency_srv)
-        print("Service detected")
-        self.emergency_client = rospy.ServiceProxy(emergency_srv, GetImage)
-        self.comp_data = None
         self.last_service_time = 0
+        if srv_mode:
+            self.comp_img_sub = rospy.Subscriber(image_topic + '/compressed', CompressedImage, self._comp_cb)
+            rospy.wait_for_service(emergency_srv)
+            print("Service detected")
+            self.emergency_client = rospy.ServiceProxy(emergency_srv, GetImage)
+            self.comp_data = None
+
     def _comp_cb(self, data):
         self.comp_data = data
         #rospy.loginfo(self.no_human_flag)
-        if self.no_human_flag and time.time() - self.last_service_time > 3:
+        if self.no_human_flag and (time.time() - self.last_service_time > 3):
             rospy.loginfo("REUESTING")
             res = self.emergency_client(self.comp_data)
             rospy.loginfo("SERVICE SUCCESS? : ", res.success)
@@ -71,11 +74,19 @@ class Human_follower(DetectorManager):
         self.vis_img = self.bridge.imgmsg_to_cv2(data, "8UC3")
         #self.vis_img_for_pub = self.vis_img
         #rospy.loginfo(type(self.vis_img_for_pub))
-        try:
-            cv2.imshow('track_result', self.vis_img_for_pub)
-            cv2.waitKey(25)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        fontScale = 1.0
+        thickness = 3
+        cv2.putText(self.vis_img, f"Target_actor: {self.actor_idx}",
+                    (50, HEIGHT - 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
+        if self.actor_idx is None:
+            cv2.putText(self.vis_img, "Move toward to identify you.", (50, 50), font, fontScale, (255, 255, 0),
+                        thickness, cv2.LINE_AA)
+        cv2.imshow("track_result",self.vis_img)
+        #print(self.vis_img)
+        cv2.waitKey(3)
     def __get_human_depth(self,bbox):
-        rospy.loginfo(len(self.detection_results.bounding_boxes))
+        #rospy.loginfo(len(self.detection_results.bounding_boxes))
 
         for detection_result in self.detection_results.bounding_boxes:
             #rospy.loginfo(f"detection_result {np.abs(int(detection_result.xmin - bbox[0])) <= 2 and np.abs(int(detection_result.ymax - bbox[3]))}")
@@ -93,7 +104,7 @@ class Human_follower(DetectorManager):
         #
         if len(data.data)==0 or self.last_data == data.data:
             #rospy.loginfo("No Human found...")
-            cv2.putText(vis_img,"Move toward to identify you.",(50,50),font,fontScale,(255,255,0),thickness,cv2.LINE_AA)
+            #cv2.putText(self.vis_img,"Move toward to identify you.",(50,50),font,fontScale,(255,255,0),thickness,cv2.LINE_AA)
             rospy.sleep(.5)
         else:
             #rospy.loginfo("Human Recognized")
@@ -107,16 +118,16 @@ class Human_follower(DetectorManager):
             elif not self.no_human_flag:
                 # cv2.putText(vis_img, f"Target_actor: {self.actor_idx}, Depth:{np.round(self.actor_depth, 3)}",
                 #             (50, HEIGHT - 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
-                cv2.putText(vis_img, f"Target_actor: {self.actor_idx}",
-                                         (50, HEIGHT - 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
+                #cv2.putText(vis_img, f"Target_actor: {self.actor_idx}",
+                #                         (50, HEIGHT - 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
                 # print("vis_img",vis_img)
-                rospy.loginfo(type(vis_img))
+                #rospy.loginfo(type(vis_img))
                 self.track_pub.publish(self.bridge.cv2_to_imgmsg(vis_img,"bgr8"))
                 self.vis_img_for_pub = self.vis_img
 
                 pass
             else:
-                if depth < threshold_dist and depth != -1 and depth!= 0:
+                if depth is not None and depth < threshold_dist and depth != -1 and depth!= 0:
                     #if human is in the center and close enough
                     if self.actor_idx is None:
                         self.actor_idx = int(idx)
@@ -125,7 +136,7 @@ class Human_follower(DetectorManager):
                     elif self.actor_idx != int(idx) and depth < self.actor_depth:
                         _word = "THERE MUST BE ONLY ONE PERSON toward camera for identification"
                         rospy.loginfo(_word)
-                        cv2.putText(vis_img, _word, (50, 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
+                        # cv2.putText(self.vis_img, _word, (50, 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
                         self.actor_idx = int(idx)
                         self.actor_depth = depth
                     else:
@@ -133,13 +144,11 @@ class Human_follower(DetectorManager):
                 else:
                     _word = "MOVE TO the CENTER AND COME NEARBY"
                     #rospy.loginfo("MOVE TO the CENTER AND COME NEARBY")
-                    cv2.putText(vis_img, _word, (50, 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
+                    # cv2.putText(self.vis_img, _word, (50, 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
         #cv2.putText(vis_img,f"Target_actor: {self.actor_idx}, Depth:{np.round(self.actor_depth,3w)}",(50,HEIGHT-50),font,fontScale,(255,255,0),thickness,cv2.LINE_AA)
-        cv2.putText(vis_img, f"Target_actor: {self.actor_idx}",
-                    (50, HEIGHT - 50), font, fontScale, (255, 255, 0), thickness, cv2.LINE_AA)
         #print("vis_img",vis_img)
-        self.track_pub.publish(self.bridge.cv2_to_imgmsg(vis_img, "bgr8"))
-        self.vis_img_for_pub = self.vis_img
+        #self.track_pub.publish(self.bridge.cv2_to_imgmsg(vis_img, "bgr8"))
+        #self.vis_img_for_pub = self.vis_img
 
 
     def _vel_cb(self,data):
@@ -179,9 +188,9 @@ class Human_follower(DetectorManager):
             _stop = Twist()
             _stop.angular.z = 0
             self.vel_pub.publish(_stop)
-            print("We need to identify you. Please move toward the camera")
+            rospy.loginfo("We need to identify you. Please move toward the camera")
             rospy.sleep(5)
-            print("SCAN FINISHED, actor idx",self.actor_idx)
+            rospy.loginfo(f"SCAN FINISHED, actor idx {self.actor_idx}")
             if self.actor_idx is not None:
                 self.no_human_flag = False
                 self.endurance_time = time.time()
@@ -227,7 +236,7 @@ class Human_follower(DetectorManager):
 
 if __name__ == '__main__':
     rospy.init_node("human_follower")
-    human_follower=Human_follower(False)
+    human_follower=Human_follower(True)
     while True:
         human_follower.modify_speed()
         rospy.sleep(.1)
