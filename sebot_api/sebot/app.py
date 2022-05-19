@@ -3,7 +3,7 @@
 
 import cv2
 import time
-from flask import Flask, request, session, render_template, redirect, url_for, Response, stream_with_context, jsonify
+from flask import Flask, request, session, render_template, redirect, url_for, jsonify
 from flask_socketio import SocketIO
 from flask_cors import cross_origin, CORS
 import argparse
@@ -11,9 +11,8 @@ import roslibpy
 import json
 from db_utils import Database
 from ros_utils import SeBot
-# from PIL import Image
-# from ros_utils import SeBot
-# from db_utils import Database
+from ros_utils import SeBot
+from db_utils import Database
 
 app = Flask(__name__)
 app.host = '0.0.0.0'
@@ -228,7 +227,10 @@ def get_image_list():
 def get_image():
     file_name = request.json['file_name']
     url = db.cloud.get_image(file_name)
-    return jsonify(url)
+    res = dict()
+    res['url'] = url
+    res['odom'] = [10,10]
+    return jsonify(res)
 
 
 # Socket
@@ -252,7 +254,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     db = Database()
-    sebot = SeBot(db, args.robot_ip)
+    sebot = SeBot(db, args.robot_ip, socketio)
 
     app.secret_key = '20200601'
     # app.debug = True

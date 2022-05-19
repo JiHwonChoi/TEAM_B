@@ -7,12 +7,13 @@ import base64
 import time
 
 class SeBot:
-    def __init__(self, db, robot_ip):
+    def __init__(self, db, robot_ip, socket):
         #Init ros web socket
         self.client = roslibpy.Ros(host=robot_ip, port=9090)
         self.client.run()
 
         self.db = db
+        self.socket = socket
 
         # robot pose
         self.x = None
@@ -99,6 +100,7 @@ class SeBot:
         image_bytes = base64.b64decode(base64_bytes)
         res = self.db.image_upload(image_bytes)
         response['emergency'] = res
+        self.socket.emit('emergency', {'emergency': True})
         return True
 
 
