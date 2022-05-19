@@ -2,23 +2,37 @@
 .navigation{
     position:absolute;
     bottom: 0px;
+    
+
 }
 
 .tabbar{
     position: absolute;
-width: 375px;
-height: 83px;
-left: 0px;
-bottom: 0px;
-border: 1px solid black;
+    left: 0px;
+    bottom: 0px;
+
+    width: 375px;
+    height: 83px;
+    border: 1px solid black;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.tabbar div{
+    top:10px;
 }
 
 .plus {
-    position: absolute;
+    /* position: absolute;
     left: 150px;
-    right: 190px;
+    right: 190px; */
     top: 10.84%;
     bottom: 40.96%;
+    width: 40px;
+    height: 40px;
     /* border: 1px solid black; */
 }
 .plus_icon{
@@ -27,28 +41,17 @@ border: 1px solid black;
     height: 40px;
     background:no-repeat center/120% url(./image/plus.png);
 }
-.search{
-    position: absolute;
-left: 21.87%;
-right: 67.47%;
-top: 10.84%;
-bottom: 40.96%;
-}
 
-.search_icon{
-
-    width: 40px;
-    height: 40px;
-    background:no-repeat center/100% url(./image/search.jpg);
-}
 
 .home-button{
 /* Rectangle */
-position: absolute;
+/* position: absolute;
 left: 20px;
 right: 260px;
 top: 10.84%;
-bottom: 40.96%;
+bottom: 40.96%; */
+width: 80px;
+height: 40px;
 
 background: #8DC63F;
 border-radius: 20px;
@@ -69,11 +72,13 @@ border-radius: 20px;
 /* 40 / Toolbar / bell */
 
 
-position: absolute;
+/* position: absolute;
 left: 232px;
 right: 275px;
 top: 10.84%;
-bottom: 40.96%;
+bottom: 40.96%; */
+width: 40px;
+    height: 40px;
 
 }
 
@@ -88,11 +93,13 @@ bottom: 40.96%;
 /* 40 / Toolbar / bell */
 
 
-position: absolute;
+/* position: absolute;
 left: 310px;
 right: 350px;
 top: 10.84%;
-bottom: 40.96%;
+bottom: 40.96%; */
+width: 40px;
+    height: 40px;
 }
 
 .profile_icon{
