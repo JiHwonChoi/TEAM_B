@@ -24,7 +24,7 @@ function LoginPage(props) {
 
     }}/>)
     return (
-        <div className='loginPage'>
+        <div className='home-background'>
             {article}
         </div>
     )

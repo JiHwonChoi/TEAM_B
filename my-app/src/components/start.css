@@ -53,3 +53,17 @@ background:no-repeat center/100% url(./image/캐릭터.png);
     border: 1px solid black;
     vertical-align: center;
 }
+
+.grid_login{
+    display: grid;
+    grid-template-rows: 200px 30px;
+
+}
+.login_button{
+ margin-left: 10px;
+ margin-right: 10px;
+}
+.button_register{
+    margin-left: 10px;
+    margin-right: 10px;
+}

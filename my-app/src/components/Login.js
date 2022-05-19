@@ -51,17 +51,25 @@ class Login extends React.Component {
     }
     render () {
         return (
-            <div>
+            <div className='grid_login'>
             <form onSubmit={this.handleFormSubmit}>
+                
                 <h1>로그인</h1>
-                <label>아이디</label>
+                <div>
+                <label>아이디 </label>
                 <input type="text" name="id" value={this.state.id} onChange={this.handleValueChange}/>
-                <label>패스워드</label>
+                </div>
+
+                <div>
+                <label>패스워드 </label>
                 <input type="password" name="pw" value={this.state.pw} onChange={this.handleValueChange}/>
-                <button type="submit">로그인</button>
+                </div>
                 
             </form>
-            <button onClick={this.props.onRegister}>회원가입</button>
+                <div>
+                <button className = "login_button"type="submit">로그인</button>
+                <button className='button_register' onClick={this.props.onRegister}>회원가입</button>
+                </div>
             </div>
         )
     }

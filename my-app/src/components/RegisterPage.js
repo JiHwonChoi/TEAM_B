@@ -6,7 +6,7 @@ function RegisterPage() {
     let navigate = useNavigate()
     const [article, setArticle] = useState(<Register navigate={navigate} />)
     return (
-        <div>
+        <div className='home-background'>
             {article}
         </div>
     )
