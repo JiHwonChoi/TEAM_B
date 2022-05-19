@@ -207,20 +207,29 @@ def end_strolling():
 
 @app.route("/get_image_list", methods=['POST'])
 def get_image_list():
-    nurse_idx = session['idx']
-    # nurse_idx = 33
-    image_info_query = 'SELECT e.idx, e.file_name, mem.user_name FROM emergency AS e INNER JOIN member_info AS mem ON e.user_idx = mem.idx WHERE nurse_idx = %s'
-    res = db.execute(image_info_query, (nurse_idx,))
+    # nurse_idx = session['idx']
+    nurse_idx = 33
+    image_info_query = 'SELECT e.idx, e.file_name, mem.user_name FROM emergency AS e INNER JOIN member_info AS mem ON e.user_idx = mem.idx WHERE nurse_idx = 33 ORDER BY e.idx DESC'
+    tmp = db.execute(image_info_query, (nurse_idx,))
+    res = []
+
+    for row in tmp:
+        new_row = {}
+        new_row['file_name'] = row[0]
+        new_row['user_nmae'] = row[1]
+        res.append(new_row)
+
     return jsonify(res)
 
 
 @app.route("/get_image", methods=['POST'])
 def get_image():
-    file_name = request.json['file_name']
-    url = db.cloud.get_image(file_name)
-    res = dict()
-    res['url'] = url
-    res['odom'] = [10,10]
+    idx = request.json['idx']
+    res = db.get_image_info(idx)
+    
+    if len(res) == 0:
+        return 'INVALID_USER', 400
+
     return jsonify(res)
 
 
