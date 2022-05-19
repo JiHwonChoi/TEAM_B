@@ -7,5 +7,6 @@ DB = {'user': 'dbmasteruser',
 CLOUD = {
     'AWS_ACCESS_KEY': 'AKIARPZURBWP5KHOIE6Z',
     'AWS_SECRET_KEY': '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',
-    'BUCKET_NAME': 'robot-image'
+    'BUCKET_NAME': 'robot-image',
+    'URL': 'https://robot-image.s3.ap-northeast-2.amazonaws.com/'
 }

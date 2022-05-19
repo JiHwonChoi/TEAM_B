@@ -27,3 +27,9 @@ class Cloud:
         except Exception as e:
             return None, False
 
+
+    def get_image(self, image_name):
+        url = CLOUD['URL']
+        image_name = image_name.replace(' ', '+')
+        image_name = image_name.replace(':', '%3A')
+        return url+image_name

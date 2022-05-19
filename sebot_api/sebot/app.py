@@ -3,7 +3,7 @@
 
 import cv2
 import time
-from flask import Flask, request, session, render_template, redirect, url_for, Response, stream_with_context, jsonify
+from flask import Flask, request, session, render_template, redirect, url_for, jsonify
 from flask_socketio import SocketIO
 from flask_cors import cross_origin, CORS
 import argparse
@@ -11,9 +11,8 @@ import roslibpy
 import json
 from db_utils import Database
 from ros_utils import SeBot
-# from PIL import Image
-# from ros_utils import SeBot
-# from db_utils import Database
+from ros_utils import SeBot
+from db_utils import Database
 
 app = Flask(__name__)
 app.host = '0.0.0.0'
@@ -64,33 +63,32 @@ def login_form():
 
 @app.route('/login_proc', methods=['POST'])
 def login_proc():
-    if request.method == 'POST':
-        userId = request.form['id']
-        userPwd = request.form['pwd']
-        if len(userId) == 0 or len(userPwd) == 0:
-            return 'userId, userPwd not found!!'
-            
-        else:
-            sql = 'SELECT idx, user_id, user_pwd, user_code, user_name FROM member_info WHERE (user_id = %s or user_code = %s) and user_pwd = %s'
-            rows = db.execute(sql, (userId, userId, userPwd,))
-
-            if len(rows) == 0:
-                return redirect(url_for('login_form'))
-
-            else:
-                for rs in rows:
-                    if (userId == rs[1] and userPwd == rs[2])or(userId == rs[3] and userPwd == rs[2]): #회원 코드로도 로그인 가능
-                        session['logFlag'] = True
-                        session['idx'] = rs[0]
-                        session['userId'] = rs[4]
-                        
-                        return redirect(url_for('main'))
-
-                    else:
-                        return redirect(url_for('login_form')) #메소드를 호출
-
+    userId = request.form['id']
+    userPwd = request.form['pwd']
+    if len(userId) == 0 or len(userPwd) == 0:
+        return 'userId, userPwd not found!!'
+        
     else:
-        return '잘못된 접근입니다.', 400
+        sql = 'SELECT idx, user_id, user_pwd, user_code, user_name FROM member_info WHERE (user_id = %s or user_code = %s) and user_pwd = %s'
+        rows = db.execute(sql, (userId, userId, userPwd,))
+
+        if len(rows) == 0:
+            return redirect(url_for('login_form'))
+
+        else:
+            for rs in rows:
+                if (userId == rs[1] and userPwd == rs[2])or(userId == rs[3] and userPwd == rs[2]): #회원 코드로도 로그인 가능
+                    session['logFlag'] = True
+                    session['idx'] = rs[0]
+                    session['userId'] = rs[4]
+                    
+                    return redirect(url_for('main'))
+
+                else:
+                    return redirect(url_for('login_form')) #메소드를 호출
+
+    
+    return '잘못된 접근입니다.', 400
 
 
 @app.route('/user_info_edit/<int:edit_idx>', methods=['GET'])
@@ -102,6 +100,7 @@ def getUser(edit_idx):
     row = db.execute(sql, (edit_idx,))
     edit_code = row[0][0]
     return render_template('users/user_info.html', edit_idx=edit_idx, edit_code=edit_code)
+
 
 @app.route('/user_info_edit_proc', methods=['POST'])
 def user_info_edit_proc():
@@ -216,10 +215,23 @@ def end_strolling():
     pass
 
 
+@app.route("/get_image_list", methods=['POST'])
+def get_image_list():
+    nurse_idx = session['idx']
+    image_info_query = 'SELECT e.idx, e.file_name, mem.user_name FROM emergency AS e INNER JOIN member_info AS mem ON e.user_idx = mem.idx WHERE nurse_idx = %s'
+    res = db.execute(image_info_query, (nurse_idx,))
+    return jsonify(res)
+
+
 @app.route("/get_image", methods=['POST'])
 def get_image():
-    #For manager
-    return 400
+    file_name = request.json['file_name']
+    url = db.cloud.get_image(file_name)
+    res = dict()
+    res['url'] = url
+    res['odom'] = [10,10]
+    return jsonify(res)
+
 
 # Socket
 @socketio.on('robot location')
@@ -242,7 +254,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     db = Database()
-    sebot = SeBot(db, args.robot_ip)
+    sebot = SeBot(db, args.robot_ip, socketio)
 
     app.secret_key = '20200601'
     # app.debug = True
