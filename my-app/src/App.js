@@ -64,7 +64,7 @@ const App =() => {
 
   
 
-  socket.on('state', (msg) => {
+  socket.on('emergency', (msg) => {
     // console.log('received')
     console.log('received')
     //요기에다가 추가하면 됨

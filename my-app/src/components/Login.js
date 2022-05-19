@@ -65,11 +65,12 @@ class Login extends React.Component {
                 <input type="password" name="pw" value={this.state.pw} onChange={this.handleValueChange}/>
                 </div>
                 
-            </form>
+            
                 <div>
                 <button className = "login_button"type="submit">로그인</button>
                 <button className='button_register' onClick={this.props.onRegister}>회원가입</button>
                 </div>
+                </form>
             </div>
         )
     }

@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import './start.css'
-import New from './New';
+import Courseselection from './Courseselection';
 import Homelogo from './Homelogo';
 import Search from './Search';
 import HomeAdmin from './Home_admin';
@@ -62,7 +62,7 @@ function StartAdmin (props) {
                 <Navigation onChange={function(idx){
                     console.log('this is onChange function',idx)
                     if(idx=='plus'){
-                        setArticle(<New />)
+                        setArticle(<Courseselection />)
                     }
                     else if (idx=='search'){
                         setArticle(<Search />)
