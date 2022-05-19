@@ -9,15 +9,22 @@ function LoginPage(props) {
     console.log('executed')
 
     const [article,setArticle] = useState(<Login 
-        onSuccess={function(){
-       navigate('/start')
-        console.log('success')
+        //여기 보고 로그인 바꾸기
+        onSuccess_admin={function(){
+            navigate('/admin')
+            console.log('success_admin')
+    }}   
+        onSuccess_user={function(){
+        navigate('/start') //admin 여부로 바꿔주기만 하면 될듯
+        console.log('success_user')    
+
     }} onRegister={function(){
         // <Register> 호출하기
-        navigate('/Register ')
+        navigate('/Register')
+
     }}/>)
     return (
-        <div className='loginPage'>
+        <div className='home-background'>
             {article}
         </div>
     )

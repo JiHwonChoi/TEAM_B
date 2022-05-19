@@ -26,6 +26,36 @@ session = {}
 def index():
     return "<h1> HI </h1>"
 
+@app.route('/register', methods=['POST',"GET"]) # 회원가입 화면
+@cross_origin()
+def register():
+    if request.method == 'POST': # POST 형식으로 요청할 것임
+    
+        # 페이지에서 입력한 값을 받아와 변수에 저장
+        userId = request.form['regi_id'] #userid
+        userPwd = request.form['regi_pw'] #userpassword
+        userPwd_check = request.form['regi_pw_check'] #userpassword
+        userName = request.form['regi_name'] # userName
+        userCode = request.form['regi_code'] # usercode
+        userNumber = request.form['regi_number'] # usernumber
+  
+        if userPwd_check != userPwd:
+            return jsonify({'ERROR' : 'NOT SAME Password and Check_Password.'}),411
+          
+        conn = db # DB와 연결
+        cursor = conn.cursor() # connection으로부터 cursor 생성
+        sql = 'INSERT INTO member_info("user_id", "user_pwd", "user_name", "user_code", "user_number") VALUES (%s, %s, %s, %s, %s)' # 실행할 SQL문
+        
+        try:
+            cursor.execute(sql,(userId, userPwd, userName, userCode, userNumber)) # 메소드로 전달해 명령문을 실행#
+            #conn.commit() # 변경사항 저장
+            return jsonify({'SUCCESS': 'register'}),200  # 로그인 화면으로 이동
+        
+        except:
+            conn.rollback() # 데이터베이스에 대한 모든 변경사항을 되돌림
+            return jsonify({'ERROR' : 'Register Failed'}),415
+         
+    return jsonify({'ERROR' : 'Posting Error'}),416 # 용도 확인
 
 @app.route('/register', methods=['POST',"GET"]) # 회원가입 화면
 def register():
