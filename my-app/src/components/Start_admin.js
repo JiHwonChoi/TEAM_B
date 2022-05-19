@@ -22,40 +22,35 @@ function StartAdmin (props) {
     const [title, setTitle] = useState('this is admin app')
 
     //로컬에 저장
-    function setLocalStorage(key, value){ localStorage.setItem(key,JSON.stringify(value)); }
+    // function setLocalStorage(key, value){ localStorage.setItem(key,JSON.stringify(value)); }
 
     //socket 으로 받기
     //1. 사용자 이름이 넘어오기 username
     // 2. 넘어진 사진 넘어오기 picture
     // 3. 지도 넘어오기 map 
     //지도, 사용자 이름, emergency 사진
-    socket.emit("emergency test")
-    socket.on('emergency', (msg) => {
+    // socket.on('emergency', (msg) => {
         // console.log('received')
-        console.log(msg)
-        var arraymap = new Uint8Array( msg.map );
-        var arraypicture = new Uint8Array( msg.picture );
-        var blob_map = new Blob( [ arraymap ], { type: "image/jpeg" } );
-        var blob_picture = new Blob( [ arraypicture ], { type: "image/jpeg" } );
+        //console.log(msg)
+       //  var arraymap = new Uint8Array( msg.map );
+        // var arraypicture = new Uint8Array( msg.picture );
+        // var blob_map = new Blob( [ arraymap ], { type: "image/jpeg" } );
+        // var blob_picture = new Blob( [ arraypicture ], { type: "image/jpeg" } );
 
-        var urlCreator = window.URL || window.webkitURL;
+        // var urlCreator = window.URL || window.webkitURL;
         //담아야 되는 3가지 
-        var imageUrl_map = urlCreator.createObjectURL( blob_map );
-        var imageUrl_picture = urlCreator.createObjectURL( blob_picture );
-        var arrayusername = msg.username ;
+        //var imageUrl_map = urlCreator.createObjectURL( blob_map );
+        //var imageUrl_picture = urlCreator.createObjectURL( blob_picture );
+        // var arrayusername = msg.username ;
 
-        const alarm_list = {
+        // const alarm_list = {
             //이름 넣기
-            name: arrayusername,
-            map: imageUrl_map,
-            picture: imageUrl_picture,
-        }
-
-
-        var jsonData = JSON.stringify(alarm_list);
-        setLocalStorage(localStorage.length, alarm_list)
-    })
-
+            // name: arrayusername,
+            // map: arraymap,
+            // picture: arraypicture,
+        // }
+        // setLocalStorage(localStorage.length, alarm_list)
+    // })
     return(
         <div>
             {console.log('render')}

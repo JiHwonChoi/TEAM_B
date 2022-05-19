@@ -22,6 +22,9 @@ function New(props) {
         var urlCreator = window.URL || window.webkitURL;
         var imageUrl = urlCreator.createObjectURL( blob );
         // console.log('imageurl here:', imageUrl)
+        console.log(imageUrl)
+        console.log(typeof(imageUrl))
+
         setImgurl(imageUrl)
         
     })
