@@ -6,7 +6,7 @@ import time
 from flask import Flask, request, session, jsonify
 from flask_socketio import SocketIO
 from flask_cors import cross_origin, CORS
-from models import db
+from models import db2
 import argparse
 import roslibpy
 import json
@@ -42,7 +42,7 @@ def register():
         if userPwd_check != userPwd:
             return jsonify({'ERROR' : 'NOT SAME Password and Check_Password.'}),411
           
-        conn = db # DB와 연결
+        conn = db2 # DB와 연결
         cursor = conn.cursor() # connection으로부터 cursor 생성
         sql = 'INSERT INTO member_info("user_id", "user_pwd", "user_name", "user_code", "user_number") VALUES (%s, %s, %s, %s, %s)' # 실행할 SQL문
         
@@ -56,48 +56,18 @@ def register():
             return jsonify({'ERROR' : 'Register Failed'}),415
          
     return jsonify({'ERROR' : 'Posting Error'}),416 # 용도 확인
-
-@app.route('/register', methods=['POST',"GET"]) # 회원가입 화면
-def register():
-    if request.method == 'POST': # POST 형식으로 요청할 것임
-    
-        # 페이지에서 입력한 값을 받아와 변수에 저장
-        userId = request.form['regi_id'] #userid
-        userPwd = request.form['regi_pw'] #userpassword
-        userPwd_check = request.form['regi_pw_check'] #userpassword
-        userName = request.form['regi_name'] # userName
-        userCode = request.form['regi_code'] # usercode
-        userNumber = request.form['regi_number'] # usernumber
-  
-        if userPwd_check != userPwd:
-            return jsonify({'ERROR' : 'NOT SAME Password and Check_Password.'}),411
-          
-        conn = db # DB와 연결
-        cursor = conn.cursor() # connection으로부터 cursor 생성
-        sql = 'INSERT INTO member_info("user_id", "user_pwd", "user_name", "user_code", "user_number") VALUES (%s, %s, %s, %s, %s)' # 실행할 SQL문
-        
-        try:
-            cursor.execute(sql,(userId, userPwd, userName, userCode, userNumber)) # 메소드로 전달해 명령문을 실행#
-            #conn.commit() # 변경사항 저장
-            return jsonify({'SUCCESS': 'register'}),200  # 로그인 화면으로 이동
-        
-        except:
-            conn.rollback() # 데이터베이스에 대한 모든 변경사항을 되돌림
-            return jsonify({'ERROR' : 'Register Failed'}),415
-         
-    return jsonify({'ERROR' : 'Posting Error'}),416 # 용도 확인
-
 
 
 @app.route('/login', methods=['POST',"GET"])
 def login():
+    print('login')
     if request.method == 'POST':
         userId = request.form['id']
         userPwd = request.form['pw']
         if len(userId) == 0 or len(userPwd) == 0:
             return jsonify({'ERROR' : 'Please enter your ID and Password'}),400
         else:
-            conn = db
+            conn = db2
             cursor = conn.cursor()
             sql = 'select idx, user_id, user_pwd, user_code, user_name, user_type from member_info where (user_id = %s or user_code = %s) and user_pwd = %s'
             #sql = 'select * from member'
@@ -238,6 +208,7 @@ def end_strolling():
 @app.route("/get_image_list", methods=['POST'])
 def get_image_list():
     nurse_idx = session['idx']
+    # nurse_idx = 33
     image_info_query = 'SELECT e.idx, e.file_name, mem.user_name FROM emergency AS e INNER JOIN member_info AS mem ON e.user_idx = mem.idx WHERE nurse_idx = %s'
     res = db.execute(image_info_query, (nurse_idx,))
     return jsonify(res)
@@ -277,4 +248,4 @@ if __name__ == "__main__":
     app.secret_key = 'super secret key'
     # app.debug = True
     # app.run(port=5000, debug = True)
-    socketio.run(app, debug=True)
+    socketio.run(app)

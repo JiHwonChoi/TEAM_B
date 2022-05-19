@@ -96,6 +96,7 @@ class SeBot:
 
 
     def upload_image(self, request, response):
+        print('upload')
         base64_bytes = request['image']['data'].encode('ascii')
         image_bytes = base64.b64decode(base64_bytes)
         res = self.db.image_upload(image_bytes)
