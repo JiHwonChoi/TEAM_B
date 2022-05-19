@@ -1,116 +1,73 @@
-import React, {useState, useContext} from 'react'
-import Navigation from './Navigation';
-import './walking.css';
+import React, {useState, useEffect, useContext} from 'react'
+// import './new.css'
 import { SocketContext } from "../service/socket";
 
 
-function Walking (props) {
+function Walking(props) {
 
-        const[left,setLeft] = useState(0)
-        const[location, setLocation] = useState('000호')
-        const[xclick, setx] = useState(50)
-        const[yclick, sety] = useState(50)
-        const[roomidx, setroomidx] = useState(0)
-        const socket = useContext(SocketContext);
+    const [imgurl, setImgurl] = useState('')
+    const socket = useContext(SocketContext);
+    const [check, setCheck] = useState('1호기 이용중 입니다.')
 
-        function goleft(){
-            let left_margin = left
-            left_margin+=327
-            if (left_margin>327){
-                left_margin = 0
+    // setTimeout(finishWalking, 2000)
+    
+    useEffect( ()=>{
+        socket.emit( 'robot location')
+        console.log('!!!request location!!!')
+        socket.on('state', (msg) => {
+            console.log(msg.arrival)
+            if(msg.arrival){
+                socket.off('state')
+                finishWalking()
             }
-
-            setLeft(-1 * left_margin)
-
-        } 
-
-        function goright(){
-            let left_margin = left
-            left_margin+=327
-            if(left_margin>327){
-                left_margin=327
+            else{
+                handlestate(msg)
             }
-
-            setLeft(-1 * left_margin)
-            console.log(left)
-            
-        }
-
-        function imgClick(e){
-
-            setx(e.nativeEvent.offsetX-12)
-            sety(e.nativeEvent.offsetY-20)
-            roomWhere(e.nativeEvent.offsetX-12,e.nativeEvent.offsetY-20)
-            // this.setState(
-            //     {
-            //         clicked:{x:e.nativeEvent.offsetX, y: e.nativeEvent.offsetY},
-            //         where:{left:(e.pageX-25) +'px',top: (e.pageY-50) +'px' }
-            //     }
-            // )
-       }
-
-       function roomWhere(x,y){
-           if(80<x && x<120 && 60<y && y<80){
-               setLocation('101호 로 호출하기')
-               setroomidx(1)
-           }
-           else{
-               setLocation('이 위치로는 호출할 수 없습니다')
-           }
-           
-       }
-
-       function gowalk(){
-
-        fetch("http://127.0.0.1:5000/call_sebot",{
-            method: "POST",
-            headers:{
-                "Content-Type":"application/json",
-                'Access-Control-Allow-Origin': '*',
-            },
-            body: JSON.stringify({idx: 1})
-        }).then((res)=>{
-            console.log(res)
         })
-        console.log('fetch')
 
-        // console.log('gowalk')
-        // socket.emit('walksign', {'roomidx': roomidx})
-        props.pageshift()
+        return () => {
+            socket.off('state', (msg) => {
+                handlestate(msg)
+            })
+           
+        }
+    }, [])
 
-       }
+    function finishWalking(){
 
-       
-        
+        setCheck('산책을 완료하였습니다.')
 
-        return(
-            <div>
-			<div className='title'>
-                <div className='big_title'>로봇 호출 위치 선택</div>
-                <div className='small_title'>{location}</div>
-            </div>
-
-            <div className='slidewrap'>
-                <img className='marker' src='marker.png' style={{left:xclick+'px', top:yclick+'px'}}></img>
-                <div className='slide' style={{left:left+'px'}} onClick={imgClick}>
-                    <img src='mapimg/testmap.jpg'></img>
-                    <img src='mapimg/map.png'></img>
-                </div>
-                
-            </div>
-            <div className='map_navigate_wrapper'>
-                <div className='buttonWrapper' >
-                    <div onClick={goleft}> &lt; 이전</div>
-                    <div onClick={goright}> 다음 &gt; </div>
-                </div>
-            </div>
-            <div> clicked! x:{xclick} y:{yclick}</div>
-            <div className='to_my_location' onClick={gowalk}>산책 시작하기</div>
-            <div className='take_stroll'></div>
-		    </div>
-
-        );
     }
 
+    const handlestate  = (msg) => {
+        // console.log(msg)
+        var arrayBufferView = new Uint8Array( msg.map );
+        var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
+        var urlCreator = window.URL || window.webkitURL;
+        var imageUrl = urlCreator.createObjectURL( blob );
+        // console.log('imageurl here:', imageUrl)
+        setImgurl(imageUrl)
+        socket.emit( 'robot location')
+
+    }
+
+    return (
+        <div>
+            this is Walking.js
+            <div className='title'>
+                <div className='big_title'>산책 중 입니다.</div>
+                <div className='small_title'>{check}</div>
+            </div>
+
+            <div className='robot_current_walking'>
+                <img src ={imgurl}></img>
+            </div>
+            <div className='detail' onClick={props.gowalk} >응급호출</div>
+            <div className='to_my_location' onClick ={props.canceled}>취소하기</div>
+            <div className='take_stroll'></div>
+
+        </div>
+    )
+}
 
 export default Walking;

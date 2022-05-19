@@ -15,8 +15,8 @@ border: 1px solid black;
 
 .plus {
     position: absolute;
-    left: 2.93%;
-    right: 86.4%;
+    left: 150px;
+    right: 190px;
     top: 10.84%;
     bottom: 40.96%;
     /* border: 1px solid black; */
@@ -25,7 +25,7 @@ border: 1px solid black;
 
     width: 40px;
     height: 40px;
-    background:no-repeat center/100% url(./image/plus.jpg);
+    background:no-repeat center/120% url(./image/plus.png);
 }
 .search{
     position: absolute;
@@ -45,8 +45,8 @@ bottom: 40.96%;
 .home-button{
 /* Rectangle */
 position: absolute;
-left: 40.8%;
-right: 40.53%;
+left: 20px;
+right: 260px;
 top: 10.84%;
 bottom: 40.96%;
 
@@ -70,8 +70,8 @@ border-radius: 20px;
 
 
 position: absolute;
-left: 67.73%;
-right: 21.6%;
+left: 232px;
+right: 275px;
 top: 10.84%;
 bottom: 40.96%;
 
@@ -80,7 +80,7 @@ bottom: 40.96%;
 .noti_icon{
     width: 40px;
     height: 40px;
-    background:no-repeat center/100% url(./image/bell.png);
+    background:no-repeat center/90% url(./image/bell.png);
 }
 
 
@@ -89,8 +89,8 @@ bottom: 40.96%;
 
 
 position: absolute;
-left: 86.4%;
-right: 2.93%;
+left: 310px;
+right: 350px;
 top: 10.84%;
 bottom: 40.96%;
 }
