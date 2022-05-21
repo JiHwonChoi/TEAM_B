@@ -93,8 +93,7 @@ function Notification() {
         //img 테그에 src 지정
         newDiv_picture.src = obj.url;
         imgUrl.push(obj.url);
-        console.log(obj.url);
-        console.log(imgUrl);
+
 
         //setim(newDiv_picture);
 
@@ -169,10 +168,7 @@ function Notification() {
     function get_origin(key){
         var image_map = document.getElementById("image_picture_"+key)
         image_map.src = imgUrl[key];
-        console.log("여기용1 "+ num)
         num = "0";
-        console.log("여기용2 "+ num)
-
     }
 
     useEffect( ()=>{ //화면이 열리자 마자 실행이 된다.

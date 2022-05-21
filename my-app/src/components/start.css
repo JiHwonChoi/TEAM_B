@@ -107,3 +107,28 @@ background:no-repeat center/100% url(./image/캐릭터.png);
 .top{
     margin-top: 100px;
 }
+.register_grid{
+    display: grid;
+    grid-template-rows: 1 1 1 1 1 1 1;
+    border: 1px rgb(209, 206, 206) solid;
+    margin-top: 50px;
+    text-align: right;
+    padding-right: 70px;
+
+}
+.img_register{
+    width: 373px;
+    height: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: rgb(182, 224, 119);
+    margin-top: 227px;
+    border: 1px rgb(209, 206, 206) solid;
+
+}
+.domain_register{
+    margin-top:150px;
+}
+.button_regi{
+    margin-right: 75px;
+}

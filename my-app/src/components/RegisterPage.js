@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import Register from './Register';
 import { useNavigate } from "react-router-dom";
+import './start.css'
 
 function RegisterPage() {
     let navigate = useNavigate()

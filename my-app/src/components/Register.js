@@ -4,10 +4,13 @@ import axios from 'axios';
 import { Link, useNavigate } from "react-router-dom";
 
 
+
 axios.defaults.withCredentials = false;
 axios.defaults.baseURL = "52.79.237.147:5000";
 
+
 class Register extends React.Component {
+
 
     constructor(props){
         super(props)
@@ -20,6 +23,7 @@ class Register extends React.Component {
             regi_number : ''
         }
     }
+
 
     register = () => {
         const url = 'http://52.79.237.147:5000/register'
@@ -61,27 +65,58 @@ class Register extends React.Component {
         nextState[event.target.name] = event.target.value;
         this.setState(nextState);
     }
+
  
 
     render () {
         return (
-            <div className='register'> 
+            <div > 
             <form onSubmit={this.handleFormSubmit}>
-                <h1>회원가입</h1>
-                <label>아이디</label>
+                <div >
+                <h1 id = "domain_register">회원가입 </h1>
+                </div>
+
+                <div className='register_grid'>
+
+                <div>
+                <label className = "regi">아이디 </label>
                 <input type="text" name="regi_id" value={this.state.regi_id} onChange={this.handleValueChange}/>
-                <label>패스워드</label>
+                </div>
+
+                <div>
+                <label className = "regi">패스워드 </label>
                 <input type="password" name="regi_pw" value={this.state.regi_pw} onChange={this.handleValueChange}/>
-                <label>패스워드 확인</label>
+                </div>
+
+                <div>
+                <label className = "regi">패스워드 확인 </label>
                 <input type="password" name="regi_pw_check" value={this.state.regi_pw_check} onChange={this.handleValueChange}/>
-                <label>이름</label>
+                </div>
+
+                <div>
+                <label className = "regi">이름 </label>
                 <input type="text" name="regi_name"  value={this.state.regi_name} onChange={this.handleValueChange}/>
-                <label>회원코드</label>
+                </div>
+
+                <div>
+                <label className = "regi">회원코드 </label>
                 <input type="text" name="regi_code"  value={this.state.regi_code} onChange={this.handleValueChange}/>
-                <label>전화번호</label>
+                </div>
+
+                <div>
+                <label className = "regi_6">전화번호</label>
                 <input type="text" name="regi_number"  value={this.state.regi_number} onChange={this.handleValueChange}/>
+                </div>
+
+                <div className='button_regi'>
                 <button type="submit">회원가입</button>
+                </div>
+                </div>
+                
             </form>
+            <div className='img_register'>
+
+            </div>
             </div>
         )
     }
