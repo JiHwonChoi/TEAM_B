@@ -133,6 +133,8 @@ def call_sebot():
     if not sebot.idle:
         return "SEBOT_BUSY", 423
 
+    sebot.user_idx = session['idx']
+    
     start_point = [3, 2]
 
     if idx == 1:
@@ -207,8 +209,8 @@ def end_strolling():
 
 @app.route("/get_image_list", methods=['POST'])
 def get_image_list():
-    # nurse_idx = session['idx']
-    nurse_idx = 33
+    nurse_idx = session['idx']
+    # nurse_idx = 33
     image_info_query = 'SELECT e.idx, e.file_name, mem.user_name FROM emergency AS e INNER JOIN member_info AS mem ON e.user_idx = mem.idx WHERE nurse_idx = 33 ORDER BY e.idx DESC'
     tmp = db.execute(image_info_query, (nurse_idx,))
     res = []

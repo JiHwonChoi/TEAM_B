@@ -34,12 +34,12 @@ class Database:
             self.db.commit()
 
 
-    def image_upload(self, image):
+    def image_upload(self, image, user_idx, point):
         res = self.cloud.upload_image(image)
         print(res)
         if res[1]:
-            query = 'INSERT INTO emergency ("file_name") VALUES (%s)'
-            self.execute(query, (res[0],))
+            query = 'INSERT INTO emergency ("file_name" "user_idx", "location") VALUES (%s, %s, %s)'
+            self.execute(query, (res[0], user_idx, point))
         return res[1]
 
 

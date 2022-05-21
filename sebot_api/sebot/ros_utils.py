@@ -97,7 +97,7 @@ class SeBot:
         print('upload')
         base64_bytes = request['image']['data'].encode('ascii')
         image_bytes = base64.b64decode(base64_bytes)
-        res = self.db.image_upload(image_bytes)
+        res = self.db.image_upload(image_bytes, self.user_id, [self.x, self.y])
         response['emergency'] = res
         self.socket.emit('emergency', {'emergency': True})
         return True
