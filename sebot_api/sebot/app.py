@@ -3,13 +3,14 @@
 
 import cv2
 import time
+import argparse
+import roslibpy
+import json
+import base64
 from flask import Flask, request, session, jsonify
 from flask_socketio import SocketIO
 from flask_cors import cross_origin, CORS
 from models import db2
-import argparse
-import roslibpy
-import json
 from db_utils import Database
 from ros_utils import SeBot
 from ros_utils import SeBot
@@ -232,9 +233,11 @@ def get_map():
     # print(data['location'].split(','))
     print(x, y)
     world_map = cv2.circle(world_map, (int((50 + x)*10), int((50 - y)*10)), 5, (0, 0, 255), -1)
-    world_map = cv2.imencode('_.jpg', world_map)[1].tobytes()
+    # world_map = cv2.imencode('_.jpg', world_map)[1].tobytes()
+    world_map = cv2.imencode('_.jpg', world_map)[1]
+    b64_string = base64.b64encode(world_map).decode('utf-8')
 
-    return world_map
+    return jsonify(b64_string)
 
 
 # Socket
