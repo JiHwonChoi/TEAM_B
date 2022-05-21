@@ -133,7 +133,7 @@ def call_sebot():
     # if not sebot.idle:
     #     return "SEBOT_BUSY", 423
 
-    sebot.user_idx = session['idx']
+    sebot.user_id = session['idx']
 
     start_point = [3, 2]
 
