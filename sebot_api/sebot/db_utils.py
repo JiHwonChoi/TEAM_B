@@ -50,9 +50,9 @@ class Database:
 
     
     def get_image_info(self, idx):
+        print("Get Image Info")
         image_query = 'SELECT e.file_name, mem.user_name, e.location FROM emergency AS e INNER JOIN member_info AS mem ON mem.idx = e.user_idx WHERE e.idx = %s'
         query_res = self.execute(image_query, (idx,))
-        print(query_res)
         url = self.cloud.get_image(query_res[0][0])
         res = {}
         res['url'] = url

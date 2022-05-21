@@ -102,8 +102,8 @@ def info():
         else:
             userId = session["userId"]
             userType = session["userType"]
-            print(userId)
-            print(userType)
+            print(userId, userType)
+            
             try:
                 return jsonify({'SUCCESS': 200, 'Data' : userId, "Type": userType}), 200   
             except:
@@ -116,7 +116,7 @@ def info():
 # Send Destination
 @app.route("/call_sebot", methods=['POST'])
 def call_sebot():
-    print('call sebot')
+    print('Call SEBOT')
     if request.headers["Content-Type"] != "application/json":
         return "INVALID_ACCESS", 406
     
@@ -143,9 +143,9 @@ def call_sebot():
                 "orientation": {"w": 1}
                 }
     }})
-    print('before call')
+    
     result = sebot.goal_srv.call(ros_request)
-    print('after call')
+    
     if result['response']:
         sebot.idle = False
         sebot.arrival = False
@@ -238,15 +238,17 @@ def get_map():
 # Socket
 @socketio.on('robot location')
 def robot_location():
+    print("Robot Location")
     map = db.map.copy()
     map = cv2.circle(map, (int((50+sebot.x)*10), int((50-sebot.y)*10)), 5, (0, 0, 255), -1)
     map = cv2.imencode('_.jpg', map)[1].tobytes()
 
+    time.sleep(2)
     socketio.emit('state', {'map': map, 'arrival': sebot.arrival})
     
     if sebot.arrival:
         sebot.arrival = False
-    time.sleep(2)
+    
 
 
 if __name__ == "__main__":
