@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
 
+import json
 import psycopg2
 import cv2
 from config import DB
@@ -44,7 +45,7 @@ class Database:
 
 
     def get_map(self):
-        img = cv2.imread('map.pgm')
+        img = cv2.imread('hospital.pgm')
         return img
 
     
@@ -59,8 +60,20 @@ class Database:
         res['name'] = query_res[0][1]
         res['location'] = query_res[0][2]
         return res
+    
+    def get_map_location(self, idx):
+        point_query = 'SELECT map_point FROM map_info WHERE idx = 1'
+        json_dict = self.execute(point_query)[0][0]
+
+        target_point = json_dict[str(idx)]
+        return target_point['x'], target_point['y']
+
+
+
+
 
 if __name__=="__main__":
     db = Database()
-    cv2.imshow("map test", db.map)
-    cv2.waitKey(0)
+    print(db.get_map_location(1))
+    # cv2.imshow("map test", db.map)
+    # cv2.waitKey(0)

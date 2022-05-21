@@ -135,13 +135,8 @@ def call_sebot():
 
     sebot.user_id = session['idx']
 
-    start_point = [3, 2]
-
-    if idx == 1:
-        start_point = [-9.5, 9.5]
+    start_point = db.get_map_location(idx)
     
-
-
     ros_request = roslibpy.ServiceRequest({"goal": {
         "header": {"frame_id": "map"},
         "pose": {"position": {"x": start_point[0], "y": start_point[1]},
@@ -230,10 +225,11 @@ def get_map():
 
     data = json.loads(request.get_data()) # json error detector needed
     
-    if (not 'x' in data) or (not 'y' in data):
+    if (not 'location' in data):
         return "INVALID_INPUT", 406
     
-    map = cv2.circle(map, (int((50+data['x'])*10), int((50-data['y'])*10)), 5, (0, 0, 255), -1)
+    x,y = list(map(float, data['location'].split(',')))
+    map = cv2.circle(map, (int((50 + x)*10), int((50 - y)*10)), 5, (0, 0, 255), -1)
     map = cv2.imencode('_.jpg', map)[1].tobytes()
 
     return jsonify(map)
