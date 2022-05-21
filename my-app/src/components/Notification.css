@@ -3,7 +3,9 @@
     overflow: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
-    height: 500px;
+    height: 495px;
+    text-align: left;
+    border-bottom: 1px rgb(209, 206, 206) solid;
 
 }
 #noti::-webkit-scrollbar{ display:none; }
@@ -12,5 +14,49 @@
     width:150px;
     height:150px;
 
+
+}
+/* 테그로 그림 크기 조절하자. */
+
+img{
+    width:150px;
+    height:150px;
+}
+
+#button_DIV{
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+#main{
+    border-top: 1px rgb(209, 206, 206) solid;
+    border-bottom: 1px rgb(209, 206, 206) solid;
+    margin-bottom: 5px;
+
+
+}
+#review{
+    border-top: 1px rgb(209, 206, 206) solid;
+    border-bottom: 1px rgb(209, 206, 206) solid;
+    margin-bottom: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+
+}
+#button_css{
+    margin-left: 10px;
+
+}
+#domain{
+    height: 80px;
+    background-color: skyblue;
+    margin-top: -50px
+
+}
+#title{
+    font-size: large;
+    font-weight: 500;
+    border-bottom: 1px rgb(209, 206, 206) solid;
+    border-top: 1px rgb(209, 206, 206) solid;
 
 }

@@ -107,7 +107,7 @@ function Start (props) {
                 <div className='home-background'>
                     
                     {article}
-                    <br></br><br></br><br></br>
+                    <br></br><br></br>
                     {/* <img src={imgurl}></img> */}
                     {/* {title} */}
                     <Navigation onChange={function(idx){

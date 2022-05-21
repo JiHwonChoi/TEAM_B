@@ -24,12 +24,13 @@ background: no-repeat center/100% url(./image/sebotage_1.png);
 width: 364px;
 height: 272px;
 left: 5px;
-top: 426px;
+top: 400px;
 
 background:no-repeat center/100% url(./image/캐릭터.png);
 }
 
 .home, .walking{
+    margin-top: -50px;
     text-align: center;
     width:100%;
     height: 650px;
