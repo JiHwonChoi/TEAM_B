@@ -29,6 +29,7 @@ img{
     margin-bottom: 10px;
 }
 #main{
+    display:none;
     border-top: 1px rgb(209, 206, 206) solid;
     border-bottom: 1px rgb(209, 206, 206) solid;
     margin-bottom: 5px;

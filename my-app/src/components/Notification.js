@@ -3,6 +3,10 @@ import './Notification.css'
 import {post} from 'axios';
 import axios from 'axios';
 
+import jquery from 'jquery'
+import $ from 'jquery'
+import swing from 'jquery'
+
 
 
 
@@ -17,7 +21,14 @@ function Notification() {
     const [img, setimg] = useState('')
     const [imgurl, setimgurl] = useState()
 
-
+    function onbutton(key){
+        var box_review = document.getElementsByClassName("review_"+key);
+        var box_main = document.getElementsByClassName("main_"+key);
+        //box_review.style.display = "block";
+        //box_main.style.display = "none";
+        $(".review_"+key).toggle(500,swing)
+        $(".main_"+key).toggle(500,swing)
+    }
 
     //div 테그 만들기
     function createDiv(key, data) {
@@ -26,8 +37,10 @@ function Notification() {
         //전체용
         var new_div = document.createElement('div')
         new_div.id = 'main';
+        new_div.className = 'main_'+key;
         var new_div_review = document.createElement('div')
         new_div_review.id = "review";
+        new_div_review.className = "review_"+key;
         var new_line= document.createElement('hr')
         new_line.id = "line";
 
@@ -47,6 +60,13 @@ function Notification() {
         var css_button = document.createElement('button');
         css_button.innerHTML = "상세보기"
         css_button.id = 'button_css'
+        css_button.onclick=() => onbutton(key)
+
+        var css_button_1 = document.createElement('button');
+        css_button_1.innerHTML = "요약하기"
+        css_button_1.id = 'button_css'
+        css_button_1.onclick=() => onbutton(key)
+
 
 
         // 2. <div>에 들어갈 text node 만들기
@@ -70,6 +90,7 @@ function Notification() {
         new_div.appendChild(newDiv_location);
         new_div.appendChild(newDiv_button);
         new_div.appendChild(newDiv_picture);
+        new_div.appendChild(css_button_1);
 
         //요약 본에 넣기
         new_div_review.appendChild(alarm);
