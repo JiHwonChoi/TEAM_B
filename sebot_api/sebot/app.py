@@ -130,8 +130,8 @@ def call_sebot():
     if not type(idx) is int:
         return "INVALID_INPUT", 406
 
-    if not sebot.idle:
-        return "SEBOT_BUSY", 423
+    # if not sebot.idle:
+    #     return "SEBOT_BUSY", 423
 
     sebot.user_idx = session['idx']
 
@@ -222,6 +222,21 @@ def get_image_list():
         res.append(new_row)
 
     return jsonify(res)
+
+# Socket
+@app.route("/get_map", methods=['POST'])
+def get_map():
+    map = db.map.copy()
+
+    data = json.loads(request.get_data()) # json error detector needed
+    
+    if (not 'x' in data) or (not 'y' in data):
+        return "INVALID_INPUT", 406
+    
+    map = cv2.circle(map, (int((50+data['x'])*10), int((50-data['y'])*10)), 5, (0, 0, 255), -1)
+    map = cv2.imencode('_.jpg', map)[1].tobytes()
+
+    return jsonify(map)
 
 
 # Socket
