@@ -256,6 +256,8 @@ if __name__ == "__main__":
     sebot = SeBot(db, args.robot_ip, socketio)
     app.secret_key = 'super secret key'
     app.host = "0.0.0.0"
+    app.port = 5000
+    app.debug = False
     # app.debug = True
     # app.run(port=5000, debug = True)
     socketio.run(app)
