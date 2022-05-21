@@ -38,7 +38,7 @@ class Database:
         res = self.cloud.upload_image(image)
         print(res)
         if res[1]:
-            query = 'INSERT INTO emergency ("file_name" "user_idx", "location") VALUES (%s, %s, %s)'
+            query = 'INSERT INTO emergency ("file_name", "user_idx", "location") VALUES (%s, %s, %s)'
             self.execute(query, (res[0], user_idx, point))
         return res[1]
 
