@@ -21,6 +21,7 @@ NECK_TH=450/2
 openpose_path = '/home/danmuzi/openpose/' #You need to change to dir where you download openpose
 image_topic = '/rear_camera/rgb/image_raw'
 emergency_srv = '/emergency_sign'
+em_topic = '/em_topic'
 '''
 --------------------------
 '''
@@ -64,14 +65,16 @@ opWrapper.start()
 
 
 class Pose_detector:
-    def __init__(self,opWrapper,vis):
+    def __init__(self,opWrapper,vis,indoor):
         self.pose_sub=rospy.Subscriber(image_topic,Image,self._cb)
         self.comp_img_sub = rospy.Subscriber(image_topic+'/compressed',CompressedImage,self._comp_cb)
+        self.em_pub = rospy.Publisher(em_topic,Bool,queue_size=1)
         self.opWrapper=opWrapper
         self.bridge=CvBridge()
         self.cnt=0
         self.emergency_flag = False
         self._vis = vis
+        self.indoor = indoor
         self.last_service_time = 0
         rospy.wait_for_service(emergency_srv)
         print("Service detected")
@@ -93,15 +96,19 @@ class Pose_detector:
         if self.emergency_flag and (time.time() - self.last_service_time > _time_gap):
             rospy.loginfo("REUESTING")
             res = self.emergency_client(data)
+            rospy.sleep(3)
             rospy.loginfo("SERVICE SUCCESS? : ",res.success)
             if res.success:
                 self.last_service_time = time.time()
+
 
 
     def __process_pose(self,imageToProcess):
         datum = op.Datum()
         datum.cvInputData = imageToProcess
         self.opWrapper.emplaceAndPop(op.VectorDatum([datum]))
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        fontScale = 1.0
         # Display Image
         #print ("input",datum.cvInputData.shape)
         #print ("output", datum.cvOutputData.shape)
@@ -109,11 +116,17 @@ class Pose_detector:
         ## x is index 0 , y(height) is index 1...
         emergency_flag=False
         _safe = True
+        temp = datum.cvInputData.copy()
         #Todo:insert no detection sign
         try:
             if datum.poseKeypoints is None:
                 #rospy.loginfo("No Human")
-                self.emergency_flag = True
+                if self._vis:
+                    cv2.imshow("OpenPose 1.7.0 - ROS_ROBOT_VERSION_BTEAM", temp)
+                    cv2.waitKey(25)
+                if not self.indoor:
+                    self.emergency_flag = True
+                    self.em_pub.publish(Bool(True))
                 return
             for person in datum.poseKeypoints:
                #print("person detected")
@@ -129,27 +142,31 @@ class Pose_detector:
                    #print("person hip",person[8][1])
                    if angle<30 or angle>150 or person[8][1]>400:
                        _safe = False
+                       cv2.putText(temp, "EMERGENCY DETECTED", (30, 30), font, fontScale, (0, 0, 255), 3, cv2.LINE_AA)
                        self.emergency_flag = True
                        #rospy.loginfo("People fall down! Emergency!")
-            rospy.loginfo(f"Emergency flag: {self.emergency_flag}")
+            #rospy.loginfo(f"Emergency flag: {self.emergency_flag}")
 
             if _safe:
                 self.emergency_flag = False
                 #print("All people detected")
 
+            self.em_pub.publish(Bool(self.emergency_flag))
+
         except:
             self.emergency_flag = False #Need more inspection...
+            self.em_pub.publish(Bool(self.emergency_flag))
             pass
         
         if self._vis == True:
-            cv2.imshow("OpenPose 1.7.0 - ROS_ROBOT_VERSION_BTEAM", datum.cvOutputData)
-            cv2.waitKey(3)
+            cv2.imshow("OpenPose 1.7.0 - ROS_ROBOT_VERSION_BTEAM", temp)
+            cv2.waitKey(25)
 
 
 
 if __name__ == '__main__':
     rospy.init_node('sample_openpose')
-    Pose_detector(opWrapper,vis=True)
+    Pose_detector(opWrapper,vis=True,indoor=True)
 
     try:
         rospy.spin()

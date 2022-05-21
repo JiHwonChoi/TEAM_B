@@ -22,8 +22,9 @@ WIDTH = 960
 HEIGHT = 540
 emergency_srv = '/emergency_sign'
 image_topic = '/rear_camera/rgb/image_raw'
+em_topic = '/em_topic'
 class Human_follower(DetectorManager):
-    def __init__(self, follower_mode=False,speed = 0.5, srv_mode = False):
+    def __init__(self, follower_mode=False,speed = 0.26, srv_mode = False, em_mode = False):
         super().__init__(False)
         self.flag=follower_mode
         self.no_human_flag = True
@@ -38,6 +39,8 @@ class Human_follower(DetectorManager):
         self.max_speed = (self.max_vel_x ** 2 + self.max_vel_y ** 2) ** 0.5
         #self.odom = rospy.Subscriber('/odom', Odometry, self._odom_cb,queue_size=1)
         self.odom_idx=0
+        if em_mode:
+            self.em_sub = rospy.Subscriber(em_topic,Bool,self._em_cb,queue_size=1)
         self.vel_pub = rospy.Publisher('/cmd_vel',Twist,queue_size=1)
         rospy.Subscriber('/sort_track_deep', IntList, self._track_cb,queue_size=1)
         rospy.Subscriber('/sort_vis',Image,self._vis_cb,queue_size=10)
@@ -54,6 +57,8 @@ class Human_follower(DetectorManager):
         self.angular = Vector3(0,0,0)
         self.vis_img_for_pub = None
         self.last_service_time = 0
+        self.em_data = False
+
         if srv_mode:
             self.comp_img_sub = rospy.Subscriber(image_topic + '/compressed', CompressedImage, self._comp_cb)
             rospy.wait_for_service(emergency_srv)
@@ -61,12 +66,16 @@ class Human_follower(DetectorManager):
             self.emergency_client = rospy.ServiceProxy(emergency_srv, GetImage)
             self.comp_data = None
 
+    def _em_cb(self,data):
+        self.em_data = data.data
+        rospy.loginfo(f"emtest {self.em_data}")
     def _comp_cb(self, data):
         self.comp_data = data
         #rospy.loginfo(self.no_human_flag)
         if self.no_human_flag and (time.time() - self.last_service_time > 3):
             rospy.loginfo("REUESTING")
             res = self.emergency_client(self.comp_data)
+            rospy.sleep(3)
             rospy.loginfo("SERVICE SUCCESS? : ", res.success)
             if res.success:
                 self.last_service_time = time.time()
@@ -161,7 +170,12 @@ class Human_follower(DetectorManager):
             try:
                 pub_vel.linear = self.linear
                 pub_vel.angular = self.angular
-                self.vel_pub.publish(pub_vel)
+                if not self.em_data:
+                    self.vel_pub.publish(pub_vel)
+                else:
+                    _stop = Twist()
+                    _stop.angular = pub_vel
+                    self.vel_pub.publish(_stop)
             except:
                 #print("Robot currently stop.")
                 pass
@@ -180,12 +194,21 @@ class Human_follower(DetectorManager):
                     _vel = Twist()
                     _vel.linear = self.linear
                     _vel.angular = self.angular
-                    self.vel_pub.publish(_vel)
+                    if not self.em_data:
+                        self.vel_pub.publish(_vel)
+                    else:
+                        _stop = Twist()
+                        _stop.linear.x = max(self.linear.x/5,0.02)
+                        _stop.linear.y = max(self.linear.y/5,0.02)
+                        _stop.angular = _vel.angular
+                        self.vel_pub.publish(_stop)
                 except:
                     rospy.loginfo("Something wrong with circulating" )
                 return
         if self.no_human_flag: #start searching
             _stop = Twist()
+            _stop.linear.x = max(self.linear.x / 5, 0.02)
+            _stop.linear.y = max(self.linear.y / 5, 0.02)
             _stop.angular.z = 0
             self.vel_pub.publish(_stop)
             rospy.loginfo("We need to identify you. Please move toward the camera")
@@ -198,14 +221,23 @@ class Human_follower(DetectorManager):
 
         if self.depth_point is None:
             _stop = Twist()
-            _stop.angular.z =0
+            _stop.linear.x = max(self.linear.x / 5, 0.02)
+            _stop.linear.y = max(self.linear.y / 5, 0.02)
+            _stop.angular.z = 0
             self.vel_pub.publish(_stop)
 
         elif self.depth_point < threshold_dist :
             try:
                 pub_vel.linear = self.linear
                 pub_vel.angular = self.angular
-                self.vel_pub.publish(pub_vel)
+                if not self.em_data:
+                    self.vel_pub.publish(pub_vel)
+                else:
+                    _stop = Twist()
+                    _stop.linear.x = max(self.linear.x / 5, 0.02)
+                    _stop.linear.y = max(self.linear.y / 5, 0.02)
+                    _stop.angular.z = self.angular
+                    self.vel_pub.publish(_stop)
             except:
                 #print("Robot currently stop.")
                 pass
@@ -216,7 +248,9 @@ class Human_follower(DetectorManager):
             if self.actor_depth > stop_threshold:
                 rospy.loginfo("YOU ARE TOO FAR AWAY... STOP FOR A SEC...")
                 _stop = Twist()
-                _stop.angular.z = 0
+                _stop.linear.x = max(self.linear.x / 5, 0.02)
+                _stop.linear.y = max(self.linear.y / 5, 0.02)
+                _stop.angular = angular
                 self.vel_pub.publish(_stop)
 
             else:
@@ -228,15 +262,22 @@ class Human_follower(DetectorManager):
                     linear.y = min( self.max_vel_y,speed_ratio * linear.y)
                     pub_vel.linear = linear
                     pub_vel.angular = angular
+                    if not self.em_data:
+                        self.vel_pub.publish(pub_vel)
+                    else:
+                        _stop = Twist()
+                        _stop.linear.x = max(self.linear.x / 5, 0.02)
+                        _stop.linear.y = max(self.linear.y / 5, 0.02)
+                        _stop.angular = _vel.angular
+                        self.vel_pub.publish(_stop)
 
-                    self.vel_pub.publish(pub_vel)
                 except:
                     rospy.loginfo("actor_depth is zero")
 
 
 if __name__ == '__main__':
     rospy.init_node("human_follower")
-    human_follower=Human_follower(True)
+    human_follower=Human_follower(True,em_mode=False)
     while True:
         human_follower.modify_speed()
         rospy.sleep(.1)

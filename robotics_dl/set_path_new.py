@@ -74,9 +74,9 @@ class Nav_goal_control:
             rospy.loginfo("We reach the checkpoint")
             res = self.arrival_client(True)
             rospy.loginfo(res)
-
             if not res.response:
                 rospy.loginfo("Arrival Server returns false... something wrong")
+
 
 
 if __name__=='__main__':
