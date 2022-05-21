@@ -178,8 +178,8 @@ def set_dest():
     if not type(dst_point) is list or len(dst_point) != 2 or not type(dst_point[0]) is int or not type(dst_point[1]) is int:
         return "INVALID_INPUT", 406
 
-    if not sebot.idle:
-        return "SEBOT_BUSY", 423
+    # if not sebot.idle:
+    #     return "SEBOT_BUSY", 423
     
 
     ros_request = roslibpy.ServiceRequest({"goal": {
@@ -230,13 +230,12 @@ def robot_location():
     map = db.map.copy()
     map = cv2.circle(map, (int((50+sebot.x)*10), int((50-sebot.y)*10)), 5, (0, 0, 255), -1)
     map = cv2.imencode('_.jpg', map)[1].tobytes()
-    print('hihihihii')
 
     socketio.emit('state', {'map': map, 'arrival': sebot.arrival})
     
     if sebot.arrival:
         sebot.arrival = False
-    time.sleep(1)
+    time.sleep(2)
 
 
 if __name__ == "__main__":
