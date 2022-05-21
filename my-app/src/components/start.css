@@ -70,14 +70,40 @@ background:no-repeat center/100% url(./image/캐릭터.png);
 
 .grid_login{
     display: grid;
-    grid-template-rows: 200px 30px;
+    grid-template-rows: 200px 30px 50px 50px;
 
 }
 .login_button{
  margin-left: 10px;
  margin-right: 10px;
+ width: 100px;
 }
 .button_register{
     margin-left: 10px;
     margin-right: 10px;
+    width: 100px;
+
+}
+.main_box{
+    border: 1px rgb(209, 206, 206) solid;
+}
+
+.pass{
+    margin-left: -15px;
+}
+.text{
+    margin-right: 10px;
+}
+.img_login{
+    width: 373px;
+    height: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 500px;
+    border: 1px rgb(209, 206, 206) solid;
+    background-color: rgb(182, 224, 119);
+
+}
+.top{
+    margin-top: 100px;
 }
