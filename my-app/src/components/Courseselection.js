@@ -7,6 +7,7 @@ function CourseSelection(props) {
 
     const [imgurl, setImgurl] = useState('')
     const socket = useContext(SocketContext);
+    const [popup, setPopup] = useState('')
     
     useEffect( ()=>{
         socket.emit( 'robot location')
@@ -34,16 +35,21 @@ function CourseSelection(props) {
         setImgurl(imageUrl)
     }
 
+    function showpopup (){
+        setPopup(<div className='search_popup'> hello </div>)
+    }
+
     return (
         <div>
             course selection page
             <div className='title'>
-                <div className='big_title'>코스 선택</div>
-                <div className='small_title'>산책할 코스를 선택해주세요</div>
+                <div className='big_title'>로봇 선택</div>
+                <div className='small_title'>사용할 로봇을 확인해주세요</div>
             </div>
-            <div className='search_tab'>
+            <div className='search_tab' onClick = {showpopup}>
                     1층 1호기
                 </div>
+            {popup}
 
             <div className='robot_current'>
                 <img src ={imgurl}></img>

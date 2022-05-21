@@ -12,13 +12,12 @@ function Nowcalling(props) {
     )
     const [arrived, setArrived] = useState('0')
 
-    // setTimeout(robotArrival,3000)
 
     useEffect( ()=>{
         socket.emit( 'robot location')
         console.log('!!!request location!!!')
         socket.on('state', (msg) => {
-            console.log(msg.arrival)
+            // console.log(msg.arrival)
             if(msg.arrival){
                 socket.off('state')
                 alert('!도착!')

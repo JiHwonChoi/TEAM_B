@@ -25,37 +25,6 @@ function Start (props) {
         const [imgurl, setImgurl] = useState('')
         const socket = useContext(SocketContext);
         
-
-        // const socket = socketio.connect('http://127.0.0.1:5000')
-        //socket 사용하는 부분
-        // useEffect( ()=>{
-            
-        //     //소켓 주소 맞게 입력해주세요
-        //     //------소켓이 연결이 안된 상태에서 아래를 활성화 하면 앱이 멈춥니다------
-        //     socket.on('connect', function() {
-        //         console.log("socket server connected.");
-        //     })
-        //     }, [])
-
-        //     socket.on('state', (msg) => {
-        //         console.log('received')
-        //         console.log(msg)
-        //         var arrayBufferView = new Uint8Array( msg.map );
-        //         var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
-        //         var urlCreator = window.URL || window.webkitURL;
-        //         var imageUrl = urlCreator.createObjectURL( blob );
-        //         console.log('imageurl here:', imageUrl)
-        //         imageSet(imageUrl)
-                
-        //     })
-
-        // function showLocation (){
-        //     socket.emit( 'robot location')
-        // }
-        // function imageSet (imageUrl){
-        //     setImgurl(imageUrl)
-        // }
-
         function callWalkpage (){
             setArticle(<Walking />)
         }
@@ -107,9 +76,7 @@ function Start (props) {
                 <div className='home-background'>
                     
                     {article}
-                    <br></br><br></br><br></br>
-                    {/* <img src={imgurl}></img> */}
-                    {/* {title} */}
+                    
                     <Navigation onChange={function(idx){
                         console.log('this is onChange function',idx)
                         nav_page_change(idx)

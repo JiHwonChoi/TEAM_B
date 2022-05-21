@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import './start.css'
 import Courseselection from './Courseselection';
 import Homelogo from './Homelogo';
@@ -10,7 +10,14 @@ import Navigation from './Navigation';
 import Register from './Register';
 import axios from 'axios';
 import Login from './Login';
-import { socket } from '../service/socket';
+import { SocketContext } from "../service/socket";
+import Walking from './Walking';
+import Nowcalling from './Nowcalling';
+import Callrobot from './CallRobot';
+import CourseSelection from './Courseselection';
+import Home from './Home';
+
+
 
 
 
@@ -20,68 +27,63 @@ function StartAdmin (props) {
         
     const [article, setArticle] = useState(<HomeAdmin />)
     const [title, setTitle] = useState('this is admin app')
+    const socket = useContext(SocketContext);
+        
+    function callWalkpage (){
+        setArticle(<Walking />)
+    }
 
-    //로컬에 저장
-    // function setLocalStorage(key, value){ localStorage.setItem(key,JSON.stringify(value)); }
+    function callrobot (){
+        setArticle(<Callrobot gocall={
+            callNowcalling
+        }></Callrobot>)
+    }
 
-    //socket 으로 받기
-    //1. 사용자 이름이 넘어오기 username
-    // 2. 넘어진 사진 넘어오기 picture
-    // 3. 지도 넘어오기 map 
-    //지도, 사용자 이름, emergency 사진
-    // socket.on('emergency', (msg) => {
-        // console.log('received')
-        //console.log(msg)
-       //  var arraymap = new Uint8Array( msg.map );
-        // var arraypicture = new Uint8Array( msg.picture );
-        // var blob_map = new Blob( [ arraymap ], { type: "image/jpeg" } );
-        // var blob_picture = new Blob( [ arraypicture ], { type: "image/jpeg" } );
+    function callNowcalling(){
+        console.log('hey')
+        setArticle(<Nowcalling gowalk={callWalkpage}></Nowcalling>)
+    }
 
-        // var urlCreator = window.URL || window.webkitURL;
-        //담아야 되는 3가지 
-        //var imageUrl_map = urlCreator.createObjectURL( blob_map );
-        //var imageUrl_picture = urlCreator.createObjectURL( blob_picture );
-        // var arrayusername = msg.username ;
+    function callNewpage(){
+        setArticle(<CourseSelection pageshift={
+            callrobot
+        } />)
+    }
 
-        // const alarm_list = {
-            //이름 넣기
-            // name: arrayusername,
-            // map: arraymap,
-            // picture: arraypicture,
-        // }
-        // setLocalStorage(localStorage.length, alarm_list)
-    // })
+    function nav_page_change(idx){
+        if(idx=='plus'){
+            setArticle(<CourseSelection pageshift={
+                callrobot
+            } />)
+        }
+        else if (idx=='search'){
+            setArticle(<Search />)
+        }
+        else if (idx=='home_button'){
+            setArticle(<Home />)
+        }
+        else if (idx=='noti'){
+            setArticle(<Notification />)
+        }
+        else if (idx=='profile'){
+            setArticle(<Profile />)
+        }
+        else{
+            setArticle(<Homelogo />)
+        }
+    }
+
+
     return(
         <div>
             {console.log('render')}
             <div className='home-background'>
                 
-                {title}
-                <br></br><br></br><br></br>
                 {article}
+                
                 <Navigation onChange={function(idx){
                     console.log('this is onChange function',idx)
-                    if(idx=='plus'){
-                        setArticle(<Courseselection />)
-                    }
-                    else if (idx=='search'){
-                        setArticle(<Search />)
-                    }
-                    else if (idx=='home_button'){
-                        setArticle(<HomeAdmin />)
-                    }
-                    else if (idx=='noti'){
-                        setArticle(<Notification />)
-                    }
-                    else if (idx=='profile'){
-                        setArticle(<Profile />)
-                    }
-                    else{
-                        setArticle(<HomeAdmin />)
-                    }
-                    
-
-
+                    nav_page_change(idx)
                 } }></Navigation>
             </div>
 

@@ -214,3 +214,13 @@ top: 210px;
 
 overflow: hidden;
 }
+
+.search_popup{
+    position: absolute;
+    width: 327px;
+    left: calc(50% - 327px/2);
+    top: 243px;
+    height: 70px;
+    z-index: 20000;
+    border: solid 1px black;
+}
