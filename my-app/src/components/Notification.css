@@ -1,0 +1,16 @@
+#noti{
+    width: auto;
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    height: 500px;
+
+}
+#noti::-webkit-scrollbar{ display:none; }
+
+#image_picture{
+    width:150px;
+    height:150px;
+
+
+}

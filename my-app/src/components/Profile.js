@@ -19,7 +19,7 @@ function Profile() {
     useEffect(()=>{
         //var res;
         //useeffect
-        const url = 'http://127.0.0.1:5000/info'
+        const url = 'http://52.79.237.147:5000/info'
         const config = {
             headers : {
                 //'Access-Control-Allow-Origin': '*',
