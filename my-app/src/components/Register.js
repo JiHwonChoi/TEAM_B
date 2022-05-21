@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 
 axios.defaults.withCredentials = false;
-axios.defaults.baseURL = "localhost:5000";
+axios.defaults.baseURL = "52.79.237.147:5000";
 
 class Register extends React.Component {
 
@@ -22,7 +22,7 @@ class Register extends React.Component {
     }
 
     register = () => {
-        const url = 'http://127.0.0.1:5000/register'
+        const url = 'http://52.79.237.147:5000/register'
         const formData = new FormData();
         const config = {
             headers : {

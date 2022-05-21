@@ -7,8 +7,8 @@ function Notification() {
     const [url,seturl] = useState('')
     
     //div 테그 만들기
-    function createDiv(key) {
-        
+    function createDiv(key, data) {
+        var obj = data[key];
         // 1. <div> element 만들기
         const newDiv_picture = document.createElement('img');
         newDiv_picture.setAttribute("id", "image_picture");
@@ -34,11 +34,17 @@ function Notification() {
 
 
     useEffect( ()=>{ //화면이 열리자 마자 실행이 된다.
-        fetch('http://127.0.0.1:5000/get_image_list')
+        fetch('http://52.79.237.147:5000/get_image_list')
         .then(res => {
-            data = res.json();
+            console.log(res);
+            var data = res.json();
+            var key = data.length;
+            console.log(data);
+            for (var step = 0; step < key; step++){
+                createDiv(step, data)
+            }
         }) 
-        console.log(data)
+        
     }, []);
 
 

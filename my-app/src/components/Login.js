@@ -3,7 +3,7 @@ import {post} from 'axios';
 import axios from 'axios';
 
 axios.defaults.withCredentials = false;
-axios.defaults.baseURL = "localhost:5000";
+axios.defaults.baseURL = "52.79.237.147:5000";
 
 class Login extends React.Component {
     constructor(props){
@@ -15,7 +15,7 @@ class Login extends React.Component {
     }
 
     login = () => {
-        const url = 'http://127.0.0.1:5000/login'
+        const url = 'http://52.79.237.147:5000/login'
         const formData = new FormData();
         const config = {
             headers : {
