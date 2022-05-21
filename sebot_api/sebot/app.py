@@ -221,7 +221,7 @@ def get_image_list():
 # Socket
 @app.route("/get_map", methods=['POST'])
 def get_map():
-    map = db.map.copy()
+    world_map = db.map.copy()
 
     data = json.loads(request.get_data()) # json error detector needed
     
@@ -229,10 +229,12 @@ def get_map():
         return "INVALID_INPUT", 406
     
     x,y = list(map(float, data['location'].split(',')))
-    map = cv2.circle(map, (int((50 + x)*10), int((50 - y)*10)), 5, (0, 0, 255), -1)
-    map = cv2.imencode('_.jpg', map)[1].tobytes()
+    # print(data['location'].split(','))
+    print(x, y)
+    world_map = cv2.circle(world_map, (int((50 + x)*10), int((50 - y)*10)), 5, (0, 0, 255), -1)
+    world_map = cv2.imencode('_.jpg', world_map)[1].tobytes()
 
-    return jsonify(map)
+    return world_map
 
 
 # Socket
