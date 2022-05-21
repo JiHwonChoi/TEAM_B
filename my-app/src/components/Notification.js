@@ -31,7 +31,7 @@ function Notification() {
         var newDiv_button = document.createElement('button');
         newDiv_button.innerHTML = "장소 보기"
         //함수 넣기
-        newDiv_button.onclick = {notification_post};
+        newDiv_button.onclick=() => notification_post()
 
 
         // 2. <div>에 들어갈 text node 만들기
@@ -80,7 +80,7 @@ function Notification() {
             }
         }
         console.log(1)
-        var loc = document.getElementById("location").innerHTML()
+        var loc = document.getElementById("location").innerHTML
         formData.append('location', loc);
         console.log(2)
         post(url, formData, config)
