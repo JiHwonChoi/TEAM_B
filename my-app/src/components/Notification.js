@@ -9,8 +9,11 @@ import swing from 'jquery'
 
 
 
+var num = '0';
+var imgUrl = [];
 
 function Notification() {
+    
 
     axios.defaults.withCredentials = false;
     axios.defaults.baseURL = "52.79.237.147:5000";
@@ -18,9 +21,9 @@ function Notification() {
     // const [url,seturl] = useState('')
     // const [array, setarray] = useState()
     // const [map, setmap] = useState()
-    // const [img, setimg] = useState('')
-    const [imgurl, setimgurl] = useState()
-    const [number, setnumber] = useState()
+     const [im, setim] = useState('')
+    //const [imgurl, setimgurl] = useState()
+    const [number, setNumber] = useState()
 
     function onbutton(key){
         //var box_review = document.getElementsByClassName("review_"+key);
@@ -58,11 +61,11 @@ function Notification() {
         newDiv_button.id = 'button_DIV'
         //함수 넣기
         newDiv_button.onclick=() => {
-            if (number != '1'){
+            if (num == '0'){
                 notification_post(key)
-                console.log("김준서 test:" + imgurl)
+                console.log("김준서 test:" + imgUrl)
             }
-            else if (number == '1'){
+            else if (num == '1'){
                 original_picture(key)
             }
             }
@@ -89,8 +92,11 @@ function Notification() {
         //지도
         //img 테그에 src 지정
         newDiv_picture.src = obj.url;
-        setimgurl(obj.url);
-        //setimg(newDiv_picture);
+        imgUrl.push(obj.url);
+        console.log(obj.url);
+        console.log(imgUrl);
+
+        //setim(newDiv_picture);
 
         // // 3. <div>에 text node 붙이기
         newDiv_name.appendChild(newname);
@@ -139,15 +145,20 @@ function Notification() {
 
     // 사진 넣기가 안됨
     function get_map(key, data){
-        var img_blob = data.data;
-        var arrayBufferView = new Uint8Array( img_blob );
+        var img_blob = data.data.map;
+        const byteCharacters = atob(img_blob);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        var arrayBufferView = new Uint8Array( byteNumbers  );
         var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
         var urlCreator = window.URL || window.webkitURL;
         var imageUrl = urlCreator.createObjectURL( blob );
         //setimgurl(imageUrl)
         var image_map = document.getElementById("image_picture_"+key)
         image_map.src = imageUrl;
-        setnumber("1")
+        num = "1";
         console.log(number)
     }
 
@@ -157,10 +168,10 @@ function Notification() {
 
     function get_origin(key){
         var image_map = document.getElementById("image_picture_"+key)
-        image_map.src = imgurl;
-        console.log("여기용1 "+ number)
-        setnumber("0")
-        console.log("여기용2 "+ number)
+        image_map.src = imgUrl[key];
+        console.log("여기용1 "+ num)
+        num = "0";
+        console.log("여기용2 "+ num)
 
     }
 
@@ -181,7 +192,7 @@ function Notification() {
             <div id = "domain"></div>
             <div id = "title">Emergency Alarm</div>
             <div id='noti'>
-            {/* <img src= {imgurl}></img> */}
+            {/* <img src= {im}></img> */}
             </div>
             
         </div>
