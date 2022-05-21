@@ -179,7 +179,7 @@ mix-blend-mode: darken;
 border-radius: 8px; */
 }
 
-.robot_current img{
+.robot_current img, .robot_current_walking img{
     position: absolute; 
     top: -60px; 
     left: -50px; 

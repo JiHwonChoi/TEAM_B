@@ -12,6 +12,7 @@ function Nowcalling(props) {
     )
     const [arrived, setArrived] = useState('0')
 
+    // setInterval(robotArrival, 2000 )
 
     useEffect( ()=>{
         socket.emit( 'robot location')
@@ -20,7 +21,7 @@ function Nowcalling(props) {
             // console.log(msg.arrival)
             if(msg.arrival){
                 socket.off('state')
-                alert('!도착!')
+                console.log('!도착!')
                 robotArrival()
                 
             }

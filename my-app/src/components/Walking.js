@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react'
-// import './new.css'
+import './new.css'
 import { SocketContext } from "../service/socket";
 
 
@@ -13,7 +13,7 @@ function Walking(props) {
     
     useEffect( ()=>{
         socket.emit( 'robot location')
-        console.log('!!!request location!!!')
+        console.log('this is walking js: !!!request location!!!')
         socket.on('state', (msg) => {
             console.log(msg.arrival)
             if(msg.arrival){
