@@ -217,20 +217,9 @@ def get_image_list():
 
     for row in tmp:
         new_row = {}
-        new_row['file_name'] = row[1]
-        new_row['user_nmae'] = row[2]
+        new_row['idx'] = row[0]
+        new_row['data'] = db.get_image_info(row[0])
         res.append(new_row)
-
-    return jsonify(res)
-
-
-@app.route("/get_image", methods=['POST'])
-def get_image():
-    idx = request.json['idx']
-    res = db.get_image_info(idx)
-    
-    if len(res) == 0:
-        return 'INVALID_USER', 400
 
     return jsonify(res)
 
