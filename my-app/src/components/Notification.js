@@ -36,8 +36,9 @@ function Notification() {
     useEffect( ()=>{ //화면이 열리자 마자 실행이 된다.
         fetch('http://52.79.237.147:5000/get_image_list')
         .then(res => {
-            console.log(res);
+            console.log("결과");
             var data = res.json();
+            console.log(data);
             var key = data.length;
             console.log(data);
             for (var step = 0; step < key; step++){
