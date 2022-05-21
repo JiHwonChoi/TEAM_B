@@ -122,19 +122,27 @@ function Notification() {
         var json_location = JSON.stringify(data_location)
         console.log(json_location)
         post(url, json_location, config).then((res) => { //에러 발생
-            console.log("여기")
+            console.log(res)
             get_map(key, res);
 
         })
     }
     
     function get_map(key, data){
-        var img_blob = data.data;
-        var arrayBufferView = new Uint8Array( img_blob );
+        var img_blob = data.data.map;
+        // console.log(img_blob);
+        const byteCharacters = atob(img_blob);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        var arrayBufferView = new Uint8Array( byteNumbers );
+        // console.log(arrayBufferView);
         var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
         var urlCreator = window.URL || window.webkitURL;
         var imageUrl = urlCreator.createObjectURL( blob );
-        //setimgurl(imageUrl)
+        console.log(imageUrl);
+        setimgurl(imageUrl);
         var image_map = document.getElementById("image_picture_"+key)
         image_map.src = imageUrl;
     }
