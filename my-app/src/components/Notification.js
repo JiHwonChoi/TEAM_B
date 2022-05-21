@@ -23,7 +23,7 @@ function Notification() {
         var newDiv_location = document.createElement('div');
         //지도로 보여주는 버튼
         var newDiv_button = document.createElement('button');
-        newDiv_button.onclick()
+        // newDiv_button.onclick()
 
         // 2. <div>에 들어갈 text node 만들기
         //이름
