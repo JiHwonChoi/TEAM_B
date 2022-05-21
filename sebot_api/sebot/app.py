@@ -217,8 +217,8 @@ def get_image_list():
 
     for row in tmp:
         new_row = {}
-        new_row['file_name'] = row[0]
-        new_row['user_nmae'] = row[1]
+        new_row['file_name'] = row[1]
+        new_row['user_nmae'] = row[2]
         res.append(new_row)
 
     return jsonify(res)
