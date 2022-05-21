@@ -63,7 +63,7 @@ class SeBot:
         # self.path_counter = (self.path_counter + 1) % (len(self.path))
         # Call Once when Init
 
-        rospy.loginfo(f'SEBOT INIT Successfully')
+        print(f'SEBOT INIT Successfully')
 
         # log subscriber
 
