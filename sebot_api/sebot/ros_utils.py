@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 # _*_ coding: utf-8 _*_
 
-import rospy
 import roslibpy
 import base64
-import time
 
 class SeBot:
     def __init__(self, db, robot_ip, socket):
