@@ -15,15 +15,16 @@ function Notification() {
     axios.defaults.withCredentials = false;
     axios.defaults.baseURL = "52.79.237.147:5000";
 
-    const [url,seturl] = useState('')
-    const [array, setarray] = useState()
-    const [map, setmap] = useState()
-    const [img, setimg] = useState('')
+    // const [url,seturl] = useState('')
+    // const [array, setarray] = useState()
+    // const [map, setmap] = useState()
+    // const [img, setimg] = useState('')
     const [imgurl, setimgurl] = useState()
+    const [number, setnumber] = useState()
 
     function onbutton(key){
-        var box_review = document.getElementsByClassName("review_"+key);
-        var box_main = document.getElementsByClassName("main_"+key);
+        //var box_review = document.getElementsByClassName("review_"+key);
+        //var box_main = document.getElementsByClassName("main_"+key);
         //box_review.style.display = "block";
         //box_main.style.display = "none";
         $(".review_"+key).toggle(500,swing)
@@ -33,6 +34,7 @@ function Notification() {
     //div 테그 만들기
     function createDiv(key, data) {
         var obj = data[key].data;
+
         // 1. <div> element 만들기
         //전체용
         var new_div = document.createElement('div')
@@ -55,7 +57,15 @@ function Notification() {
         newDiv_button.innerHTML = "지도 보기"
         newDiv_button.id = 'button_DIV'
         //함수 넣기
-        newDiv_button.onclick=() => notification_post(key)
+        newDiv_button.onclick=() => {
+            if (number != '1'){
+                notification_post(key)
+                console.log("김준서 test:" + imgurl)
+            }
+            else if (number == '1'){
+                original_picture(key)
+            }
+            }
 
         var css_button = document.createElement('button');
         css_button.innerHTML = "상세보기"
@@ -79,7 +89,8 @@ function Notification() {
         //지도
         //img 테그에 src 지정
         newDiv_picture.src = obj.url;
-        setimg(newDiv_picture);
+        setimgurl(obj.url);
+        //setimg(newDiv_picture);
 
         // // 3. <div>에 text node 붙이기
         newDiv_name.appendChild(newname);
@@ -108,7 +119,6 @@ function Notification() {
 
     function notification_post(key){
         const url = 'http://52.79.237.147:5000/get_map'
-        //const formData = new FormData();
         const config = {
             headers : {
                 // 'Access-Control-Allow-Origin': '*',
@@ -118,16 +128,16 @@ function Notification() {
         }
         var loc = document.getElementById("location_"+key).innerHTML.split(" ")[2]
         var data_location = {"location": loc}
-        // formData.append("location", loc);
         var json_location = JSON.stringify(data_location)
         console.log(json_location)
         post(url, json_location, config).then((res) => { //에러 발생
-            console.log("여기")
+            console.log(number)
             get_map(key, res);
 
         })
     }
-    
+
+    // 사진 넣기가 안됨
     function get_map(key, data){
         var img_blob = data.data;
         var arrayBufferView = new Uint8Array( img_blob );
@@ -137,6 +147,21 @@ function Notification() {
         //setimgurl(imageUrl)
         var image_map = document.getElementById("image_picture_"+key)
         image_map.src = imageUrl;
+        setnumber("1")
+        console.log(number)
+    }
+
+    function original_picture(key){
+        get_origin(key);
+    }
+
+    function get_origin(key){
+        var image_map = document.getElementById("image_picture_"+key)
+        image_map.src = imgurl;
+        console.log("여기용1 "+ number)
+        setnumber("0")
+        console.log("여기용2 "+ number)
+
     }
 
     useEffect( ()=>{ //화면이 열리자 마자 실행이 된다.
@@ -147,8 +172,8 @@ function Notification() {
             for (var step = 0; step < key; step++){
                 createDiv(step, res)
             }
+            console.log("useeffect");
         }) 
-        
     }, []);
 
     return (

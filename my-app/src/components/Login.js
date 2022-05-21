@@ -51,26 +51,32 @@ class Login extends React.Component {
     }
     render () {
         return (
-            <div className='grid_login'>
-            <form onSubmit={this.handleFormSubmit}>
-                
-                <h1>로그인</h1>
-                <div>
-                <label>아이디 </label>
-                <input type="text" name="id" value={this.state.id} onChange={this.handleValueChange}/>
-                </div>
+            <div>
+                <div className='grid_login'>
+                    <form onSubmit={this.handleFormSubmit}>
+                        <h1 className = 'top'>로그인</h1>
+                        <div className = "main_box">
+                            <div>
+                            <label className = "text"> 아이디  </label>
+                            <input type="text" name="id" value={this.state.id} onChange={this.handleValueChange}/>
+                            </div>
 
-                <div>
-                <label>패스워드 </label>
-                <input type="password" name="pw" value={this.state.pw} onChange={this.handleValueChange}/>
+                            <div className = 'pass'>
+                            <label className = "text"> 패스워드 </label>
+                            <input type="password" name="pw" value={this.state.pw} onChange={this.handleValueChange}/>
+                            </div>
+                        
+                    
+                            <div>
+                            <button className = "login_button" type="submit">로그인</button>
+                            <button className='button_register' onClick={this.props.onRegister}>회원가입</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div className = "img_login">
+                        
+                    </div>
                 </div>
-                
-            
-                <div>
-                <button className = "login_button"type="submit">로그인</button>
-                <button className='button_register' onClick={this.props.onRegister}>회원가입</button>
-                </div>
-                </form>
             </div>
         )
     }
