@@ -237,7 +237,7 @@ def get_map():
     world_map = cv2.imencode('_.jpg', world_map)[1]
     b64_string = base64.b64encode(world_map).decode('utf-8')
 
-    return jsonify(b64_string)
+    return jsonify({'map': b64_string})
 
 
 # Socket
