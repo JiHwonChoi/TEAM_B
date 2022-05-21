@@ -134,7 +134,7 @@ def call_sebot():
         return "SEBOT_BUSY", 423
 
     sebot.user_idx = session['idx']
-    
+
     start_point = [3, 2]
 
     if idx == 1:
@@ -207,7 +207,7 @@ def end_strolling():
     pass
 
 
-@app.route("/get_image_list", methods=['POST'])
+@app.route("/get_image_list", methods=['GET'])
 def get_image_list():
     nurse_idx = session['idx']
     # nurse_idx = 33
