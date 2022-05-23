@@ -47,7 +47,7 @@ def register():
         sql = 'INSERT INTO member_info("user_id", "user_pwd", "user_name", "user_code", "user_number") VALUES (%s, %s, %s, %s, %s)' # 실행할 SQL문
         
         try:
-            db.execute(sql,(userId, userPwd, userName, userCode, userNumber)) # 메소드로 전달해 명령문을 실행#
+            db.execute(sql,(userId, userPwd, userName, userCode, userNumber,)) # 메소드로 전달해 명령문을 실행#
             return jsonify({'SUCCESS': 'register'}),200  # 로그인 화면으로 이동
         
         except:
@@ -65,10 +65,11 @@ def login():
         userPwd = request.form['pw']
         if len(userId) == 0 or len(userPwd) == 0:
             return jsonify({'ERROR' : 'Please enter your ID and Password'}),400
+
         else:
             sql = 'select idx, user_id, user_pwd, user_code, user_name, user_type from member_info where (user_id = %s or user_code = %s) and user_pwd = %s'
             #sql = 'select * from member'
-            rows = db.execute(sql, (userId, userId, userPwd))
+            rows = db.execute(sql, (userId, userId, userPwd,))
             print(rows)
 
             if rows is None:
