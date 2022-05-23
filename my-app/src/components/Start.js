@@ -3,7 +3,7 @@ import './start.css'
 import CourseSelection from './Courseselection';
 import Homelogo from './Homelogo';
 import Search from './Search';
-import Home from './Home';
+import HomeUser from './Home_user';
 import Notification from './Notification';
 import Profile from './Profile';
 import Navigation from './Navigation';
@@ -87,7 +87,7 @@ function Start (props) {
                 setArticle(<Search />)
             }
             else if (idx=='home_button'){
-                setArticle(<Home />)
+                setArticle(<HomeUser callWalkPage = {callWalkpage} />)
             }
             else if (idx=='noti'){
                 setArticle(<Notification />)
@@ -104,6 +104,7 @@ function Start (props) {
         return(
             <div>
                 {console.log('render')}
+                start.js
                 <div className='home-background'>
                     
                     {article}

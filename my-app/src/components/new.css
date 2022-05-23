@@ -214,3 +214,30 @@ top: 210px;
 
 overflow: hidden;
 }
+
+.onwalk_1{
+    position: absolute;
+    top: 200px;
+    color: white;
+}
+.onwalk_2{
+    position: absolute;
+    top: 260px;
+    color: white;
+}
+
+.pause_button{
+    background-color: grey;
+}
+
+.continue_button{
+    background-color: white;
+}
+.walking_page{
+    background-color: grey;
+    height: 727px;
+    
+}
+.home_background{
+    background: grey;
+}

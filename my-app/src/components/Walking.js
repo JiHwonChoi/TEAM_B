@@ -7,63 +7,38 @@ function Walking(props) {
 
     const [imgurl, setImgurl] = useState('')
     const socket = useContext(SocketContext);
-    const [check, setCheck] = useState('1호기 이용중 입니다.')
+    const [check, setCheck] = useState('재개하기 버튼을 눌러주세요')
+    const [pButton, setPButton] = useState(
+        {'backgroundColor':'white'}
+    )
+    const [isPaused, setPaused] = useState(0)
 
-    // setTimeout(finishWalking, 2000)
-    
-    useEffect( ()=>{
-        socket.emit( 'robot location')
-        console.log('!!!request location!!!')
-        socket.on('state', (msg) => {
-            console.log(msg.arrival)
-            if(msg.arrival){
-                socket.off('state')
-                finishWalking()
-            }
-            else{
-                handlestate(msg)
-            }
-        })
-
-        return () => {
-            socket.off('state', (msg) => {
-                handlestate(msg)
-            })
-           
+    function press_pause(){
+        if(isPaused===0){
+            setPButton(
+                {'backgroundColor':'grey'},
+            )
+            setPaused(1)
         }
-    }, [])
-
-    function finishWalking(){
-
-        setCheck('산책을 완료하였습니다.')
-
+        else{
+            setPButton(
+                {'backgroundColor':'white'},
+            )
+            setPaused(0)
+        }
     }
 
-    const handlestate  = (msg) => {
-        // console.log(msg)
-        var arrayBufferView = new Uint8Array( msg.map );
-        var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
-        var urlCreator = window.URL || window.webkitURL;
-        var imageUrl = urlCreator.createObjectURL( blob );
-        // console.log('imageurl here:', imageUrl)
-        setImgurl(imageUrl)
-        socket.emit( 'robot location')
-
-    }
 
     return (
-        <div>
+        <div className='walking_page' style={pButton}>
             this is Walking.js
             <div className='title'>
-                <div className='big_title'>산책 중 입니다.</div>
-                <div className='small_title'>{check}</div>
+                <div className='big_title onwalk_1'>일시 정지</div>
+                <div className='small_title onwalk_2'>{check}</div>
             </div>
 
-            <div className='robot_current_walking'>
-                <img src ={imgurl}></img>
-            </div>
-            <div className='detail' onClick={props.gowalk} >응급호출</div>
-            <div className='to_my_location' onClick ={props.canceled}>취소하기</div>
+            <div className='detail pause_button' onClick={press_pause} style={pButton} >일시정지</div>
+            <div className='to_my_location continue_button' onClick ={press_pause}>재개하기</div>
             <div className='take_stroll'></div>
 
         </div>
