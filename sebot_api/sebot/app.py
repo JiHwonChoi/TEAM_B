@@ -67,9 +67,12 @@ def login():
             return jsonify({'ERROR' : 'Please enter your ID and Password'}),400
 
         else:
+            sql = 'select * from member_info'
+            row = db.execute(sql)
+            print(row)
             sql = 'select idx, user_id, user_pwd, user_code, user_name, user_type from member_info where (user_id = %s or user_code = %s) and user_pwd = %s'
-            #sql = 'select * from member'
             rows = db.execute(sql, (userId, userId, userPwd,))
+            
             print(rows)
 
             if rows is None:
