@@ -27,7 +27,7 @@ class Database:
     def execute(self, query, args={}):
         self.cursor.execute(query, args)
 
-        if query.startswith('S'):
+        if query.startswith('S') or query.startswith('s'):
             row = self.cursor.fetchall()
             return row
 
@@ -73,6 +73,6 @@ class Database:
 
 if __name__=="__main__":
     db = Database()
-    print(db.get_map_location(1))
+    
     # cv2.imshow("map test", db.map)
     # cv2.waitKey(0)
