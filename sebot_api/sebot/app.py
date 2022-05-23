@@ -43,17 +43,15 @@ def register():
         if userPwd_check != userPwd:
             return jsonify({'ERROR' : 'NOT SAME Password and Check_Password.'}),411
           
-        conn = db2 # DB와 연결
-        cursor = conn.cursor() # connection으로부터 cursor 생성
+        
         sql = 'INSERT INTO member_info("user_id", "user_pwd", "user_name", "user_code", "user_number") VALUES (%s, %s, %s, %s, %s)' # 실행할 SQL문
         
         try:
-            cursor.execute(sql,(userId, userPwd, userName, userCode, userNumber)) # 메소드로 전달해 명령문을 실행#
-            #conn.commit() # 변경사항 저장
+            db.execute(sql,(userId, userPwd, userName, userCode, userNumber)) # 메소드로 전달해 명령문을 실행#
             return jsonify({'SUCCESS': 'register'}),200  # 로그인 화면으로 이동
         
         except:
-            conn.rollback() # 데이터베이스에 대한 모든 변경사항을 되돌림
+            db.cursor.rollback() # 데이터베이스에 대한 모든 변경사항을 되돌림
             return jsonify({'ERROR' : 'Register Failed'}),415
          
     return jsonify({'ERROR' : 'Posting Error'}),416 # 용도 확인
@@ -68,14 +66,13 @@ def login():
         if len(userId) == 0 or len(userPwd) == 0:
             return jsonify({'ERROR' : 'Please enter your ID and Password'}),400
         else:
-            conn = db2
-            cursor = conn.cursor()
             sql = 'select idx, user_id, user_pwd, user_code, user_name, user_type from member_info where (user_id = %s or user_code = %s) and user_pwd = %s'
             #sql = 'select * from member'
-            cursor.execute(sql, (userId, userId, userPwd))
-            rows = cursor.fetchall()
+            rows = db.execute(sql, (userId, userId, userPwd))
+
             if len(rows) == 0:
                 return jsonify({'ERROR' : 'NOT Exist ID or Password'}),401
+
             else:
                 for rs in rows:
                     if (userId == rs[1] and userPwd == rs[2])or(userId == rs[3] and userPwd == rs[2]): #회원 코드로도 로그인 가능
@@ -84,11 +81,12 @@ def login():
                         session['userId'] = rs[4]
                         session['userType'] = rs[5]
                         print(session) ## 출력이 되므로 session에 저장이 되어 있음
-                        return jsonify({'SUCCESS': 'login', "data" : session['userType'], "ID": session['userId']}),200
+                        return jsonify({'SUCCESS': 'login', "data" : session['userType'], "ID": session['userId']}), 200
+
                     else:
-                        return jsonify({'ERROR' : 'Login Failed'}),400 #메소드를 호출
+                        return jsonify({'ERROR' : 'Login Failed'}), 400 #메소드를 호출
     else:
-        return jsonify({'ERROR' : 'Posting Error'}),402
+        return jsonify({'ERROR' : 'Posting Error'}), 402
 
 
 
