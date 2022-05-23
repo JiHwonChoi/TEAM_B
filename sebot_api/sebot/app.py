@@ -70,7 +70,7 @@ def login():
             #sql = 'select * from member'
             rows = db.execute(sql, (userId, userId, userPwd))
 
-            if len(rows) == 0:
+            if rows is None:
                 return jsonify({'ERROR' : 'NOT Exist ID or Password'}),401
 
             else:
