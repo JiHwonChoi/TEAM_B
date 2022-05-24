@@ -224,7 +224,7 @@ def get_map():
 
     data = json.loads(request.get_data()) # json error detector needed
     
-    if (not 'location' in data):0
+    if (not 'location' in data):
         return "INVALID_INPUT", 406
     
     x,y = list(map(float, data['location'].split(',')))
