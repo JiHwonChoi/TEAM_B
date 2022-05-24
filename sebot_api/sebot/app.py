@@ -246,6 +246,7 @@ def robot_location():
     print("Robot Location")
     map = db.map.copy()
     map = cv2.circle(map, (int((50+sebot.x)*10), int((50-sebot.y)*10)), 5, (0, 0, 255), -1)
+    map = map[300:700][:]
     map = cv2.imencode('_.jpg', map)[1].tobytes()
 
     time.sleep(2)
