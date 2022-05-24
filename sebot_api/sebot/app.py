@@ -19,6 +19,7 @@ from db_utils import Database
 
 
 app = Flask(__name__)
+app.secret_key = 'super secret key'
 Session(app)
 cors = CORS(app, resources={r"/*": {"origins": "*"}}, automatic_options=True)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -259,7 +260,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     db = Database()
     sebot = SeBot(db, args.robot_ip, socketio)
-    app.secret_key = 'super secret key'
+    
     
     # app.debug = True
     # app.run(port=5000, debug = True)
