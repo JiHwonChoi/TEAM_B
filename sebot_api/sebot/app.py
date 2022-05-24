@@ -19,8 +19,9 @@ from ros_utils import SeBot
 app = Flask(__name__)
 app.secret_key = 'super secret key'
 Session(app)
-cors = CORS(app, resources={r"/*": {"origins": "http://52.79.237.14:3000"}}, automatic_options=True, supports_credentials=True)
-socketio = SocketIO(app, cors_allowed_origins="http://52.79.237.14:3000")
+# cors = CORS(app, resources={r"/*": {"origins": "*"}}, automatic_options=True, supports_credentials=True)
+# socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app)
 # session = {}
 
 @app.route('/')
@@ -28,7 +29,6 @@ def index():
     return "<h1> HI </h1>"
 
 @app.route('/register', methods=['POST',"GET"]) # 회원가입 화면
-@cross_origin()
 def register():
     if request.method == 'POST': # POST 형식으로 요청할 것임
     
