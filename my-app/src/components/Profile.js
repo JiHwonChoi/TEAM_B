@@ -80,7 +80,7 @@ function Profile() {
                 로그아웃
                 </div>
 
-                <div className='grid_3_2' onClick={() => window.open('https://www.naver.com/', '_blank')}>
+                <div className='grid_3_2' onClick={() => window.open('http://pf.kakao.com/_pCxeLb/chat', '_blank')}>
 
                 {/*1대 1 문의 -> 카카오톡 오픈 채팅방 개설*/}
                 1대1 문의

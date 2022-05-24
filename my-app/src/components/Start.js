@@ -13,6 +13,7 @@ import Callrobot from './CallRobot';
 import axios from 'axios';
 import socketio from 'socket.io-client'
 import { SocketContext } from "../service/socket";
+import HomeUser from './Home_user';
 
 
 
@@ -21,7 +22,7 @@ import { SocketContext } from "../service/socket";
 
 function Start (props) {
         
-        const [article, setArticle] = useState(<Homelogo />)
+        const [article, setArticle] = useState(<HomeUser />)
         const [imgurl, setImgurl] = useState('')
         const socket = useContext(SocketContext);
         
