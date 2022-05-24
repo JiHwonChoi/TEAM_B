@@ -21,7 +21,7 @@ app.secret_key = 'super secret key'
 Session(app)
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, automatic_options=True, supports_credentials=True)
 socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000")
-session = {}
+# session = {}
 
 @app.route('/')
 def index():
