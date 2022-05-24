@@ -20,7 +20,7 @@ app = Flask(__name__)
 app.secret_key = 'super secret key'
 Session(app)
 # cors = CORS(app, resources={r"/*": {"origins": "*"}}, automatic_options=True, supports_credentials=True)
-socketio = SocketIO(app, cors_allowed_origins=["http://52.79.237.147:3000/"])
+socketio = SocketIO(app, cors_allowed_origins=['http://52.79.237.147:3000/', 'http://localhost:3000'])
 # socketio = SocketIO(app)
 # session = {}
 
