@@ -3,13 +3,14 @@
 
 import cv2
 import time
+import argparse
+import roslibpy
+import json
+import base64
 from flask import Flask, request, session, jsonify
 from flask_socketio import SocketIO
 from flask_cors import cross_origin, CORS
 from models import db2
-import argparse
-import roslibpy
-import json
 from db_utils import Database
 from ros_utils import SeBot
 from ros_utils import SeBot
@@ -42,17 +43,15 @@ def register():
         if userPwd_check != userPwd:
             return jsonify({'ERROR' : 'NOT SAME Password and Check_Password.'}),411
           
-        conn = db2 # DB와 연결
-        cursor = conn.cursor() # connection으로부터 cursor 생성
+        
         sql = 'INSERT INTO member_info("user_id", "user_pwd", "user_name", "user_code", "user_number") VALUES (%s, %s, %s, %s, %s)' # 실행할 SQL문
         
         try:
-            cursor.execute(sql,(userId, userPwd, userName, userCode, userNumber)) # 메소드로 전달해 명령문을 실행#
-            #conn.commit() # 변경사항 저장
+            db.execute(sql,(userId, userPwd, userName, userCode, userNumber,)) # 메소드로 전달해 명령문을 실행#
             return jsonify({'SUCCESS': 'register'}),200  # 로그인 화면으로 이동
         
         except:
-            conn.rollback() # 데이터베이스에 대한 모든 변경사항을 되돌림
+            db.cursor.rollback() # 데이터베이스에 대한 모든 변경사항을 되돌림
             return jsonify({'ERROR' : 'Register Failed'}),415
          
     return jsonify({'ERROR' : 'Posting Error'}),416 # 용도 확인
@@ -66,15 +65,14 @@ def login():
         userPwd = request.form['pw']
         if len(userId) == 0 or len(userPwd) == 0:
             return jsonify({'ERROR' : 'Please enter your ID and Password'}),400
+
         else:
-            conn = db2
-            cursor = conn.cursor()
             sql = 'select idx, user_id, user_pwd, user_code, user_name, user_type from member_info where (user_id = %s or user_code = %s) and user_pwd = %s'
-            #sql = 'select * from member'
-            cursor.execute(sql, (userId, userId, userPwd))
-            rows = cursor.fetchall()
-            if len(rows) == 0:
+            rows = db.execute(sql, (userId, userId, userPwd,))
+
+            if rows is None:
                 return jsonify({'ERROR' : 'NOT Exist ID or Password'}),401
+
             else:
                 for rs in rows:
                     if (userId == rs[1] and userPwd == rs[2])or(userId == rs[3] and userPwd == rs[2]): #회원 코드로도 로그인 가능
@@ -83,12 +81,14 @@ def login():
                         session['userId'] = rs[4]
                         session['userType'] = rs[5]
                         print(session) ## 출력이 되므로 session에 저장이 되어 있음
-                        return jsonify({'SUCCESS': 'login', "data" : session['userType'], "ID": session['userId']}),200
+                        return jsonify({'SUCCESS': 'login', "data" : session['userType'], "ID": session['userId']}), 200
+
                     else:
+                        return jsonify({'ERROR' : 'Login Failed'}), 400 #메소드를 호출
                         return jsonify({'ERROR' : 'Login Failed'}),400 #메소드를 호출
             cursor.close()
     else:
-        return jsonify({'ERROR' : 'Posting Error'}),402
+        return jsonify({'ERROR' : 'Posting Error'}), 402
 
 
 
@@ -103,8 +103,8 @@ def info():
         else:
             userId = session["userId"]
             userType = session["userType"]
-            print(userId)
-            print(userType)
+            print(userId, userType)
+            
             try:
                 return jsonify({'SUCCESS': 200, 'Data' : userId, "Type": userType}), 200   
             except:
@@ -117,7 +117,7 @@ def info():
 # Send Destination
 @app.route("/call_sebot", methods=['POST'])
 def call_sebot():
-    print('call sebot')
+    print('Call SEBOT')
     if request.headers["Content-Type"] != "application/json":
         return "INVALID_ACCESS", 406
     
@@ -131,25 +131,22 @@ def call_sebot():
     if not type(idx) is int:
         return "INVALID_INPUT", 406
 
-    if not sebot.idle:
-        return "SEBOT_BUSY", 423
+    # if not sebot.idle:
+    #     return "SEBOT_BUSY", 423
 
-    start_point = [3, 2]
+    sebot.user_id = session['idx']
 
-    if idx == 1:
-        start_point = [-9.5, 9.5]
+    start_point = db.get_map_location(idx)
     
-
-
     ros_request = roslibpy.ServiceRequest({"goal": {
         "header": {"frame_id": "map"},
         "pose": {"position": {"x": start_point[0], "y": start_point[1]},
                 "orientation": {"w": 1}
                 }
     }})
-    print('before call')
+    
     result = sebot.goal_srv.call(ros_request)
-    print('after call')
+    
     if result['response']:
         sebot.idle = False
         sebot.arrival = False
@@ -177,8 +174,8 @@ def set_dest():
     if not type(dst_point) is list or len(dst_point) != 2 or not type(dst_point[0]) is int or not type(dst_point[1]) is int:
         return "INVALID_INPUT", 406
 
-    if not sebot.idle:
-        return "SEBOT_BUSY", 423
+    # if not sebot.idle:
+    #     return "SEBOT_BUSY", 423
     
 
     ros_request = roslibpy.ServiceRequest({"goal": {
@@ -206,47 +203,57 @@ def end_strolling():
     pass
 
 
-@app.route("/get_image_list", methods=['POST'])
+@app.route("/get_image_list", methods=['GET'])
 def get_image_list():
-    # nurse_idx = session['idx']
-    nurse_idx = 33
-    image_info_query = 'SELECT e.idx, e.file_name, mem.user_name FROM emergency AS e INNER JOIN member_info AS mem ON e.user_idx = mem.idx WHERE nurse_idx = 33 ORDER BY e.idx DESC'
+    nurse_idx = session['idx']
+    # nurse_idx = 33
+    image_info_query = 'SELECT e.idx, e.file_name, mem.user_name FROM emergency AS e INNER JOIN member_info AS mem ON e.user_idx = mem.idx WHERE nurse_idx = %s ORDER BY e.idx DESC'
     tmp = db.execute(image_info_query, (nurse_idx,))
     res = []
 
     for row in tmp:
         new_row = {}
-        new_row['file_name'] = row[0]
-        new_row['user_nmae'] = row[1]
+        new_row['idx'] = row[0]
+        new_row['data'] = db.get_image_info(row[0])
         res.append(new_row)
 
     return jsonify(res)
 
+# Socket
+@app.route("/get_map", methods=['POST'])
+def get_map():
+    world_map = db.map.copy()
 
-@app.route("/get_image", methods=['POST'])
-def get_image():
-    idx = request.json['idx']
-    res = db.get_image_info(idx)
+    data = json.loads(request.get_data()) # json error detector needed
     
-    if len(res) == 0:
-        return 'INVALID_USER', 400
+    if (not 'location' in data):
+        return "INVALID_INPUT", 406
+    
+    x,y = list(map(float, data['location'].split(',')))
+    # print(data['location'].split(','))
+    print(x, y)
+    world_map = cv2.circle(world_map, (int((50 + x)*10), int((50 - y)*10)), 5, (0, 0, 255), -1)
+    # world_map = cv2.imencode('_.jpg', world_map)[1].tobytes()
+    world_map = cv2.imencode('_.jpg', world_map)[1]
+    b64_string = base64.b64encode(world_map).decode('utf-8')
 
-    return jsonify(res)
+    return jsonify({'map': b64_string})
 
 
 # Socket
 @socketio.on('robot location')
 def robot_location():
+    print("Robot Location")
     map = db.map.copy()
     map = cv2.circle(map, (int((50+sebot.x)*10), int((50-sebot.y)*10)), 5, (0, 0, 255), -1)
     map = cv2.imencode('_.jpg', map)[1].tobytes()
-    print('hihihihii')
 
+    time.sleep(2)
     socketio.emit('state', {'map': map, 'arrival': sebot.arrival})
     
     if sebot.arrival:
         sebot.arrival = False
-    time.sleep(1)
+    
 
 
 if __name__ == "__main__":
@@ -256,6 +263,7 @@ if __name__ == "__main__":
     db = Database()
     sebot = SeBot(db, args.robot_ip, socketio)
     app.secret_key = 'super secret key'
+    
     # app.debug = True
     # app.run(port=5000, debug = True)
-    socketio.run(app)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=False)
