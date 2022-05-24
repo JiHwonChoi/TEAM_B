@@ -8,6 +8,7 @@ import roslibpy
 import json
 import base64
 from flask import Flask, request, session, jsonify
+from flask_session import Session
 from flask_socketio import SocketIO
 from flask_cors import cross_origin, CORS
 from models import db2
@@ -16,7 +17,9 @@ from ros_utils import SeBot
 from ros_utils import SeBot
 from db_utils import Database
 
+
 app = Flask(__name__)
+Session(app)
 cors = CORS(app, resources={r"/*": {"origins": "*"}}, automatic_options=True)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
@@ -199,7 +202,6 @@ def end_strolling():
 
 @app.route("/get_image_list", methods=['GET'])
 def get_image_list():
-    print(session)
     nurse_idx = session['idx']
     # nurse_idx = 33
     image_info_query = 'SELECT e.idx, e.file_name, mem.user_name FROM emergency AS e INNER JOIN member_info AS mem ON e.user_idx = mem.idx WHERE nurse_idx = %s ORDER BY e.idx DESC'
