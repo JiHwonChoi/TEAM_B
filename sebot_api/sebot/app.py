@@ -204,6 +204,7 @@ def end_strolling():
 
 @app.route("/get_image_list", methods=['GET'])
 def get_image_list():
+    print(session)
     nurse_idx = session['idx']
     # nurse_idx = 33
     image_info_query = 'SELECT e.idx, e.file_name, mem.user_name FROM emergency AS e INNER JOIN member_info AS mem ON e.user_idx = mem.idx WHERE nurse_idx = %s ORDER BY e.idx DESC'
