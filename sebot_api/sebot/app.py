@@ -85,8 +85,6 @@ def login():
 
                     else:
                         return jsonify({'ERROR' : 'Login Failed'}), 400 #메소드를 호출
-                        return jsonify({'ERROR' : 'Login Failed'}),400 #메소드를 호출
-            cursor.close()
     else:
         return jsonify({'ERROR' : 'Posting Error'}), 402
 
