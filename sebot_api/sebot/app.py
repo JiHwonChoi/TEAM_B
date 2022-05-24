@@ -86,6 +86,7 @@ def login():
                         return jsonify({'SUCCESS': 'login', "data" : session['userType'], "ID": session['userId']}),200
                     else:
                         return jsonify({'ERROR' : 'Login Failed'}),400 #메소드를 호출
+            cursor.close()
     else:
         return jsonify({'ERROR' : 'Posting Error'}),402
 
