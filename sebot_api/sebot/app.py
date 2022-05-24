@@ -16,7 +16,6 @@ from ros_utils import SeBot
 from ros_utils import SeBot
 from db_utils import Database
 
-
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}}, automatic_options=True)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -90,7 +89,6 @@ def login():
 
 @app.route('/info', methods=['POST',"GET"])
 def info():
-
     if request.method == 'POST':
         login_status = request.form["login_status"]
         
@@ -201,6 +199,7 @@ def end_strolling():
 
 @app.route("/get_image_list", methods=['GET'])
 def get_image_list():
+    print(session)
     nurse_idx = session['idx']
     # nurse_idx = 33
     image_info_query = 'SELECT e.idx, e.file_name, mem.user_name FROM emergency AS e INNER JOIN member_info AS mem ON e.user_idx = mem.idx WHERE nurse_idx = %s ORDER BY e.idx DESC'
