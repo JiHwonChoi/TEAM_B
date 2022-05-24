@@ -20,8 +20,6 @@ from db_utils import Database
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}}, automatic_options=True)
 socketio = SocketIO(app, cors_allowed_origins="*")
-session = {}
-
 
 @app.route('/')
 def index():
