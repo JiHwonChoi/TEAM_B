@@ -205,7 +205,7 @@ def end_strolling():
 def get_image_list():
     nurse_idx = session['idx']
     # nurse_idx = 33
-    image_info_query = 'SELECT e.idx, e.file_name, mem.user_name FROM emergency AS e INNER JOIN member_info AS mem ON e.user_idx = mem.idx WHERE nurse_idx = 33 ORDER BY e.idx DESC'
+    image_info_query = 'SELECT e.idx, e.file_name, mem.user_name FROM emergency AS e INNER JOIN member_info AS mem ON e.user_idx = mem.idx WHERE nurse_idx = %s ORDER BY e.idx DESC'
     tmp = db.execute(image_info_query, (nurse_idx,))
     res = []
 
@@ -224,7 +224,7 @@ def get_map():
 
     data = json.loads(request.get_data()) # json error detector needed
     
-    if (not 'location' in data):
+    if (not 'location' in data):0
         return "INVALID_INPUT", 406
     
     x,y = list(map(float, data['location'].split(',')))
