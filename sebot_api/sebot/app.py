@@ -7,7 +7,6 @@ import argparse
 import roslibpy
 import json
 import base64
-import redis
 from flask import Flask, request, session, jsonify
 from flask_session import Session
 from flask_socketio import SocketIO
@@ -15,17 +14,14 @@ from flask_cors import cross_origin, CORS
 from models import db2
 from db_utils import Database
 from ros_utils import SeBot
-from ros_utils import SeBot
-from db_utils import Database
 
 
 app = Flask(__name__)
 app.secret_key = 'super secret key'
-app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_REDIS'] = redis.from_url('127.0.0.1:6379')
 Session(app)
 cors = CORS(app, resources={r"/*": {"origins": "*"}}, automatic_options=True, supports_credentials=True)
 socketio = SocketIO(app, cors_allowed_origins="*")
+session = {}
 
 @app.route('/')
 def index():
