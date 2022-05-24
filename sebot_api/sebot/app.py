@@ -20,7 +20,7 @@ from db_utils import Database
 
 app = Flask(__name__)
 app.secret_key = 'super secret key'
-app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_TYPE'] = 'redis'
 Session(app)
 cors = CORS(app, resources={r"/*": {"origins": "*"}}, automatic_options=True, supports_credentials=True)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -82,6 +82,7 @@ def login():
                         session['idx'] = rs[0]
                         session['userId'] = rs[4]
                         session['userType'] = rs[5]
+
                         print(session) ## 출력이 되므로 session에 저장이 되어 있음
                         return jsonify({'SUCCESS': 'login', "data" : session['userType'], "ID": session['userId']}), 200
 
@@ -231,7 +232,7 @@ def get_map():
     
     x,y = list(map(float, data['location'].split(',')))
     # print(data['location'].split(','))
-    print(x, y)
+    # print(x, y)
     world_map = cv2.circle(world_map, (int((50 + x)*10), int((50 - y)*10)), 5, (0, 0, 255), -1)
     # world_map = cv2.imencode('_.jpg', world_map)[1].tobytes()
     world_map = cv2.imencode('_.jpg', world_map)[1]
