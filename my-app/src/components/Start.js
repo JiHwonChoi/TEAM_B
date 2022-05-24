@@ -104,7 +104,7 @@ function Start (props) {
 
         return(
             <div>
-                {console.log('render')}
+                {/* {console.log('render')} */}
                 <div className='home-background'>
                     
                     {article}

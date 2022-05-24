@@ -53,12 +53,13 @@ function StartAdmin (props) {
     // })
     return(
         <div>
-            {console.log('render')}
+            {/* {console.log('render')} */}
             <div className='home-background'>
                 
-                {title}
+                {/* {title} */}
                 <br></br><br></br><br></br>
                 {article}
+                
                 <Navigation onChange={function(idx){
                     console.log('this is onChange function',idx)
                     if(idx=='plus'){
