@@ -21,7 +21,7 @@ no_human_endurance_time = 6.0 # time to stop if there's no human
 WIDTH = 960
 HEIGHT = 540
 emergency_srv = '/emergency_sign'
-image_topic = '/rear_camera/rgb/image_raw'
+image_topic = '/camera/rgb/image_raw'
 em_topic = '/em_topic'
 class Human_follower(DetectorManager):
     def __init__(self, follower_mode=False,speed = 0.26, srv_mode = False, em_mode = False):
@@ -68,7 +68,7 @@ class Human_follower(DetectorManager):
 
     def _em_cb(self,data):
         self.em_data = data.data
-        rospy.loginfo(f"emtest {self.em_data}")
+        #rospy.loginfo(f"emtest {self.em_data}")
     def _comp_cb(self, data):
         self.comp_data = data
         #rospy.loginfo(self.no_human_flag)
@@ -173,11 +173,15 @@ class Human_follower(DetectorManager):
                 if not self.em_data:
                     self.vel_pub.publish(pub_vel)
                 else:
+                    rospy.loginfo("Emergency detected")
                     _stop = Twist()
-                    _stop.angular = pub_vel
+                    _stop.linear.x = 0.02
+                    _stop.linear.y = 0.02
+                    _stop.angular = pub_vel.angular
                     self.vel_pub.publish(_stop)
+                    rospy.loginfo("Stop")
             except:
-                #print("Robot currently stop.")
+                print("Robot currently stop.")
                 pass
             return
         if time.time() - self.endurance_time > no_human_endurance_time:

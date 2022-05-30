@@ -19,7 +19,7 @@ NECK_TH=450/2
 -------PARAMETERS-----------
 '''
 openpose_path = '/home/danmuzi/openpose/' #You need to change to dir where you download openpose
-image_topic = '/rear_camera/rgb/image_raw'
+image_topic = '/camera/rgb/image_raw'
 emergency_srv = '/emergency_sign'
 em_topic = '/em_topic'
 '''
@@ -130,7 +130,7 @@ class Pose_detector:
                 return
             for person in datum.poseKeypoints:
                #print("person detected")
-               if person[1][1]==0:
+               if person[1][1] == 0 or person[22][1] == 0:
                    continue
                #print("neck: ",person[1][1])
                if person[1][1]>NECK_TH:
@@ -140,7 +140,9 @@ class Pose_detector:
                    angle=np.abs(np.arctan2(person[1][1]-person[8][1],person[1][0]-person[8][0]))*180/np.pi
                    #print ("angle",angle)
                    #print("person hip",person[8][1])
-                   if angle<30 or angle>150 or person[8][1]>400:
+                   heap_angle = np.abs(np.arctan2(person[22][1] - person[8][1], person[22][0] - person[8][0])) * 180 / np.pi
+                   if angle < 60 or angle > 120 or heap_angle < 60 or heap_angle >120::
+                       #print("foot",person[22][1])
                        _safe = False
                        cv2.putText(temp, "EMERGENCY DETECTED", (30, 30), font, fontScale, (0, 0, 255), 3, cv2.LINE_AA)
                        self.emergency_flag = True
