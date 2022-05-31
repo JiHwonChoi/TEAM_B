@@ -92,7 +92,7 @@ class Pose_detector:
 
     def _comp_cb(self,data):
         _time_gap = 3
-        rospy.loginfo(f"Comp_cb {self.emergency_flag} {(time.time() - self.last_service_time > 3)}")
+        #rospy.loginfo(f"Comp_cb {self.emergency_flag} {(time.time() - self.last_service_time > 3)}")
         if self.emergency_flag and (time.time() - self.last_service_time > _time_gap):
             rospy.loginfo("REUESTING")
             res = self.emergency_client(data)
@@ -141,7 +141,8 @@ class Pose_detector:
                    #print ("angle",angle)
                    #print("person hip",person[8][1])
                    heap_angle = np.abs(np.arctan2(person[22][1] - person[8][1], person[22][0] - person[8][0])) * 180 / np.pi
-                   if angle < 60 or angle > 120 or heap_angle < 60 or heap_angle >120::
+                   print("angle",angle,"   heap_angle",heap_angle)
+                   if angle < 60 or angle > 120 or heap_angle < 60 or heap_angle >120:
                        #print("foot",person[22][1])
                        _safe = False
                        cv2.putText(temp, "EMERGENCY DETECTED", (30, 30), font, fontScale, (0, 0, 255), 3, cv2.LINE_AA)

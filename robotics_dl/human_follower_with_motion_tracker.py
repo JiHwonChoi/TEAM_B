@@ -281,7 +281,7 @@ class Human_follower(DetectorManager):
 
 if __name__ == '__main__':
     rospy.init_node("human_follower")
-    human_follower=Human_follower(True,em_mode=False)
+    human_follower=Human_follower(False,em_mode=False)
     while True:
         human_follower.modify_speed()
         rospy.sleep(.1)
