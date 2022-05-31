@@ -1,3 +1,7 @@
 sensor_msgs/CompressedImage image
 ---
+<<<<<<< HEAD
 bool success
+=======
+bool emergency
+>>>>>>> 5bab64001a11538d4abbdd5bede153d83a9bff03

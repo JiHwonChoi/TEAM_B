@@ -1,0 +1,216 @@
+/* div{
+    border: solid black 1px;
+} */
+
+div{
+    vertical-align: middle;    
+}
+
+.title{
+    /* Title */
+
+/* Auto layout */
+
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 12px 24px 16px;
+
+position: absolute;
+height: 76px;
+left: 0px;
+right: 0px;
+top: 92px;
+
+/* border: solid black 1px; */
+}
+
+.big_title{
+    /* 로봇 역할 카테고리 */
+
+
+position: static;
+width: 327px;
+height: 36px;
+left: 24px;
+top: 12px;
+
+/* /Title2 */
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 700;
+font-size: 32px;
+line-height: 36px;
+/* identical to box height, or 112% */
+
+text-align: center;
+
+/* Ink/Darkest */
+
+color: #090A0A;
+
+
+/* Inside auto layout */
+
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+margin: 4px 0px;
+}
+
+.small_title{
+    position: static;
+    width: 327px;
+    left: calc(50% - 327px/2);
+    top: 68.42%;
+    bottom: 0%;
+
+/* Regular/Normal/Regular */
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 24px;
+/* identical to box height, or 150% */
+
+text-align: center;
+
+/* Ink/Light */
+
+color: #6C7072;
+
+
+/* Inside auto layout */
+
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+margin: 4px 0px;
+}
+
+.search_tab{
+    position: absolute;
+height: 48px;
+left: 17px;
+right: 15px;
+top: 203px;
+border: solid black 1px;
+}
+
+.robot_current{
+    border: solid black 1px;
+    /* Content Blocks */
+
+
+/* Auto layout */
+
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+
+position: absolute;
+width: 327px;
+height: 284px;
+left: 25px;
+top: 285px;
+
+overflow: hidden;
+}
+
+.detail{
+    border: solid black 1px;
+    text-align: center;
+    /* Chips-group3 */
+
+
+/* Auto layout */
+
+display: flex;
+flex-direction: column;
+/* align-items: flex-start; */
+padding: 0px;
+
+position: absolute;
+height: 50px;
+left: 27px;
+right: 21px;
+top: 585px;
+
+}
+
+.to_my_location{
+    border: solid black 1px;
+    text-align: center;
+    /* Chips-group3 */
+
+
+/* Auto layout */
+
+display: flex;
+flex-direction: column;
+/* align-items: flex-start; */
+padding: 0px;
+
+position: absolute;
+height: 50px;
+left: 25px;
+right: 23px;
+top: 662px;
+}
+
+.take_stroll{
+    /* border: solid black 1px; */
+    /* Controls / Chips: Rounded */
+
+
+position: absolute;
+width: 327px;
+height: 50px;
+left: calc(50% - 327px/2 + 2px);
+top: 739px;
+/* 
+background: #F2F4F5;
+mix-blend-mode: darken;
+border-radius: 8px; */
+}
+
+.robot_current img{
+    position: absolute; 
+    top: -60px; 
+    left: -50px; 
+    transform: translate(50, 50); 
+    width: 130%; 
+    height: 130%; 
+    object-fit: cover; 
+    margin: auto;
+
+
+    /* overflow: hidden; */
+
+}
+
+.robot_current_walking{
+    border: solid black 1px;
+    /* Content Blocks */
+
+
+/* Auto layout */
+
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+
+position: absolute;
+width: 327px;
+height: 356px;
+left: 25px;
+top: 210px;
+
+overflow: hidden;
+}

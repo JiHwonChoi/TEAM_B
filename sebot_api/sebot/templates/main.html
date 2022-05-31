@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>main.html</title>
+</head>
+<body>
+    {% if session.get('logFlag') %}
+        이름 : {{ session['userId'] }}
+        | <a href="/user_info_edit/{{ session['idx'] }}">Edit</a>
+        | <a href="/logout">Logout</a>
+    {% else %}
+        <a href="/login_form">Login</a>
+        <a href="/register_form">Register</a>
+    {% endif %}
+    <hr>
+    main
+
+</body>
+</html>

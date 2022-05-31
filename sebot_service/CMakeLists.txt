@@ -61,6 +61,10 @@ add_service_files(
   FILES
   GetImage.srv
   SetGoal.srv
+<<<<<<< HEAD
+=======
+  SendArrival.srv
+>>>>>>> 5bab64001a11538d4abbdd5bede153d83a9bff03
 )
 
 ## Generate actions in the 'action' folder
@@ -108,7 +112,11 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES sebot_service
+<<<<<<< HEAD
   CATKIN_DEPENDS geometry_msgs nav_msgs rospy sensor_msgs message_runtime
+=======
+  CATKIN_DEPENDS geometry_msgs nav_msgs rospy sensor_msgs message_runtime std_msgs
+>>>>>>> 5bab64001a11538d4abbdd5bede153d83a9bff03
 #  DEPENDS system_lib
 )
 

@@ -1,20 +1,21 @@
 TEAM_B
 
-22.04.17
-Dependencies
-openpose (https://github.com/CMU-Perceptual-Computing-Lab/openpose)
-yolov3_pytorch_ros (https://github.com/vvasilo/yolov3_pytorch_ros)
-face_recognition(https://github.com/ageitgey/face_recognition)
 
-Human Pose estimator with openpose:
-You need to insert your directory to openpose in line 17! Checkout all parameters at the top of the script!
-$ python pose_estimator.py
+## 파일 실행방법 
+clone후 my-app 디렉토리에서 터미널을 켜고 
 
-object detection with depth using yolov3:
-Checkout all parameters at the top of the script!
-I just use it by..
-$ python detector.py --net_resolution 320x-1 (net resolution is to reduce memory usage...)
 
-Face recognition:
-Checkout all parameters at the top of the script!
-python face_recog.py
+> npm install  
+> npm start  
+
+
+순으로 입력하면 됩니다. nodemodules 라는 폴더 설치 되는지 확인.  
+
+
+## 소켓 테스트 용 앱 주의사항
+
+src/Start.js 에서 useEffect() 함수 안에 있는 부분을 수정해야합니다.
+F12로 콘솔창 열어서 서버랑 접속하는지 확인해주세요
+
+### createProxyMiddleware 에러 났을경우
+> npm install http-proxy-middleware --save-dev

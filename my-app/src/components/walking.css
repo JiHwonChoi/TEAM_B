@@ -1,0 +1,85 @@
+.slidewrap{
+    
+    overflow:hidden;
+    /* position: absolute;
+    width: 327px;
+    height: 400px;
+    left: 25px;
+    top: 177px; */
+
+    position: absolute;
+    width: 327px;
+    height: 436px;
+    left: 25px;
+    top: 203px;
+    border: solid black 1px;
+}
+
+.slide{
+    /* overflow: hidden; */
+    display: flex; /*이미지를 옆으로 일렬로 늘어놓음 (좌우슬라이드)*/
+    left : 0px;
+    position: absolute; /* left속성 적용시키려면 필요함*/
+
+    transition: all 0.25s;
+    /* 이동 애니메이션 */
+}
+
+.slide img{
+    position: static;
+    width: 327px;
+    height: 436px;
+    left: 0px;
+    object-fit: cover;
+
+    
+}
+
+.map_navigate_wrapper{
+    border: none;
+    text-align: center;
+    position: absolute;
+    height: 50px;
+    left: 27px;
+    right: 21px;
+    top: 585px;
+}
+
+.buttonWrapper{
+    display: flex; /*이미지를 옆으로 일렬로 늘어놓음 (좌우슬라이드)*/
+    left : 0px;
+    position: absolute; /* left속성 적용시키려면 필요함*/
+}
+
+.buttonWrapper div{
+    border: 1px solid black;
+    width:163.5px;
+    height: 50px;
+}
+
+.marker {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    z-index: 10000;
+}
+
+.letsgowalk{
+    border: solid black 1px;
+    text-align: center;
+    /* Chips-group3 */
+/* Auto layout */
+display: flex;
+flex-direction: column;
+/* align-items: flex-start; */
+padding: 0px;
+position: absolute;
+height: 50px;
+left: 25px;
+right: 23px;
+top: 662px;
+line-height: 50px;
+}
+
+
+

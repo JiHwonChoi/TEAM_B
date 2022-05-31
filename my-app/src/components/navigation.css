@@ -1,0 +1,109 @@
+
+.navigation{
+    position:absolute;
+    bottom: 0px;
+    
+
+}
+
+.tabbar{
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+
+    width: 375px;
+    height: 83px;
+    border: 1px solid black;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.tabbar div{
+    top:10px;
+}
+
+.plus {
+    /* position: absolute;
+    left: 150px;
+    right: 190px; */
+    top: 10.84%;
+    bottom: 40.96%;
+    width: 40px;
+    height: 40px;
+    /* border: 1px solid black; */
+}
+.plus_icon{
+
+    width: 40px;
+    height: 40px;
+    background:no-repeat center/120% url(./image/plus.png);
+}
+
+
+.home-button{
+/* Rectangle */
+/* position: absolute;
+left: 20px;
+right: 260px;
+top: 10.84%;
+bottom: 40.96%; */
+width: 80px;
+height: 40px;
+
+background: #8DC63F;
+border-radius: 20px;
+}
+
+.home_icon{
+    /* position: absolute; */
+    margin-left: auto;
+    margin-right: auto;
+    /* top: 26.51%;
+    bottom: 56.56%; */
+    width: 40px;
+    height: 40px;
+
+    background: no-repeat center/100% url(./image/home.png)
+}
+.noti{
+/* 40 / Toolbar / bell */
+
+
+/* position: absolute;
+left: 232px;
+right: 275px;
+top: 10.84%;
+bottom: 40.96%; */
+width: 40px;
+    height: 40px;
+
+}
+
+.noti_icon{
+    width: 40px;
+    height: 40px;
+    background:no-repeat center/90% url(./image/bell.png);
+}
+
+
+.profile{
+/* 40 / Toolbar / bell */
+
+
+/* position: absolute;
+left: 310px;
+right: 350px;
+top: 10.84%;
+bottom: 40.96%; */
+width: 40px;
+    height: 40px;
+}
+
+.profile_icon{
+    width: 40px;
+    height: 40px;
+    background:no-repeat center/100% url(./image/icon.png);   
+}
