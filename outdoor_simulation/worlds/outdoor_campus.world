@@ -1,0 +1,119 @@
+<sdf version='1.7'>
+  <world name='default'>
+
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type='adiabatic'/>
+    <physics type='ode'>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>1</shadows>
+    </scene>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <wind/>
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <latitude_deg>0</latitude_deg>
+      <longitude_deg>0</longitude_deg>
+      <elevation>0</elevation>
+      <heading_deg>0</heading_deg>
+    </spherical_coordinates>
+
+    <model name='Campus'>
+      <static>1</static>
+      <link name='floor_1'>
+        <visual name='visual'>
+          <pose>0 0 -0.25 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>https://fuel.ignitionrobotics.org/1.0/ncs_robotmanager/models/campus/2/files/meshes/Campus_world.obj</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <pose>0 0 -0.25 0 -0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>https://fuel.ignitionrobotics.org/1.0/ncs_robotmanager/models/campus/2/files/meshes/Campus_world.obj</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose>3.19204 -2.90101 0 0 -0 0</pose>
+    </model>
+    <state world_name='default'>
+      <sim_time>189 159000000</sim_time>
+      <real_time>191 6063687</real_time>
+      <wall_time>1648840891 295232083</wall_time>
+      <iterations>189159</iterations>
+      <model name='Campus'>
+        <pose>3.19204 -2.90101 0 0 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='floor_1'>
+          <pose>3.19204 -2.90101 0 0 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+    </state>
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose>116.934 -88.778 48.1027 0 0.299643 2.0482</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+    
+     <actor name="actor1">
+      <pose>21 50 0.25 0 0 -1.57</pose>
+      <skin>
+        <filename>walk.dae</filename>
+      </skin>
+      <animation name="walking">
+        <filename>walk.dae</filename>
+        <scale>1.000000</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <plugin name="actor1_plugin" filename="libactor_controller.so">
+    	  <target_weight>1.15</target_weight>
+    	  <obstacle_weight>1.8</obstacle_weight>
+    	  <animation_factor>5.1</animation_factor>
+    	  <ignore_obstacles>
+      		<model>ground_plane</model>
+    	  </ignore_obstacles>
+    </plugin>
+    </actor>
+    <plugin name='gazebo_occupancy_map' filename='libgazebo_2Dmap_plugin.so'>
+    <map_resolution>0.1</map_resolution> <!-- in meters, optional, default 0.1 -->
+    <map_height>0.05</map_height>         <!-- in meters, optional, default 0.3 -->
+    <map_size_x>500</map_size_x>          <!-- in meters, optional, default 10 -->
+    <map_size_y>500</map_size_y>          <!-- in meters, optional, default 10 -->
+    <init_robot_x>0</init_robot_x>          <!-- x coordinate in meters, optional, default 0 -->
+    <init_robot_y>0</init_robot_y>          <!-- y coordinate in meters, optional, default 0 -->
+</plugin>
+  </world>
+</sdf>

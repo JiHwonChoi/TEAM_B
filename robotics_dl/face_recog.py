@@ -8,8 +8,8 @@ import cv2
 '''
 ------PARAMETERS-------
 '''
-image_topic = '/camera/rgb/image_raw'
-actor_img_dir = 'actor_img/actor_1.png'
+image_topic = '/rear_camera/rgb/image_raw'
+actor_img_dir = '/home/danmuzi/actor_img/actor_sample.png'
 
 '''
 -----------------------
@@ -21,7 +21,7 @@ class Face_recognition:
     def __init__(self, actor_picture):  # actor_picture: dirs of actor_picture
         #self.image_sub = rospy.Subscriber('/camera/rgb/image_raw/compressed', CompressedImage, self._cb, queue_size=1)
         self.image_sub = rospy.Subscriber(image_topic, Image, self._cb, queue_size=1)
-        self.actor_image = face_recognition.load_image_file(actor_picture[0])
+        self.actor_image = face_recognition.load_image_file(actor_picture)
         #self.actor_image1= face_recognition.load_image_file(actor_picture[1])
         # print("actor img",self.actor_image)
         self.actor_encoding = face_recognition.face_encodings(self.actor_image)[0]
@@ -33,7 +33,7 @@ class Face_recognition:
         # print("initialized")
         self.process_this_frame= 0
     def _cb(self, data):
-        _r=1
+        _r=2
 
         try:
              np_arr = np.fromstring(data.data, np.uint8)
