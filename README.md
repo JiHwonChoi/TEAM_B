@@ -35,7 +35,7 @@
 
 
 ## Gazebo simulation
-Indoor map 과 outdoor map으로 구성되어 있습니다. 각각 cpastone_turtlebot, outdoor_simulation 폴더(패키지)에서 world파일과 pgm파일을 확인하실수 있습니다.
+Indoor map 과 outdoor map으로 구성되어 있습니다. 각각 capstone_turtlebot, outdoor_simulation 폴더(패키지)에서 world파일과 pgm파일을 확인하실수 있습니다.
 
 launch indoor simulation
 > roslaunch capstone_turtlebot capstone.launch
