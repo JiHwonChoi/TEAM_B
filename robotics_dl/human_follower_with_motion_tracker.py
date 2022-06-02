@@ -15,6 +15,7 @@ from sebot_service.srv import GetImage
 from sensor_msgs.msg import Image, CompressedImage
 import cv2
 import numpy as np
+import argparse
 threshold_dist = 3.0
 stop_threshold = 5.0
 no_human_endurance_time = 6.0 # time to stop if there's no human
@@ -277,11 +278,23 @@ class Human_follower(DetectorManager):
 
                 except:
                     rospy.loginfo("actor_depth is zero")
-
+def str2bool(v):
+    if isinstance(v, bool):
+       return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 if __name__ == '__main__':
     rospy.init_node("human_follower")
-    human_follower=Human_follower(False,em_mode=False)
+    parser = argparse.ArgumentParser(description='Tracker node')
+    parser.add_argument('--tracker_on', type=str2bool,help='to able/disable Identification process',default=False)
+    args = parser.parse_args()
+    print("tracker_on", Bool(args.tracker_on))
+    human_follower=Human_follower(args.tracker_on,em_mode=False)
     while True:
         human_follower.modify_speed()
         rospy.sleep(.1)

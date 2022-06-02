@@ -1,7 +1,7 @@
 <launch>
   <!-- Arguments -->
   <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
-  <arg name="map_file" default="/home/danmuzi/outdoormap/outdoor_campus.yaml"/>
+  <arg name="map_file" default="$(find outdoor_simulation)/map/outdoor_campus.yaml"/>
   <arg name="open_rviz" default="true"/>
   <arg name="move_forward_only" default="true"/>
 
